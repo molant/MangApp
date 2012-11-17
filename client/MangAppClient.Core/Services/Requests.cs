@@ -227,6 +227,7 @@
         {
             return new Chapter()
             {
+                Id = token["id"].Value<int>(),
                 PreviousChapterId = token["previous"].Value<int>(),
                 NextChapterId = token["next"].Value<int>(),
                 Number = token["number"].Value<int>(),
