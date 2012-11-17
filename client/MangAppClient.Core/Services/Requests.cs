@@ -10,6 +10,8 @@
 
     public class Requests : IRequests
     {
+        internal int MangaListVersion { get; private set ; }
+
         internal async Task<IEnumerable<MangaSummary>> GetMangaListAsync()
         {
             try
@@ -21,6 +23,8 @@
 
                 // Transform JSON into objects
                 JObject json = JObject.Parse(response);
+
+                this.MangaListVersion = json["version"].Value<int>();
                 results.AddRange(json["manga"].Children().Select(t => this.ParseMangaSummary(t)));
 
                 return results;
@@ -42,6 +46,8 @@
 
                 // Transform JSON into object
                 JObject json = JObject.Parse(response);
+
+                this.MangaListVersion = json["version"].Value<int>();
                 var groups = json["manga"].Children().GroupBy(t => t["operation"].Value<string>());
 
                 // Get the mangas that were deleted

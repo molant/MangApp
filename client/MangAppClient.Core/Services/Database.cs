@@ -25,10 +25,13 @@
                 db.CreateTable<DbManga>();
                 db.CreateTable<DbBackgroundImage>();
 
-                // TODO: CREATE VERSION LIST!!!!!
                 // Populate the tables
-                Requests req = new Requests();
-                var result = await req.GetMangaListAsync();
+                Requests requests = new Requests();
+                var result = await requests.GetMangaListAsync();
+
+                DbMangaListVersion version = new DbMangaListVersion() { Version = requests.MangaListVersion };
+                db.Insert(version);
+
                 foreach (var manga in result)
                 {
                     db.Insert(DbManga.FromMangaSummary(manga));
@@ -88,17 +91,14 @@
             SQLiteAsyncConnection db = new SQLiteAsyncConnection(Path.Combine(DbRootPath, "mangapp.sqlite"));
             DbMangaListVersion listVersion = await db.Table<DbMangaListVersion>().FirstOrDefaultAsync();
 
-            // We didn't have a list version create it
-            if (listVersion == null)
-            {
-                listVersion = new DbMangaListVersion() { Version = 1 };
-                await db.InsertAsync(listVersion);
-            }
+            Requests requests = new Requests();
+            var diffs = await requests.GetMangaListDiffAsync(listVersion.Version);
 
-            var diffs = await new Requests().GetMangaListDiffAsync(listVersion.Version);
+            // Update our local manga list version
+            listVersion.Version = requests.MangaListVersion;
+            await db.UpdateAsync(listVersion);
 
-            // Update our db with the diffs from the server
-
+            // Update our local manga list with the diffs from the server
             // Remove old mangas
             foreach (var deletion in diffs.OfType<RemoveDiffResult>())
             {
