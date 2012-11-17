@@ -1,5 +1,6 @@
 ﻿namespace MangAppClient.Core.Services
 {
+    using MangAppClient.Core.Model;
     using Newtonsoft.Json.Linq;
     using System;
     using System.Collections.Generic;

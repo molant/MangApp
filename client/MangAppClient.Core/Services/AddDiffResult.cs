@@ -1,5 +1,6 @@
 ﻿namespace MangAppClient.Core.Services
 {
+    using MangAppClient.Core.Model;
     using System.Collections.Generic;
 
     internal class AddDiffResult : DiffResult
