@@ -112,6 +112,8 @@
     <Compile Include="Services\Requests.cs" />
     <Compile Include="Services\UpdateDiffResult.cs" />
     <Compile Include="Services\Urls.cs" />
+    <Compile Include="SQLite\SQLite.cs" />
+    <Compile Include="SQLite\SQLiteAsync.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">
