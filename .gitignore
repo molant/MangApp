@@ -4,8 +4,7 @@ client/MangAppClient.Core/obj/*
 client/MangAppClient.Core/bin/*
 client/MangAppClient.Core/obj/
 client/MangAppClient.Core/bin
-client/MangAppClient.Core/bin
-client/MangAppClient.Core/obj
+client/MangAppClient.Core/obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache
 client/MangAppClient/obj
 client/MangAppClient/bin
 client/MangAppClient.Core/bin
