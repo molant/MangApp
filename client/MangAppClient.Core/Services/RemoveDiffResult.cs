@@ -1,8 +1,8 @@
 ﻿namespace MangAppClient.Core.Services
 {
-    internal class RemoveDiffResult : DiffResult
+    public sealed class RemoveDiffResult : DiffResult
     {
-        internal RemoveDiffResult(int id)
+        public RemoveDiffResult(int id)
             : base(id)
         { }
     }
