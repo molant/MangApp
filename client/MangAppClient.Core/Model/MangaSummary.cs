@@ -1,12 +1,7 @@
-﻿using MangAppClient.Core.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MangAppClient.Core.Model
+﻿namespace MangAppClient.Core.Model
 {
+    using System.Collections.Generic;
+
     public class MangaSummary : DiffResult
     {
         public MangaSummary(int id)

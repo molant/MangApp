@@ -10,7 +10,7 @@
 
     public static class Requests
     {
-        public static async Task<IEnumerable<MangaSummary>> GetMangaListAsync()
+        internal static async Task<IEnumerable<MangaSummary>> GetMangaListAsync()
         {
             try
             {
@@ -31,7 +31,7 @@
             }
         }
 
-        public static async Task<IEnumerable<DiffResult>> GetMangaListDiffAsync(int localListVersion)
+        internal static async Task<IEnumerable<DiffResult>> GetMangaListDiffAsync(int localListVersion)
         {
             try
             {

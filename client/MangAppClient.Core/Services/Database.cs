@@ -96,16 +96,28 @@
             var diffs = await Requests.GetMangaListDiffAsync(listVersion.Version);
 
             // Update our db with the diffs from the server
+
+            // Remove old mangas
             foreach (var deletion in diffs.OfType<RemoveDiffResult>())
             {
                 await db.DeleteAsync<DbManga>(deletion.Id);
             }
 
-            //foreach (var update in diffs.OfType<UpdateDiffResult>())
-            //{
-            //    await db.DeleteAsync<DbManga>(update.Id);
-            //}
+            // Update mangas
+            var updates = diffs.OfType<UpdateDiffResult>();
+            var dbMangas = await db.Table<DbManga>()
+                        .Where(m => updates.Any(u => u.Id == m.Id))
+                        .ToListAsync();
 
+            var updatedDbMangas = updates.Join(
+                dbMangas, 
+                update => update.Id, 
+                dbManga => dbManga.Id, 
+                (update, dbManga) => dbManga.Update(update));
+
+            await db.UpdateAsync(updatedDbMangas);
+
+            // Insert new mangas
             await db.InsertAllAsync(diffs.OfType<MangaSummary>().Select(m => DbManga.FromMangaSummary(m)));
         }
 
@@ -133,6 +145,17 @@
             public MangaStatus Status { get; set; }
 
             public int LastChapter { get; set; }
+
+            public DbManga Update(UpdateDiffResult update)
+            {
+                this.LastChapter = update.LastChapter;
+                if (update.NewStatus.HasValue)
+                {
+                    this.Status = update.NewStatus.Value;
+                }
+
+                return this;
+            }
 
             public static DbManga FromMangaSummary(MangaSummary summary)
             {
