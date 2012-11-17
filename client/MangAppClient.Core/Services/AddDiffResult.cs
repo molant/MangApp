@@ -8,5 +8,8 @@
 
     internal class AddDiffResult : DiffResult
     {
+        internal AddDiffResult(int id)
+            : base(id)
+        { }
     }
 }

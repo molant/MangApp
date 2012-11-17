@@ -1,0 +1,14 @@
+C:\Development\Plain Concepts\MangApp\client\MangAppClient.Core\obj\Debug\MangAppClient.Core.csprojResolveAssemblyReference.cache
+C:\Development\Plain Concepts\MangApp\client\MangAppClient.Core\bin\Debug\MangAppClient.Core.dll
+C:\Development\Plain Concepts\MangApp\client\MangAppClient.Core\bin\Debug\MangAppClient.Core.pdb
+C:\Development\Plain Concepts\MangApp\client\MangAppClient.Core\bin\Debug\MangAppClient.Core.pri
+C:\Development\Plain Concepts\MangApp\client\MangAppClient.Core\bin\Debug\Newtonsoft.Json.dll
+C:\Development\Plain Concepts\MangApp\client\MangAppClient.Core\bin\Debug\Newtonsoft.Json.pdb
+C:\Development\Plain Concepts\MangApp\client\MangAppClient.Core\bin\Debug\Newtonsoft.Json.xml
+C:\Development\Plain Concepts\MangApp\client\MangAppClient.Core\obj\Debug\MangAppClient.Core.dll
+C:\Development\Plain Concepts\MangApp\client\MangAppClient.Core\obj\Debug\MangAppClient.Core.pdb
+C:\Development\Plain Concepts\MangApp\client\MangAppClient.Core\obj\Debug\priconfig.xml
+C:\Development\Plain Concepts\MangApp\client\MangAppClient.Core\obj\Debug\layout.resfiles
+C:\Development\Plain Concepts\MangApp\client\MangAppClient.Core\obj\Debug\resources.resfiles
+C:\Development\Plain Concepts\MangApp\client\MangAppClient.Core\obj\Debug\pri.resfiles
+C:\Development\Plain Concepts\MangApp\client\MangAppClient.Core\obj\Debug\LanguageQualifiers.txt
