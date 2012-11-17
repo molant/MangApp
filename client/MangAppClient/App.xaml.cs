@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MangAppClient.Views;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,6 +14,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Caliburn.Micro;
 
 // The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=234227
 
@@ -21,7 +23,7 @@ namespace MangAppClient
     /// <summary>
     /// Provides application-specific behavior to supplement the default Application class.
     /// </summary>
-    sealed partial class App : Application
+    sealed partial class App : CaliburnApplication
     {
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code

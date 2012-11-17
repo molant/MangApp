@@ -1,8 +1,10 @@
-﻿<Application
+﻿<caliburn:CaliburnApplication
     x:Class="MangAppClient.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:MangAppClient">
+    xmlns:local="using:MangAppClient"
+    xmlns:caliburn="using:Caliburn.Micro">
+    
 
     <Application.Resources>
         <ResourceDictionary>
@@ -17,4 +19,4 @@
 
         </ResourceDictionary>
     </Application.Resources>
-</Application>
+</caliburn:CaliburnApplication>
