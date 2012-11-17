@@ -10,7 +10,7 @@
 
     public static class Requests
     {
-        public static async Task<IEnumerable<MangaSummary>> GetMangaList()
+        public static async Task<IEnumerable<MangaSummary>> GetMangaListAsync()
         {
             try
             {
@@ -31,7 +31,7 @@
             }
         }
 
-        public static async Task<IEnumerable<DiffResult>> GetMangaListDiff(int localListId)
+        public static async Task<IEnumerable<DiffResult>> GetMangaListDiffAsync(int localListId)
         {
             try
             {
@@ -63,15 +63,7 @@
                 results.AddRange(groups
                     .Where(group => group.Key.Equals("add", StringComparison.CurrentCultureIgnoreCase))
                     .SelectMany(group => group)
-                    .Select(item => new AddDiffResult(item["id"].Value<int>())
-                        {
-                            Name = item["name"].Value<string>(),
-                            Authors = item["authors"].Children().Values<string>(),
-                            Artists = item["artists"].Children().Values<string>(),
-                            Genres = item["genres"].Children().Values<string>(),
-                            LastChapter = item["chapter"].Value<int>(),
-                            Status = (MangaStatus)Enum.Parse(typeof(MangaStatus), item["status"].Value<string>())
-                        }));
+                    .Select(item => ParseMangaSummary(item)));
 
                 return results;
             }
@@ -81,7 +73,7 @@
             }
         }
 
-        public static async Task<Manga> GetMangaDetail(int mangaId)
+        public static async Task<Manga> GetMangaDetailAsync(int mangaId)
         {
             try
             {
@@ -100,7 +92,7 @@
             }
         }
 
-        public static async Task<Chapter> GetChapter(int mangaId, int chapterId)
+        public static async Task<Chapter> GetChapterAsync(int mangaId, int chapterId)
         {
             try
             {
@@ -119,7 +111,7 @@
             }
         }
 
-        public static async Task<Chapter> GetChapterFromProvider(int mangaId, int chapterId, int providerId)
+        public static async Task<Chapter> GetChapterFromProviderAsync(int mangaId, int chapterId, int providerId)
         {
             try
             {
@@ -138,7 +130,7 @@
             }
         }
 
-        public static async Task<IEnumerable<MangaSummary>> GetAuthorMangas(string authorId)
+        public static async Task<IEnumerable<MangaSummary>> GetAuthorMangasAsync(string authorId)
         {
             try
             {
@@ -159,7 +151,7 @@
             }
         }
 
-        public static async Task<IEnumerable<MangaSummary>> GetRelatedMangas(int mangaId)
+        public static async Task<IEnumerable<MangaSummary>> GetRelatedMangasAsync(int mangaId)
         {
             try
             {
@@ -177,6 +169,21 @@
             catch (HttpRequestException)
             {
                 return Enumerable.Empty<MangaSummary>();
+            }
+        }
+
+        public static async Task<byte[]> GetBackgroundImageAsync(int mangaId)
+        {
+            try
+            {
+                List<MangaSummary> results = new List<MangaSummary>();
+
+                HttpClient client = new HttpClient();
+                return await client.GetByteArrayAsync(string.Format(Urls.GetBackgroundImage, mangaId));
+            }
+            catch (HttpRequestException)
+            {
+                return null;
             }
         }
 

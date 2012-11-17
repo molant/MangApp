@@ -5,7 +5,56 @@
  * Copyright (c) 2012 molant
  * Licensed under the MIT license.
  */
+"use strict";
+var restify = require('restify'),
+    providers = require('./providers/provider-loader.js').providers,
+    promised = require("promised-io/promise"),
+    logger = require('tracer').console({
+        format:"{{timestamp}} <{{title}}> {{message}}",
+        dateformat:"HH:MM:ss.L"
+    }),
+    Deferred = require('promised-io').Deferred;
 
-exports.awesome = function() {
-  return 'awesome';
-};
+var server = restify.createServer({
+    name:'MangApp'
+});
+
+//server.use(restify.bodyParser());
+
+server.get({path:'/list/', version:'1.0.0'}, list);
+server.get({path:'/list/update/', version:'1.0.0'}, updateDB);
+server.get({path:'/update/:id', version:'1.0.0'}, update);
+server.get({path:'/manga/:id', version:'1.0.0'}, manga);
+server.get({path:'/manga/:id/:chapterId', version:'1.0.0'}, chapter);
+/*server.get({path:'/list/', version:'1.0.0'}, list);
+ server.get({path:'/list/', version:'1.0.0'}, list);*/
+server.listen(32810);
+
+function list(req, res, next) {
+    res.send('nice try');
+}
+
+function updateDB(req, res, next) {
+    var updaters = [];
+    logger.log('updating DB');
+    for (var i = 0; i < providers.length; i++) {
+        updaters.push(providers[i].update());
+    }
+
+    promised.all(updaters).then(function (array) {
+        res.send(array.length + ' servers updated');
+        logger.log('DB updated');
+    });
+}
+
+function update(req, res, next) {
+    //check for mangas updated since the requested version
+}
+
+function manga(req, res, next) {
+    console.log(req.params);
+}
+
+function chapter(req, res, next) {
+    console.log(req.params);
+}

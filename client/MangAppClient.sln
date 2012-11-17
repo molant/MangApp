@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MangAppClient.Core", "MangAppClient.Core\MangAppClient.Core.csproj", "{B00E5D2B-D36E-419F-9B5F-A0850203E161}"
