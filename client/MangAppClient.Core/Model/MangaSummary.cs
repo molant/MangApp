@@ -10,5 +10,10 @@ namespace MangAppClient.Core.Model
     {
         public string Id { get; set; }
         public string Name { get; set; }
+        public IEnumerable<string> Author { get; set; }
+        public IEnumerable<string> Genre { get; set; }
+        public IEnumerable<string> Artist { get; set; }
+        public MangaStatus Status { get; set; }
+        public int LastChapter { get; set; }
     }
 }

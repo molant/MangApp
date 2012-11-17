@@ -1,4 +1,4 @@
-﻿namespace MangAppClient.Core
+﻿namespace MangAppClient.Core.Model
 {
     internal enum MangaStatus
     {
