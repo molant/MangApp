@@ -3,7 +3,7 @@
     using MangAppClient.Core.Model;
     using System.Collections.Generic;
 
-    internal class AddDiffResult : DiffResult
+    public sealed class AddDiffResult : DiffResult
     {
         internal AddDiffResult(int id)
             : base(id)
