@@ -9,12 +9,12 @@
 
     internal static class Requests
     {
-        internal static async Task<IEnumerable<DiffResult>> FetchMangaListDiff()
+        internal static async Task<IEnumerable<DiffResult>> FetchMangaListDiff(int localListId)
         {
             try
             {
                 HttpClient client = new HttpClient();
-                var json = await client.GetStringAsync(Urls.GetMangaList);
+                var json = await client.GetStringAsync(string.Format(Urls.GetMangaDiff, localListId));
 
                 // Transform JSON into object
                 return Enumerable.Empty<DiffResult>();

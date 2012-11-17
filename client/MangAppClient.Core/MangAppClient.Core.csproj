@@ -99,11 +99,13 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="MangaStatus.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\AddDiffResult.cs" />
     <Compile Include="Services\DiffResult.cs" />
     <Compile Include="Services\RemoveDiffResult.cs" />
     <Compile Include="Services\Requests.cs" />
+    <Compile Include="Services\UpdateDiffResult.cs" />
     <Compile Include="Services\Urls.cs" />
   </ItemGroup>
   <ItemGroup>
