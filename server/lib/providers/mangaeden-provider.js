@@ -11,7 +11,7 @@ var providerId = 'MangaEden',
     promised = require("promised-io/promise"),
     Deferred = require('promised-io').Deferred,
     logger = require('tracer').console({
-        format:"{{timestamp}} <{{title}}> {{message}}",
+        format:"{{timestamp}} <{{title}}> {{message}} (in {{file}}:{{line}})",
         dateformat:"HH:MM:ss.L"
     }),
     fs = require('fs'),
@@ -96,16 +96,22 @@ function updateDB(manga) {
                 db.mangaMap.save({id:manga.id, externalId:manga.externalId, providerId:providerId}, function (err, saved) {
                     if (err || !saved) {
                         logger.err('Error updating mangaMap for %s', manga.title);
-                    }else{
+                    } else {
                         logger.log('%s inserted into mangaMap collection', manga.title);
                     }
                 });
             }
 
+            db.mangas.update({id:manga.id}, {$set:manga}, {upsert:true}, function (err) {
+                if (!err) {
+                    logger.log('%s inserted', manga.title);
+                }else{
+                    logger.err('Error inserting %s', manga.title);
+                }
+            });
+
             //updaters
         }
-
-        logger.log(err + ' ' + docs);
     });
     //insert or update
 }
