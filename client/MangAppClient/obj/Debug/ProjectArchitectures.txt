@@ -1,0 +1,1 @@
+C:\Development\Plain Concepts\MangApp\client\MangAppClient\MangAppClient.csproj;neutral
