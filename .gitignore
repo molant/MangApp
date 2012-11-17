@@ -4,3 +4,7 @@ client/MangAppClient.Core/obj/*
 client/MangAppClient.Core/bin/*
 client/MangAppClient.Core/obj/
 client/MangAppClient.Core/bin
+client/MangAppClient.Core/bin
+client/MangAppClient.Core/obj
+client/MangAppClient/obj
+client/MangAppClient/bin
