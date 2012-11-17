@@ -1,0 +1,37 @@
+{
+  "name": "MangAppServer",
+  "description": "Server for the MangApp client",
+  "version": "0.1.0",
+  "homepage": "https://github.com/molant/MangApp",
+  "author": {
+    "name": "molant",
+    "email": "amolleda@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/molant/MangApp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/molant/MangApp/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/molant/MangApp/blob/master/LICENSE-MIT"
+    }
+  ],
+  "main": "lib/MangAppServer",
+  "engines": {
+    "node": ">= 0.6.0"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "devDependencies": {
+    "grunt": "~0.3.17"
+  },
+  "keywords": [],
+  "dependencies": {
+    "restify": "~1.4.4"
+  }
+}
