@@ -1,4 +1,4 @@
-﻿namespace MangAppClient.Core.Services
+﻿namespace MangAppClient.Core.Model
 {
     public abstract class DiffResult
     {

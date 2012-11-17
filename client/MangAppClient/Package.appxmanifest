@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
-
-  <Identity Name="344e0010-a8ac-456a-aa1b-a47de9cdd94c"
+  
+  <Identity Name="5e525f30-130a-4e2e-afe8-8f2f1489efb3"
             Publisher="CN=Joaquin"
             Version="1.0.0.0" />
 
@@ -9,6 +9,7 @@
     <DisplayName>MangAppClient</DisplayName>
     <PublisherDisplayName>Joaquin</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
+    <Description>MangAppClient</Description>
   </Properties>
 
   <Prerequisites>
@@ -21,10 +22,10 @@
   </Resources>
 
   <Applications>
-    <Application Id="App"
-        Executable="$targetnametoken$.exe"
+    <Application Id="App" 
+        Executable="$targetnametoken$.exe" 
         EntryPoint="MangAppClient.App">
-        <VisualElements
+        <VisualElements 
             DisplayName="MangAppClient"
             Logo="Assets\Logo.png"
             SmallLogo="Assets\SmallLogo.png"
