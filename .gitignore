@@ -10,3 +10,12 @@ client/MangAppClient/obj
 client/MangAppClient/bin
 client/MangAppClient.Core/bin
 client/MangAppClient.Core/obj
+client/MangAppClient.Core/bin/Debug/MangAppClient.Core.dll
+client/MangAppClient.Core/bin/Debug/MangAppClient.Core.pdb
+client/MangAppClient.Core/obj/Debug/layout.resfiles.intermediate
+client/MangAppClient.Core/obj/Debug/MangAppClient.Core.csproj.FileListAbsolute.txt
+client/MangAppClient.Core/obj/Debug/MangAppClient.Core.dll
+client/MangAppClient.Core/obj/Debug/MangAppClient.Core.pdb
+client/MangAppClient.Core/obj/Debug/pri.resfiles.intermediate
+client/MangAppClient.Core/obj/Debug/priconfig.xml.intermediate
+client/MangAppClient.Core/obj/Debug/resources.resfiles.intermediate
