@@ -3,7 +3,9 @@
     using MangAppClient.Core.Model;
     using SQLite;
     using System;
+    using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Threading.Tasks;
     using Windows.Storage;
     using Windows.Storage.Streams;
@@ -19,8 +21,9 @@
         {
             using (SQLiteConnection db = new SQLiteConnection(Path.Combine(DbRootPath, "mangapp.sqlite")))
             {
-                db.CreateTable<DbBackgroundImage>();
+                db.CreateTable<DbMangaListVersion>();
                 db.CreateTable<DbManga>();
+                db.CreateTable<DbBackgroundImage>();
 
                 // Populate the tables
                 var result = await Requests.GetMangaListAsync();
@@ -71,12 +74,47 @@
             return new BitmapImage(new Uri(fileName));
         }
 
-        private class DbBackgroundImage
+        public async Task<IEnumerable<MangaSummary>> GetMangaList()
         {
-            [PrimaryKey]
+            SQLiteAsyncConnection db = new SQLiteAsyncConnection(Path.Combine(DbRootPath, "mangapp.sqlite"));
+            var mangas = await db.Table<DbManga>().ToListAsync();
+            return mangas.Select(m => DbManga.ToMangaSummary(m));
+        }
+
+        public async void UpdateMangaList()
+        {
+            SQLiteAsyncConnection db = new SQLiteAsyncConnection(Path.Combine(DbRootPath, "mangapp.sqlite"));
+            DbMangaListVersion listVersion = await db.Table<DbMangaListVersion>().FirstOrDefaultAsync();
+
+            // We didn't have a list version create it
+            if (listVersion == null)
+            {
+                listVersion = new DbMangaListVersion() { Version = 1 };
+                await db.InsertAsync(listVersion);
+            }
+
+            var diffs = await Requests.GetMangaListDiffAsync(listVersion.Version);
+
+            // Update our db with the diffs from the server
+            foreach (var deletion in diffs.OfType<RemoveDiffResult>())
+            {
+                await db.DeleteAsync<DbManga>(deletion.Id);
+            }
+
+            //foreach (var update in diffs.OfType<UpdateDiffResult>())
+            //{
+            //    await db.DeleteAsync<DbManga>(update.Id);
+            //}
+
+            await db.InsertAllAsync(diffs.OfType<MangaSummary>().Select(m => DbManga.FromMangaSummary(m)));
+        }
+
+        private class DbMangaListVersion
+        {
+            [PrimaryKey, AutoIncrement]
             public int Id { get; set; }
 
-            public string Path { get; set; }
+            public int Version { get; set; }
         }
 
         private class DbManga
@@ -122,6 +160,14 @@
                             LastChapter = dbManga.LastChapter
                         };
             }
+        }
+
+        private class DbBackgroundImage
+        {
+            [PrimaryKey]
+            public int Id { get; set; }
+
+            public string Path { get; set; }
         }
     }
 }

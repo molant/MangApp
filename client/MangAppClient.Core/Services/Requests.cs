@@ -31,14 +31,14 @@
             }
         }
 
-        public static async Task<IEnumerable<DiffResult>> GetMangaListDiffAsync(int localListId)
+        public static async Task<IEnumerable<DiffResult>> GetMangaListDiffAsync(int localListVersion)
         {
             try
             {
                 List<DiffResult> results = new List<DiffResult>();
 
                 HttpClient client = new HttpClient();
-                var response = await client.GetStringAsync(string.Format(Urls.GetMangaDiff, localListId));
+                var response = await client.GetStringAsync(string.Format(Urls.GetMangaDiff, localListVersion));
 
                 // Transform JSON into object
                 JObject json = JObject.Parse(response);
