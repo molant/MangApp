@@ -12,3 +12,7 @@ C:\Development\Plain Concepts\MangApp\client\MangAppClient.Core\obj\Debug\layout
 C:\Development\Plain Concepts\MangApp\client\MangAppClient.Core\obj\Debug\resources.resfiles
 C:\Development\Plain Concepts\MangApp\client\MangAppClient.Core\obj\Debug\pri.resfiles
 C:\Development\Plain Concepts\MangApp\client\MangAppClient.Core\obj\Debug\LanguageQualifiers.txt
+C:\Development\Plain Concepts\MangApp\client\MangAppClient.Core\obj\Debug\priconfig.xml.intermediate
+C:\Development\Plain Concepts\MangApp\client\MangAppClient.Core\obj\Debug\layout.resfiles.intermediate
+C:\Development\Plain Concepts\MangApp\client\MangAppClient.Core\obj\Debug\resources.resfiles.intermediate
+C:\Development\Plain Concepts\MangApp\client\MangAppClient.Core\obj\Debug\pri.resfiles.intermediate
