@@ -37,7 +37,7 @@
             
             <TextBlock x:Name="pageTitle"
                        Grid.Column="1"
-                       Text="my mvvm app"
+                       Text="MangApp"
                        Style="{StaticResource PageHeaderTextStyle}" />
         </Grid>
 

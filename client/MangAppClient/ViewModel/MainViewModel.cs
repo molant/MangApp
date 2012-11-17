@@ -9,14 +9,9 @@ namespace MangAppClient.ViewModel
     /// See http://www.galasoft.ch/mvvm
     /// </para>
     /// </summary>
-    public class MainViewModel : ViewModelBase
+    public class MainViewModel : MangAppViewModelBase
     {
         private readonly IDataService _dataService;
-
-        /// <summary>
-        /// The <see cref="WelcomeTitle" /> property's name.
-        /// </summary>
-        public const string WelcomeTitlePropertyName = "WelcomeTitle";
 
         private string _welcomeTitle = string.Empty;
 
@@ -39,7 +34,7 @@ namespace MangAppClient.ViewModel
                 }
 
                 _welcomeTitle = value;
-                RaisePropertyChanged(WelcomeTitlePropertyName);
+                RaisePropertyChanged();
             }
         }
 
