@@ -17,7 +17,7 @@
                 List<MangaSummary> results = new List<MangaSummary>();
 
                 HttpClient client = new HttpClient();
-                var response = await client.GetStringAsync(string.Format(Urls.GetMangaList));
+                var response = await client.GetStringAsync(Urls.GetMangaList);
 
                 // Transform JSON into objects
                 JObject json = JObject.Parse(response);
@@ -83,17 +83,59 @@
 
         public static async Task<Manga> GetMangaDetail(int mangaId)
         {
-            return null;
+            try
+            {
+                List<MangaSummary> results = new List<MangaSummary>();
+
+                HttpClient client = new HttpClient();
+                var response = await client.GetStringAsync(string.Format(Urls.GetMangaDetail, mangaId));
+
+                // Transform JSON into manga
+                JObject json = JObject.Parse(response);
+                return ParseManga(json["manga"]);
+            }
+            catch (HttpRequestException)
+            {
+                return null;
+            }
         }
 
         public static async Task<Chapter> GetChapter(int mangaId, int chapterId)
         {
-            return null;
+            try
+            {
+                List<MangaSummary> results = new List<MangaSummary>();
+
+                HttpClient client = new HttpClient();
+                var response = await client.GetStringAsync(string.Format(Urls.GetMangaChapter, mangaId, chapterId));
+
+                // Transform JSON into manga
+                JObject json = JObject.Parse(response);
+                return ParseChapter(json["chapter"]);
+            }
+            catch (HttpRequestException)
+            {
+                return null;
+            }
         }
 
         public static async Task<Chapter> GetChapterFromProvider(int mangaId, int chapterId, int providerId)
         {
-            return null;
+            try
+            {
+                List<MangaSummary> results = new List<MangaSummary>();
+
+                HttpClient client = new HttpClient();
+                var response = await client.GetStringAsync(string.Format(Urls.GetMangaChapterFromProvider, mangaId, chapterId, providerId));
+
+                // Transform JSON into manga
+                JObject json = JObject.Parse(response);
+                return ParseChapter(json["chapter"]);
+            }
+            catch (HttpRequestException)
+            {
+                return null;
+            }
         }
 
         public static async Task<IEnumerable<MangaSummary>> GetAuthorMangas(string authorId)
@@ -154,11 +196,42 @@
         private static Manga ParseManga(JToken token)
         {
             return new Manga()
+                    {
+                        Id = token["id"].Value<int>(),
+                        Name = token["name"].Value<string>(),
+                        AlternativeNames = token["alternativeNames"].Children().Values<string>(),
+                        Description = token["description"].Value<string>(),
+                        Providers = token["providers"].Children().Values<string>(),
+                        Author = token["authors"].Children().Values<string>(),
+                        Artist = token["artists"].Children().Values<string>(),
+                        Genre = token["genres"].Children().Values<string>(),
+                        Status = (MangaStatus) Enum.Parse(typeof(MangaStatus), token["status"].Value<string>()),
+                        Year = token["year"].Value<int>(),
+                        TotalChapters = token["totalChapters"].Value<int>(),
+                        Image = new Uri(token["image"].Value<string>()),
+                        LastChapters = token["chapters"].Children().Select(c => ParseChapterSummary(c))
+                    };
+        }
+
+        private static ChapterSummary ParseChapterSummary(JToken token)
+        {
+            return new ChapterSummary()
+                    {
+                        Id = token["id"].Value<int>(),
+                        Number = token["number"].Value<int>(),
+                        Title = token["title"].Value<string>()
+                    };
+        }
+
+        private static Chapter ParseChapter(JToken token)
+        {
+            return new Chapter()
             {
-                Id = token["id"].Value<string>(),
-                Name = token["name"].Value<string>(),
-                Status = (MangaStatus) Enum.Parse(typeof(MangaStatus), token["status"].Value<string>())
-                // Chapters
+                PreviousChapterId = token["previous"].Value<int>(),
+                NextChapterId = token["next"].Value<int>(),
+                Number = token["number"].Value<int>(),
+                Title = token["title"].Value<string>(),
+                Pages = token["pages"].Children().Values<string>().Select(s => new Uri(s))
             };
         }
     }
