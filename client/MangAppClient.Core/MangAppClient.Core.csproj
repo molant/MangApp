@@ -106,11 +106,10 @@
     <Compile Include="Model\Manga.cs" />
     <Compile Include="Model\MangaSummary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\AddDiffResult.cs" />
-    <Compile Include="Services\DiffResult.cs" />
-    <Compile Include="Services\RemoveDiffResult.cs" />
+    <Compile Include="Model\DiffResult.cs" />
+    <Compile Include="Model\RemoveDiffResult.cs" />
     <Compile Include="Services\Requests.cs" />
-    <Compile Include="Services\UpdateDiffResult.cs" />
+    <Compile Include="Model\UpdateDiffResult.cs" />
     <Compile Include="Services\Urls.cs" />
     <Compile Include="SQLite\SQLite.cs" />
     <Compile Include="SQLite\SQLiteAsync.cs" />

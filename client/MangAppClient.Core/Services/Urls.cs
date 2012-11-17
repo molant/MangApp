@@ -15,5 +15,7 @@
         internal static readonly string GetAuthorMangas = "http://www.mangapp.net/author/{0}";
 
         internal static readonly string GetRelatedMangas = "http://www.mangapp.net/manga/{0}/related";
+
+        internal static readonly string GetBackgroundImage = "http://www.mangapp.net/manga/{0}/background";
     }
 }
