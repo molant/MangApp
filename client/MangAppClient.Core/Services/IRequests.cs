@@ -15,5 +15,7 @@
         Task<IEnumerable<MangaSummary>> GetAuthorMangasAsync(string authorId);
 
         Task<IEnumerable<MangaSummary>> GetRelatedMangasAsync(int mangaId);
+
+        Task<IEnumerable<int>> GetFavoriteMangasAsync(int userId);
     }
 }

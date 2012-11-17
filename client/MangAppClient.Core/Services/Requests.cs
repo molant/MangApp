@@ -12,73 +12,6 @@
     {
         internal int MangaListVersion { get; private set ; }
 
-        internal async Task<IEnumerable<MangaSummary>> GetMangaListAsync()
-        {
-            try
-            {
-                List<MangaSummary> results = new List<MangaSummary>();
-
-                HttpClient client = new HttpClient();
-                var response = await client.GetStringAsync(Urls.GetMangaList);
-
-                // Transform JSON into objects
-                JObject json = JObject.Parse(response);
-
-                this.MangaListVersion = json["version"].Value<int>();
-                results.AddRange(json["manga"].Children().Select(t => this.ParseMangaSummary(t)));
-
-                return results;
-            }
-            catch (HttpRequestException)
-            {
-                return Enumerable.Empty<MangaSummary>();
-            }
-        }
-
-        internal async Task<IEnumerable<DiffResult>> GetMangaListDiffAsync(int localListVersion)
-        {
-            try
-            {
-                List<DiffResult> results = new List<DiffResult>();
-
-                HttpClient client = new HttpClient();
-                var response = await client.GetStringAsync(string.Format(Urls.GetMangaDiff, localListVersion));
-
-                // Transform JSON into object
-                JObject json = JObject.Parse(response);
-
-                this.MangaListVersion = json["version"].Value<int>();
-                var groups = json["manga"].Children().GroupBy(t => t["operation"].Value<string>());
-
-                // Get the mangas that were deleted
-                results.AddRange(groups
-                    .Where(group => group.Key.Equals("delete", StringComparison.CurrentCultureIgnoreCase))
-                    .SelectMany(group => group)
-                    .Select(item => new RemoveDiffResult(item["id"].Value<int>())));
-
-                // Get the mangas that were updated
-                results.AddRange(groups
-                    .Where(group => group.Key.Equals("update", StringComparison.CurrentCultureIgnoreCase))
-                    .SelectMany(group => group)
-                    .Select(item => new UpdateDiffResult(
-                        item["id"].Value<int>(),
-                        item["chapter"].Value<int>(),
-                        string.IsNullOrEmpty(item["status"].Value<string>()) ? null : (MangaStatus?)Enum.Parse(typeof(MangaStatus), item["status"].Value<string>()))));
-
-                // Get the mangas that were added
-                results.AddRange(groups
-                    .Where(group => group.Key.Equals("add", StringComparison.CurrentCultureIgnoreCase))
-                    .SelectMany(group => group)
-                    .Select(item => this.ParseMangaSummary(item)));
-
-                return results;
-            }
-            catch (HttpRequestException)
-            {
-                return Enumerable.Empty<DiffResult>();
-            }
-        }
-
         public async Task<Manga> GetMangaDetailAsync(int mangaId)
         {
             try
@@ -175,6 +108,94 @@
             catch (HttpRequestException)
             {
                 return Enumerable.Empty<MangaSummary>();
+            }
+        }
+
+        public async Task<IEnumerable<int>> GetFavoriteMangasAsync(int userId)
+        {
+            try
+            {
+                List<int> results = new List<int>();
+
+                HttpClient client = new HttpClient();
+                var response = await client.GetStringAsync(string.Format(Urls.GetFavoriteMangas, userId));
+
+                // Transform JSON into objects
+                JObject json = JObject.Parse(response);
+                results.AddRange(json["favorite"].Children().Values<int>());
+
+                return results;
+            }
+            catch (HttpRequestException)
+            {
+                return Enumerable.Empty<int>();
+            }
+        }
+
+        internal async Task<IEnumerable<MangaSummary>> GetMangaListAsync()
+        {
+            try
+            {
+                List<MangaSummary> results = new List<MangaSummary>();
+
+                HttpClient client = new HttpClient();
+                var response = await client.GetStringAsync(Urls.GetMangaList);
+
+                // Transform JSON into objects
+                JObject json = JObject.Parse(response);
+
+                this.MangaListVersion = json["version"].Value<int>();
+                results.AddRange(json["manga"].Children().Select(t => this.ParseMangaSummary(t)));
+
+                return results;
+            }
+            catch (HttpRequestException)
+            {
+                return Enumerable.Empty<MangaSummary>();
+            }
+        }
+
+        internal async Task<IEnumerable<DiffResult>> GetMangaListDiffAsync(int localListVersion)
+        {
+            try
+            {
+                List<DiffResult> results = new List<DiffResult>();
+
+                HttpClient client = new HttpClient();
+                var response = await client.GetStringAsync(string.Format(Urls.GetMangaDiff, localListVersion));
+
+                // Transform JSON into object
+                JObject json = JObject.Parse(response);
+
+                this.MangaListVersion = json["version"].Value<int>();
+                var groups = json["manga"].Children().GroupBy(t => t["operation"].Value<string>());
+
+                // Get the mangas that were deleted
+                results.AddRange(groups
+                    .Where(group => group.Key.Equals("delete", StringComparison.CurrentCultureIgnoreCase))
+                    .SelectMany(group => group)
+                    .Select(item => new RemoveDiffResult(item["id"].Value<int>())));
+
+                // Get the mangas that were updated
+                results.AddRange(groups
+                    .Where(group => group.Key.Equals("update", StringComparison.CurrentCultureIgnoreCase))
+                    .SelectMany(group => group)
+                    .Select(item => new UpdateDiffResult(
+                        item["id"].Value<int>(),
+                        item["chapter"].Value<int>(),
+                        string.IsNullOrEmpty(item["status"].Value<string>()) ? null : (MangaStatus?)Enum.Parse(typeof(MangaStatus), item["status"].Value<string>()))));
+
+                // Get the mangas that were added
+                results.AddRange(groups
+                    .Where(group => group.Key.Equals("add", StringComparison.CurrentCultureIgnoreCase))
+                    .SelectMany(group => group)
+                    .Select(item => this.ParseMangaSummary(item)));
+
+                return results;
+            }
+            catch (HttpRequestException)
+            {
+                return Enumerable.Empty<DiffResult>();
             }
         }
 

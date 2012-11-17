@@ -19,5 +19,7 @@
         internal static string GetRelatedMangas { get { return BaseUrl + "/manga/{0}/related"; } }
 
         internal static string GetBackgroundImage { get { return BaseUrl + "/manga/{0}/background"; } }
+
+        internal static string GetFavoriteMangas { get { return BaseUrl + "/favorite/{0}"; } }
     }
 }
