@@ -99,7 +99,9 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="MangaStatus.cs" />
+    <Compile Include="Model\MangaStatus.cs" />
+    <Compile Include="Model\Manga.cs" />
+    <Compile Include="Model\MangaSummary.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\AddDiffResult.cs" />
     <Compile Include="Services\DiffResult.cs" />
