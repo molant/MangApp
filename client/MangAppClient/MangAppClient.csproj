@@ -103,6 +103,9 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Caliburn.Micro\ContainerExtensions.cs" />
+    <Compile Include="Caliburn.Micro\ExtensionMethods.cs" />
+    <Compile Include="Caliburn.Micro\SimpleContainer.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
