@@ -66,7 +66,7 @@ namespace MangAppClient
 
         protected override void OnLaunched(LaunchActivatedEventArgs args)
         {
-            DisplayRootViewFor<MainPageViewModel>();
+            DisplayRootViewFor<MangaDetailViewModel>();
         }
 
         protected override void OnSearchActivated(SearchActivatedEventArgs args)
