@@ -14,7 +14,12 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Skins/MainSkin.xaml" />
+                
             </ResourceDictionary.MergedDictionaries>
+            <CollectionViewSource x:Name="groupedItemsViewSource"
+                                  IsSourceGrouped="True"
+                                  Source="{Binding MangaGroups}"
+                                  ItemsPath="GroupItems" />
         </ResourceDictionary>
     </Page.Resources>
 
@@ -41,7 +46,7 @@
                        Style="{StaticResource PageHeaderTextStyle}" />
         </Grid>
 
-        <TextBlock x:Name="WelcomeTextBlock"
+        <!--<TextBlock x:Name="WelcomeTextBlock"
                    FontSize="56"
                    Text="{Binding WelcomeTitle}"
                    Grid.Row="1"
@@ -50,7 +55,63 @@
                    FontFamily="Segoe UI Light"
                    Margin="120,49,0,0"
                    TextAlignment="Center"
-                   FontWeight="Light" />
+                   FontWeight="Light" />-->
+        <SemanticZoom
+            Grid.Row="1">
+            <SemanticZoom.ZoomedInView>
+                <GridView x:Name="zoomedInGridView"
+                          AutomationProperties.AutomationId="Grouped Items"
+                          AutomationProperties.Name="Grouped Items"
+                          ItemsSource="{Binding Source={StaticResource groupedItemsViewSource}}" 
+                          IsSwipeEnabled="True"
+                          ScrollViewer.IsHorizontalScrollChainingEnabled="False">
+                    <GridView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" Margin="10,10,0,0" HorizontalAlignment="Left" Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
+                                <!--<Image Source="{Binding Image}" Height="60" Width="60" VerticalAlignment="Center" Margin="0,0,10,0"/>-->
+                                <TextBlock TextWrapping="Wrap" Foreground="{StaticResource ApplicationForegroundThemeBrush}" Width="200" VerticalAlignment="Center" Text="{Binding Name}" HorizontalAlignment="Left"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </GridView.ItemTemplate>
+                    <GridView.GroupStyle>
+                        <GroupStyle HidesIfEmpty="True">
+                            <GroupStyle.HeaderTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Key}" Foreground="{StaticResource ApplicationForegroundThemeBrush}" Margin="5" FontSize="18" FontFamily="Segoe UI Light"/>
+                                </DataTemplate>
+                            </GroupStyle.HeaderTemplate>
+                            <GroupStyle.ContainerStyle>
+                                <Style TargetType="GroupItem">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="GroupItem">
+                                                <StackPanel Orientation="Vertical">
+                                                    <ContentPresenter Content="{TemplateBinding Content}" />
+                                                    <ItemsControl x:Name="ItemsControl" ItemsSource="{Binding GroupItems}" />
+                                                </StackPanel>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </GroupStyle.ContainerStyle>
+                            <GroupStyle.Panel>
+                                <ItemsPanelTemplate>
+                                    <VariableSizedWrapGrid Orientation="Vertical" MaximumRowsOrColumns="6" Margin="0,0,80,0" />
+                                </ItemsPanelTemplate>
+                            </GroupStyle.Panel>
+                        </GroupStyle>
+                    </GridView.GroupStyle>
+                    <GridView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapGrid Orientation="Vertical" MaximumRowsOrColumns="1" />
+                        </ItemsPanelTemplate>
+                    </GridView.ItemsPanel>
+                </GridView>
+            </SemanticZoom.ZoomedInView>
+            <SemanticZoom.ZoomedOutView>
+                <GridView />
+            </SemanticZoom.ZoomedOutView>
+        </SemanticZoom>
 
         <VisualStateManager.VisualStateGroups>
             <!-- Visual states reflect the application's view state -->
