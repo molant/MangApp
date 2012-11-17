@@ -101,6 +101,7 @@
   <ItemGroup>
     <Compile Include="Model\Chapter.cs" />
     <Compile Include="Model\ChapterSummary.cs" />
+    <Compile Include="Model\ReadingDirection.cs" />
     <Compile Include="Model\MangaStatus.cs" />
     <Compile Include="Model\Manga.cs" />
     <Compile Include="Model\MangaSummary.cs" />

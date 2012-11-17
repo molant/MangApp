@@ -2,7 +2,7 @@
 {
     using MangAppClient.Core.Model;
 
-    internal class UpdateDiffResult : DiffResult
+    public sealed class UpdateDiffResult : DiffResult
     {
         internal UpdateDiffResult(int id, int lastChapter, MangaStatus? newStatus = null) :
             base(id)
