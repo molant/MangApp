@@ -11,9 +11,9 @@
 
         internal string Name { get; set; }
 
-        internal IEnumerable<object> Authors { get; set; }
+        internal IEnumerable<string> Authors { get; set; }
         
-        internal IEnumerable<object> Artists { get; set; }
+        internal IEnumerable<string> Artists { get; set; }
         
         internal IEnumerable<string> Genres { get; set; }
 

@@ -45,8 +45,8 @@
                     .Select(item => new AddDiffResult(item["id"].Value<int>())
                         {
                             Name = item["name"].Value<string>(),
-                            Authors = item["authors"].Children().Select(c => c["name"].Value<string>()),
-                            Artists = item["artists"].Children().Select(c => c["name"].Value<string>()),
+                            Authors = item["authors"].Children().Values<string>(),
+                            Artists = item["artists"].Children().Values<string>(),
                             Genres = item["genres"].Children().Values<string>(),
                             LastChapter = item["chapter"].Value<int>(),
                             Status = (MangaStatus) Enum.Parse(typeof(MangaStatus), item["status"].Value<string>())
