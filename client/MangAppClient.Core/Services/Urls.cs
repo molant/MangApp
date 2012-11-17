@@ -2,20 +2,22 @@
 {
     internal class Urls
     {
-        internal static readonly string GetMangaList = "http://www.mangapp.net/list";
+        internal static readonly string BaseUrl = "http://www.mangapp.net:32810";
 
-        internal static readonly string GetMangaDiff = "http://www.mangapp.net/update/{0}";
+        internal static string GetMangaList { get { return BaseUrl + "/list"; } }
 
-        internal static readonly string GetMangaDetail = "http://www.mangapp.net/manga/{0}";
+        internal static string GetMangaDiff { get { return BaseUrl + "/update/{0}"; } }
 
-        internal static readonly string GetMangaChapter = "http://www.mangapp.net/manga/{0}/{1}";
+        internal static string GetMangaDetail { get { return BaseUrl + "/manga/{0}"; } }
 
-        internal static readonly string GetMangaChapterFromProvider = "http://www.mangapp.net/manga/{0}/{1}/{2}";
+        internal static string GetMangaChapter { get { return BaseUrl + "/manga/{0}/{1}"; } }
 
-        internal static readonly string GetAuthorMangas = "http://www.mangapp.net/author/{0}";
+        internal static string GetMangaChapterFromProvider { get { return BaseUrl + "/manga/{0}/{1}/{2}"; } }
 
-        internal static readonly string GetRelatedMangas = "http://www.mangapp.net/manga/{0}/related";
+        internal static string GetAuthorMangas { get { return BaseUrl + "/author/{0}"; } }
 
-        internal static readonly string GetBackgroundImage = "http://www.mangapp.net/manga/{0}/background";
+        internal static string GetRelatedMangas { get { return BaseUrl + "/manga/{0}/related"; } }
+
+        internal static string GetBackgroundImage { get { return BaseUrl + "/manga/{0}/background"; } }
     }
 }

@@ -172,7 +172,7 @@
             }
         }
 
-        public static async Task<byte[]> GetBackgroundImageAsync(int mangaId)
+        internal static async Task<byte[]> GetBackgroundImageAsync(int mangaId)
         {
             try
             {
