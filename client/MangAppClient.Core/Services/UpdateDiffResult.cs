@@ -1,5 +1,7 @@
 ﻿namespace MangAppClient.Core.Services
 {
+    using MangAppClient.Core.Model;
+
     internal class UpdateDiffResult : DiffResult
     {
         internal UpdateDiffResult(int id, int lastChapter, MangaStatus? newStatus = null) :

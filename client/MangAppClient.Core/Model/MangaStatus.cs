@@ -1,6 +1,6 @@
 ﻿namespace MangAppClient.Core.Model
 {
-    internal enum MangaStatus
+    public enum MangaStatus
     {
         Ongoing,
         Completed,
