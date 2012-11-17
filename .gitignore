@@ -2,3 +2,5 @@
 *.suo
 client/MangAppClient.Core/obj/*
 client/MangAppClient.Core/bin/*
+client/MangAppClient.Core/obj/
+client/MangAppClient.Core/bin
