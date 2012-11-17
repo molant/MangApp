@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
 
-  <Identity Name="a247e214-3920-47f9-9b40-b94b0c359223"
-            Publisher="CN=Vicente"
+  <Identity Name="11416b44-34f0-4825-a7a5-27cb8489c370"
+            Publisher="CN=Joaquin"
             Version="1.0.0.0" />
 
   <Properties>
     <DisplayName>MangAppClient</DisplayName>
-    <PublisherDisplayName>Vicente</PublisherDisplayName>
+    <PublisherDisplayName>Joaquin</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 

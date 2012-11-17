@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{FC582CEE-8723-4575-B0CB-1DAF6058E836}</ProjectGuid>
+    <ProjectGuid>{67EFE5A6-1C27-47A5-BFB7-61027681E5BA}</ProjectGuid>
     <OutputType>AppContainerExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MangAppClient</RootNamespace>
@@ -106,7 +106,7 @@
     <Compile Include="Caliburn.Micro\ContainerExtensions.cs" />
     <Compile Include="Caliburn.Micro\ExtensionMethods.cs" />
     <Compile Include="Caliburn.Micro\SimpleContainer.cs" />
-    <Compile Include="Views\MainPage.xaml.cs">
+    <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -133,7 +133,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\MainPage.xaml">
+    <Page Include="MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
