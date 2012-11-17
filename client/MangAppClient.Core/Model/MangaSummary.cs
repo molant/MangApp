@@ -1,6 +1,7 @@
 ﻿namespace MangAppClient.Core.Model
 {
-    using System.Collections.Generic;
+    using System;
+using System.Collections.Generic;
 
     public class MangaSummary : DiffResult
     {
@@ -15,5 +16,6 @@
         public IEnumerable<string> Artist { get; set; }
         public MangaStatus Status { get; set; }
         public int LastChapter { get; set; }
+        public DateTime UpdateDate { get; set; }
     }
 }

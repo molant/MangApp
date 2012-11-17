@@ -1,0 +1,31 @@
+﻿<Page
+    x:Class="TestApp.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:TestApp"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        
+        <Button Grid.Row="0" Margin="3" Content="Database.CreateInitialDb" />
+        <Button Grid.Row="1" Margin="3" Content="Database.GetMangaList" />
+        <Button Grid.Row="2" Margin="3" Content="Database.UpdateMangaList" />
+        <Button Grid.Row="3" Margin="3" Content="Request.GetMangaDetailAsync" />
+        <Button Grid.Row="4" Margin="3" Content="Request.GetChapterAsync" />
+        <Button Grid.Row="5" Margin="3" Content="Request.GetAuthorMangasAsync" />
+        <Button Grid.Row="6" Margin="3" Content="Request.GetRelatedMangasAsync" />
+        <Button Grid.Row="7" Margin="3" Content="Request.GetFavoriteMangasAsync" />
+    </Grid>
+</Page>
