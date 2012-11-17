@@ -8,9 +8,9 @@
     using System.Net.Http;
     using System.Threading.Tasks;
 
-    public static class Requests
+    public class Requests : IRequests
     {
-        internal static async Task<IEnumerable<MangaSummary>> GetMangaListAsync()
+        internal async Task<IEnumerable<MangaSummary>> GetMangaListAsync()
         {
             try
             {
@@ -21,7 +21,7 @@
 
                 // Transform JSON into objects
                 JObject json = JObject.Parse(response);
-                results.AddRange(json["manga"].Children().Select(t => ParseMangaSummary(t)));
+                results.AddRange(json["manga"].Children().Select(t => this.ParseMangaSummary(t)));
 
                 return results;
             }
@@ -31,7 +31,7 @@
             }
         }
 
-        internal static async Task<IEnumerable<DiffResult>> GetMangaListDiffAsync(int localListVersion)
+        internal async Task<IEnumerable<DiffResult>> GetMangaListDiffAsync(int localListVersion)
         {
             try
             {
@@ -63,7 +63,7 @@
                 results.AddRange(groups
                     .Where(group => group.Key.Equals("add", StringComparison.CurrentCultureIgnoreCase))
                     .SelectMany(group => group)
-                    .Select(item => ParseMangaSummary(item)));
+                    .Select(item => this.ParseMangaSummary(item)));
 
                 return results;
             }
@@ -73,7 +73,7 @@
             }
         }
 
-        public static async Task<Manga> GetMangaDetailAsync(int mangaId)
+        public async Task<Manga> GetMangaDetailAsync(int mangaId)
         {
             try
             {
@@ -84,7 +84,7 @@
 
                 // Transform JSON into manga
                 JObject json = JObject.Parse(response);
-                return ParseManga(json["manga"]);
+                return this.ParseManga(json["manga"]);
             }
             catch (HttpRequestException)
             {
@@ -92,7 +92,7 @@
             }
         }
 
-        public static async Task<Chapter> GetChapterAsync(int mangaId, int chapterId)
+        public async Task<Chapter> GetChapterAsync(int mangaId, int chapterId)
         {
             try
             {
@@ -103,7 +103,7 @@
 
                 // Transform JSON into manga
                 JObject json = JObject.Parse(response);
-                return ParseChapter(json["chapter"]);
+                return this.ParseChapter(json["chapter"]);
             }
             catch (HttpRequestException)
             {
@@ -111,7 +111,7 @@
             }
         }
 
-        public static async Task<Chapter> GetChapterFromProviderAsync(int mangaId, int chapterId, int providerId)
+        public async Task<Chapter> GetChapterFromProviderAsync(int mangaId, int chapterId, int providerId)
         {
             try
             {
@@ -122,7 +122,7 @@
 
                 // Transform JSON into manga
                 JObject json = JObject.Parse(response);
-                return ParseChapter(json["chapter"]);
+                return this.ParseChapter(json["chapter"]);
             }
             catch (HttpRequestException)
             {
@@ -130,7 +130,7 @@
             }
         }
 
-        public static async Task<IEnumerable<MangaSummary>> GetAuthorMangasAsync(string authorId)
+        public async Task<IEnumerable<MangaSummary>> GetAuthorMangasAsync(string authorId)
         {
             try
             {
@@ -141,7 +141,7 @@
 
                 // Transform JSON into objects
                 JObject json = JObject.Parse(response);
-                results.AddRange(json["manga"].Children().Select(t => ParseMangaSummary(t)));
+                results.AddRange(json["manga"].Children().Select(t => this.ParseMangaSummary(t)));
 
                 return results;
             }
@@ -151,7 +151,7 @@
             }
         }
 
-        public static async Task<IEnumerable<MangaSummary>> GetRelatedMangasAsync(int mangaId)
+        public async Task<IEnumerable<MangaSummary>> GetRelatedMangasAsync(int mangaId)
         {
             try
             {
@@ -162,7 +162,7 @@
 
                 // Transform JSON into objects
                 JObject json = JObject.Parse(response);
-                results.AddRange(json["manga"].Children().Select(t => ParseMangaSummary(t)));
+                results.AddRange(json["manga"].Children().Select(t => this.ParseMangaSummary(t)));
 
                 return results;
             }
@@ -172,7 +172,7 @@
             }
         }
 
-        internal static async Task<byte[]> GetBackgroundImageAsync(int mangaId)
+        internal async Task<byte[]> GetBackgroundImageAsync(int mangaId)
         {
             try
             {
@@ -187,7 +187,7 @@
             }
         }
 
-        private static MangaSummary ParseMangaSummary(JToken token)
+        private MangaSummary ParseMangaSummary(JToken token)
         {
             return new MangaSummary(token["id"].Value<int>())
                     {
@@ -200,7 +200,7 @@
                     };
         }
 
-        private static Manga ParseManga(JToken token)
+        private Manga ParseManga(JToken token)
         {
             return new Manga()
                     {
@@ -216,11 +216,11 @@
                         Year = token["year"].Value<int>(),
                         TotalChapters = token["totalChapters"].Value<int>(),
                         Image = new Uri(token["image"].Value<string>()),
-                        LastChapters = token["chapters"].Children().Select(c => ParseChapterSummary(c))
+                        LastChapters = token["chapters"].Children().Select(c => this.ParseChapterSummary(c))
                     };
         }
 
-        private static ChapterSummary ParseChapterSummary(JToken token)
+        private ChapterSummary ParseChapterSummary(JToken token)
         {
             return new ChapterSummary()
                     {
@@ -230,7 +230,7 @@
                     };
         }
 
-        private static Chapter ParseChapter(JToken token)
+        private Chapter ParseChapter(JToken token)
         {
             return new Chapter()
             {

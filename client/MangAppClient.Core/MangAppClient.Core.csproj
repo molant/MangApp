@@ -109,6 +109,8 @@
     <Compile Include="Model\DiffResult.cs" />
     <Compile Include="Model\RemoveDiffResult.cs" />
     <Compile Include="Services\Database.cs" />
+    <Compile Include="Services\IDatabase.cs" />
+    <Compile Include="Services\IRequests.cs" />
     <Compile Include="Services\Requests.cs" />
     <Compile Include="Model\UpdateDiffResult.cs" />
     <Compile Include="Services\Urls.cs" />

@@ -11,7 +11,7 @@
     using Windows.Storage.Streams;
     using Windows.UI.Xaml.Media.Imaging;
 
-    public class Database
+    public class Database : IDatabase
     {
         private static readonly string[] Separators = { "#" };
 
@@ -25,8 +25,10 @@
                 db.CreateTable<DbManga>();
                 db.CreateTable<DbBackgroundImage>();
 
+                // TODO: CREATE VERSION LIST!!!!!
                 // Populate the tables
-                var result = await Requests.GetMangaListAsync();
+                Requests req = new Requests();
+                var result = await req.GetMangaListAsync();
                 foreach (var manga in result)
                 {
                     db.Insert(DbManga.FromMangaSummary(manga));
@@ -61,7 +63,7 @@
 
         public async Task<BitmapImage> UpdateBackgroundImage(int mangaId)
         {
-            byte[] imageData = await Requests.GetBackgroundImageAsync(mangaId);
+            byte[] imageData = await new Requests().GetBackgroundImageAsync(mangaId);
 
             string fileName = mangaId + ".png";
             var file = await ApplicationData.Current.LocalFolder.CreateFileAsync(fileName, Windows.Storage.CreationCollisionOption.ReplaceExisting);
@@ -93,7 +95,7 @@
                 await db.InsertAsync(listVersion);
             }
 
-            var diffs = await Requests.GetMangaListDiffAsync(listVersion.Version);
+            var diffs = await new Requests().GetMangaListDiffAsync(listVersion.Version);
 
             // Update our db with the diffs from the server
 
