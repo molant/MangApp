@@ -215,14 +215,16 @@
 
         private MangaSummary ParseMangaSummary(JToken token)
         {
-            return new MangaSummary(token["id"].Value<string>())
+            return new MangaSummary(token["_id"].Value<string>())
                     {
-                        Title = token["name"].Value<string>(),
+                        Title = token["title"].Value<string>(),
+                        Description = token["description"].Value<string>(),
                         Authors = token["authors"].Children().Values<string>(),
                         Artists = token["artists"].Children().Values<string>(),
-                        Categories = token["genres"].Children().Values<string>(),
-                        LastChapter = token["chapter"].Value<int>(),
-                        Status = (MangaStatus)Enum.Parse(typeof(MangaStatus), token["status"].Value<string>())
+                        Categories = token["categories"].Children().Values<string>(),
+                        LastChapter = token["chapters_len"].Value<int>(),
+                        Status = this.ParseMangaStatus(token["status"].Value<int>()),
+                        SummaryImageUrl = new Uri(token["image"].Value<string>())
                     };
         }
 
@@ -267,6 +269,21 @@
                 Title = token["title"].Value<string>(),
                 Pages = token["pages"].Children().Values<string>().Select(s => new Uri(s))
             };
+        }
+
+        private MangaStatus ParseMangaStatus(int id)
+        {
+            switch (id)
+            {
+                case 0:
+                    return MangaStatus.Cancelled;
+                case 1:
+                    return MangaStatus.Ongoing;
+                case 2:
+                    return MangaStatus.Completed;
+            }
+
+            return MangaStatus.Ongoing;
         }
     }
 }
