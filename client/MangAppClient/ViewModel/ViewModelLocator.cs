@@ -39,6 +39,7 @@ namespace MangAppClient.ViewModel
             }
 
             SimpleIoc.Default.Register<MainViewModel>();
+            SimpleIoc.Default.Register<MangaReaderViewModel>();
         }
 
         /// <summary>

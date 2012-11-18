@@ -11,24 +11,37 @@ namespace MangAppClient.ViewModel
     {
         public MangaSummaryViewModel(MangaSummary summary)
         {
-            Name = summary.Title;
+            Title = summary.Title;
+            Description = summary.Description;
+            AlternativeNames = summary.AlternativeNames;
+            Popularity = summary.Popularity;
             Authors = summary.Authors;
             Categories = summary.Categories;
             Artists = summary.Artists;
+            YearOfRelease = summary.YearOfRelease;
             Status = summary.Status;
-            LastChapter = summary.LastChapter;
-            UpdateDate = summary.LastChapterDate;
+            ReadingDirection = summary.ReadingDirection;
             SummaryImageUrl = summary.SummaryImageUrl;
+            LastChapter = summary.LastChapter;
+            LastChapterDate = summary.LastChapterDate;
         }
 
-        public string Name { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public IEnumerable<string> AlternativeNames { get; set; }
+        public int Popularity { get; set; }
+
         public IEnumerable<string> Authors { get; set; }
-        public IEnumerable<string> Categories { get; set; }
         public IEnumerable<string> Artists { get; set; }
+        public IEnumerable<string> Categories { get; set; }
+
+        public int? YearOfRelease { get; set; }
         public MangaStatus Status { get; set; }
-        public int LastChapter { get; set; }
-        public DateTime? UpdateDate { get; set; }
+        public ReadingDirection? ReadingDirection { get; set; }
         public Uri SummaryImageUrl { get; set; }
+
+        public int LastChapter { get; set; }
+        public DateTime? LastChapterDate { get; set; }
 
         public MangaGroupViewModel Group { get; set; }
     }

@@ -107,10 +107,14 @@
                         <DataTemplate>
                             <Grid Width="130" Height="200">
                                 <Border Background="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}">
-                                    <Image Source="/Assets/SOUL_EATER-Portada.jpg" Stretch="UniformToFill"/>
+                                    <Image Stretch="UniformToFill">
+                                        <Image.Source>
+                                            <BitmapImage UriSource="{Binding SummaryImageUrl}"/>
+                                        </Image.Source>
+                                    </Image>
                                 </Border>
                                 <StackPanel VerticalAlignment="Bottom" Background="{StaticResource ListViewItemOverlayBackgroundThemeBrush}">
-                                    <TextBlock Text="{Binding Name}" Foreground="{StaticResource ListViewItemOverlayForegroundThemeBrush}" Style="{StaticResource TitleTextStyle}" Height="50" Margin="15,0,15,0"/>
+                                    <TextBlock Text="{Binding Title}" Foreground="{StaticResource ListViewItemOverlayForegroundThemeBrush}" Style="{StaticResource TitleTextStyle}" Height="50" Margin="15,0,15,0"/>
                                     <TextBlock Text="{Binding LastChapter, Converter={StaticResource lastChapterConverter }}" Foreground="{StaticResource ListViewItemOverlayForegroundThemeBrush}" Style="{StaticResource CaptionTextStyle}" TextWrapping="NoWrap" Margin="15,0,15,10"/>
                                 </StackPanel>
                             </Grid>

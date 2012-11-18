@@ -62,10 +62,11 @@ namespace MangAppClient.ViewModel
             }
             else
             {
-                summaries = this.dataBase.GetMangaList();
+                summaries = this.dataBase.GetMangaList().OrderBy(s => s.Popularity);
             }
 
             var genreList = summaries.SelectMany(s => s.Categories).Distinct();
+            var mangaGroupList = new List<MangaGroupViewModel>();
 
             foreach (var genre in genreList)
             {
@@ -80,8 +81,18 @@ namespace MangAppClient.ViewModel
                     group.GroupItems.Add(new MangaSummaryViewModel(manga));
                 }
 
-                mangaGroups.Add(group);
-            }           
+                mangaGroupList.Add(group);
+            }
+
+            var popularGroup = new MangaGroupViewModel
+            {
+                Key = "Popular",
+                GroupItems = summaries.Take(20).Select(s => { return new MangaSummaryViewModel(s); }).ToObservableCollection()
+            };
+            MangaGroups.Add(popularGroup);
+
+            mangaGroupList.Sort();
+            MangaGroups = MangaGroups.Concat(mangaGroupList).ToObservableCollection();
         }
 
         ////public override void Cleanup()
