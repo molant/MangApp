@@ -54,13 +54,7 @@ namespace MangAppClient.ViewModel
         {
             get
             {
-                return manga.SummaryImageUrl;
-            }
-
-            set
-            {
-                manga.SummaryImageUrl = value;
-                RaisePropertyChanged();
+                return manga.RemoteSummaryImage;
             }
         }
 

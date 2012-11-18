@@ -228,27 +228,27 @@
         {
             Manga manga = new Manga();
 
-            manga.Id = token["_id"].Value<string>();
+            manga.Key = token["_id"].Value<string>();
             manga.Title = token["title"].Value<string>();
             manga.Description = token["description"].Value<string>();
-            manga.AlternativeNames = token["alias"].Children().Values<string>();
+            manga.AlternativeNamesDb = string.Join("#", token["alias"].Children().Values<string>());
 
             //manga.Providers = token["providers"].Children().Values<string>();
 
-            manga.Authors = token["authors"].Children().Values<string>();
-            manga.Artists = token["artists"].Children().Values<string>();
-            manga.Categories = token["categories"].Children().Values<string>();
+            manga.AuthorsDb = string.Join("#", token["authors"].Children().Values<string>());
+            manga.ArtistsDb = string.Join("#", token["artists"].Children().Values<string>());
+            manga.CategoriesDb = string.Join("#", token["categories"].Children().Values<string>());
 
             manga.YearOfRelease = this.ParseYear(token["released"]);
             manga.Status = this.ParseMangaStatus(token["status"].Value<int>());
             manga.ReadingDirection = this.ParseReadingDirection(token["direction"]);
-            manga.SummaryImageUrl = new Uri(token["image"].Value<string>());
+            manga.RemoteSummaryImageDb = token["image"].Value<string>();
 
             manga.LastChapter = token["chapters_len"].Value<int>();
             manga.LastChapterDate = this.ParseDateTime(token["last_chapter_date"]);
             manga.LastChapterRead = null;
 
-            manga.Chapters = token["chapters"].Children().Select(c => this.ParseChapter(manga.Id, c)).OrderBy(c => c.Number);
+            manga.Chapters = token["chapters"].Children().Select(c => this.ParseChapter(manga.Key, c)).OrderBy(c => c.Number);
             return manga;
         }
 
