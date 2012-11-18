@@ -70,22 +70,14 @@
 
         public BitmapImage GetBackgroundImage(string mangaId)
         {
-            DbBackgroundImage dbImage;
-            using (SQLiteConnection db = new SQLiteConnection("mangapp.db"))
+            var file = ApplicationData.Current.LocalFolder.GetFileAsync(Path.Combine(BackgroundImagesFolder, mangaId + ".jpg")).GetResults();
+
+            if (file != null)
             {
-                dbImage = db.Table<DbBackgroundImage>()
-                        .Where(b => b.Key == mangaId)
-                        .FirstOrDefault();
+                return new BitmapImage(new Uri(file.Path));
             }
 
-            if (dbImage == null)
-            {
-                return null;
-            }
-            else
-            {
-                return new BitmapImage(new Uri(dbImage.Path));
-            }
+            return null;
         }
 
         public async Task<BitmapImage> UpdateBackgroundImage(string mangaId)
@@ -94,13 +86,11 @@
 
             if (imageData != null && imageData.Length > 0)
             {
-                string fileName = mangaId + ".png";
-                var file = await ApplicationData.Current.LocalFolder.CreateFileAsync(fileName, Windows.Storage.CreationCollisionOption.ReplaceExisting);
+                string fileName = mangaId + ".jpg";
+                var file = await ApplicationData.Current.LocalFolder.CreateFileAsync(Path.Combine(BackgroundImagesFolder, fileName), Windows.Storage.CreationCollisionOption.ReplaceExisting);
                 var stream = await file.OpenStreamForWriteAsync();
                 await stream.WriteAsync(imageData, 0, imageData.Length);
-
-                SQLiteAsyncConnection db = new SQLiteAsyncConnection("mangapp.db");
-                await db.InsertAsync(new DbBackgroundImage() { Key = mangaId, Path = fileName });
+                stream.Dispose();
 
                 return new BitmapImage(new Uri(fileName));
             }
@@ -111,10 +101,15 @@
         public async void CreateInitialDb()
         {
             // SQlite database  for manga information
+            var file = await ApplicationData.Current.LocalFolder.GetFileAsync("mangapp.db");
+            if (file != null)
+            {
+                await file.DeleteAsync();
+            }
+
             SQLiteAsyncConnection db = new SQLiteAsyncConnection("mangapp.db");
             await db.CreateTableAsync<DbMangaListVersion>();
             await db.CreateTableAsync<DbMangaSummary>();
-            await db.CreateTableAsync<DbBackgroundImage>();
 
             // Populate the tables from the server information
             Requests requests = new Requests();
@@ -251,13 +246,6 @@
                             LastChapterDate = dbManga.LastChapterDate
                         };
             }
-        }
-
-        private class DbBackgroundImage
-        {
-            public string Key { get; set; }
-
-            public string Path { get; set; }
         }
     }
 }
