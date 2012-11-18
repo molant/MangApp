@@ -37,7 +37,7 @@ function updateDB(req, res, next) {
     providers.update().then(function (array) {
         res.send(array.length + ' servers updated');
         logger.log('DB updated');
-    },function(err){
+    }, function (err) {
         res.send('Error uploading the server');
     });
 }
@@ -56,10 +56,10 @@ function manga(req, res, next) {
             manga.chapters = chapters;
             res.contentType = 'json';
             res.send(manga);
-        },function(err){
+        }, function (err) {
             res.send('Manga ' + req.params.id + ' not found');
         });
-    },function(err){
+    }, function (err) {
         res.send('Manga ' + req.params.id + ' not found');
     });
 }
@@ -72,9 +72,13 @@ server.get({path:'/version/', version:'1.0.0'}, function (req, res, next) {
 server.get({path:'/manga/:id/:chapterId', version:'1.0.0'}, chapter);
 function chapter(req, res, next) {
     mangaDb.getChapter(req.params.chapterId).then(function (chapters) {
-        res.contentType = 'json';
-        res.send(chapters);
-    },function(err){
+        if (chapters.length > 0) {
+            res.contentType = 'json';
+            res.send(chapters[0]);
+        }else{
+            res.send('Chapter ' + req.params.id + ' not found');
+        }
+    }, function (err) {
         res.send('Chapter ' + req.params.id + ' not found');
     });
     console.log(req.params);
