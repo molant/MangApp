@@ -141,10 +141,12 @@
                 HttpClient client = new HttpClient();
                 var response = await client.GetStringAsync(Urls.GetMangaList);
 
+                response = "{\"status\":1,\"description\":\"Kyousuke is a member of his school's kenpo club, and is the son of a detective and a part time S&M mistress. One day, he meets a girl being bullied and saves her from the bullies. She becomes the manager of his kenpo club to show her appreciation. She then gets caught in a bank heist and Kyousuke goes to save her. During the heroic rescue, Kyousuke gets panties stuck on his head. Due to his mother's perverted blood coursing through his veins, 100% of his potential is unlocked. When his potential is unlocked, Kyousuke becomes Hentai Kamen (Perverted Masked Man).\",\"image\":\"http://cdn.mangaeden.com/mangasimg/c0/c0ae3c990f5c90192dac396a157e8724a9841dd630d7367de5b0e38e.jpg\",\"released\":null,\"categories\":[\"Comedy\",\"Romance\",\"Adventure\",\"Action\"],\"hits\":12334,\"author\":\"\",\"last_chapter_date\":733925,\"artist\":\"\",\"chapters_len\":18,\"created\":734394,\"alias\":\"ultimate-h-kamen\",\"title\":\"Ultimate!! H Kamen\",\"_id\":\"50a8393a68a58df845000001\"}";
+
                 // Transform JSON into objects
                 JObject json = JObject.Parse(response);
 
-                this.MangaListVersion = json["version"].Value<int>();
+                this.MangaListVersion = 1; // json["version"].Value<int>();
                 results.AddRange(json["manga"].Children().Select(t => this.ParseMangaSummary(t)));
 
                 return results;
