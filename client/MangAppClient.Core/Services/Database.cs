@@ -8,6 +8,7 @@
     using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using Windows.ApplicationModel;
     using Windows.Storage;
     using Windows.UI.Xaml.Media.Imaging;
 
@@ -101,17 +102,17 @@
         public async void CreateInitialDb()
         {
             // SQlite database  for manga information
-            var file = await ApplicationData.Current.LocalFolder.GetFileAsync("mangapp.db");
-            if (file != null)
+            var dbFile = await this.FileExits(ApplicationData.Current.LocalFolder, "mangapp.db");
+            if (dbFile != null)
             {
-                await file.DeleteAsync();
+                await dbFile.DeleteAsync();
             }
 
             SQLiteAsyncConnection db = new SQLiteAsyncConnection("mangapp.db");
             await db.CreateTableAsync<DbMangaListVersion>();
             await db.CreateTableAsync<DbMangaSummary>();
 
-            // Populate the tables from the server information
+            // Populate the manga list from the server information
             Requests requests = new Requests();
             var mangas = await requests.GetMangaListAsync();
 
@@ -120,24 +121,29 @@
             await db.InsertAllAsync(mangas.Select(m => DbMangaSummary.FromMangaSummary(m)));
 
             // Folders for caching images
-            try
+            var folder = await this.FolderExists(ApplicationData.Current.LocalFolder, SummaryImagesFolder);
+            if (folder != null)
             {
-                await ApplicationData.Current.LocalFolder.CreateFolderAsync(SummaryImagesFolder, CreationCollisionOption.ReplaceExisting);
-                await ApplicationData.Current.LocalFolder.CreateFolderAsync(BackgroundImagesFolder, CreationCollisionOption.ReplaceExisting);
-            }
-            catch (Exception)
-            {
-                try
-                {
-                    ApplicationData.Current.LocalFolder.CreateFolderAsync(SummaryImagesFolder, CreationCollisionOption.ReplaceExisting).GetResults();
-                    ApplicationData.Current.LocalFolder.CreateFolderAsync(BackgroundImagesFolder, CreationCollisionOption.ReplaceExisting).GetResults();
-                }
-                catch (Exception)
-                {
-                }
+                await folder.DeleteAsync();
             }
 
-            // Create the local images
+            var backgroundFolder = await this.FolderExists(ApplicationData.Current.LocalFolder, BackgroundImagesFolder);
+            if (backgroundFolder != null)
+            {
+                await backgroundFolder.DeleteAsync();
+            }
+
+            await ApplicationData.Current.LocalFolder.CreateFolderAsync(SummaryImagesFolder, CreationCollisionOption.ReplaceExisting);
+            backgroundFolder = await ApplicationData.Current.LocalFolder.CreateFolderAsync(BackgroundImagesFolder, CreationCollisionOption.ReplaceExisting);
+
+            // Copy the background images from the installed folder to the app folder
+            var installFolder = await Package.Current.InstalledLocation.GetFolderAsync(BackgroundImagesFolder);
+            foreach (var file in await installFolder.GetFilesAsync())
+            {
+                await file.CopyAsync(backgroundFolder, file.Name, NameCollisionOption.ReplaceExisting);
+            }
+
+            // Get additional summary and background images from the server
             HttpClient client = new HttpClient();
             foreach (var manga in mangas)
             {
@@ -157,13 +163,38 @@
                     string fileName = manga.Id + extension;
 
                     var file = await ApplicationData.Current.LocalFolder.CreateFileAsync(Path.Combine(SummaryImagesFolder, fileName), CreationCollisionOption.ReplaceExisting);
-                    var stream = await file.OpenStreamForWriteAsync();
-                    await stream.WriteAsync(imageData, 0, imageData.Length);
-                    stream.Dispose();
+                    using (var stream = await file.OpenStreamForWriteAsync())
+                    {
+                        stream.Write(imageData, 0, imageData.Length);
+                    }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+            }
+        }
+
+        private async Task<StorageFile> FileExits(StorageFolder folder, string fileName)
+        {
+	        try
+            {
+                return await folder.GetFileAsync(fileName);
+	        } 
+            catch (FileNotFoundException)
+            {
+		        return null;
+	        }
+        }
+
+        private async Task<StorageFolder> FolderExists(StorageFolder folder, string fileName)
+        {
+            try
+            {
+                return await folder.GetFolderAsync(fileName);
+            }
+            catch (FileNotFoundException)
+            {
+                return null;
             }
         }
 
