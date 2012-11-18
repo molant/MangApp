@@ -18,7 +18,6 @@ fs.readdirSync('./providers/').forEach(function (file) {
 
 function update() {
     var updaters = [];
-    logger.log('updating DB');
     for (var i = 0; i < providers.length; i++) {
         updaters.push(providers[i].update());
     }
