@@ -225,6 +225,7 @@
             public string Title { get; set; }
             public string Description { get; set; }
             public string AlternativeNames { get; set; }
+            public int Popularity { get; set; }
 
             public string Authors { get; set; }
             public string Artists { get; set; }
@@ -256,6 +257,7 @@
                             Title = summary.Title,
                             Description = summary.Description,
                             AlternativeNames = string.Join(Database.Separators[0], summary.AlternativeNames),
+                            Popularity = summary.Popularity,
 
                             Authors = string.Join(Database.Separators[0], summary.Authors),
                             Artists = string.Join(Database.Separators[0], summary.Artists),
@@ -277,6 +279,7 @@
                             Title = dbManga.Title,
                             Description = dbManga.Description,
                             AlternativeNames = dbManga.AlternativeNames.Split(Database.Separators, StringSplitOptions.RemoveEmptyEntries),
+                            Popularity = dbManga.Popularity,
 
                             Authors = dbManga.Authors.Split(Database.Separators, StringSplitOptions.RemoveEmptyEntries),
                             Artists = dbManga.Artists.Split(Database.Separators, StringSplitOptions.RemoveEmptyEntries),

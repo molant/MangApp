@@ -13,6 +13,7 @@
         public string Title { get; set; }
         public string Description { get; set; }
         public IEnumerable<string> AlternativeNames { get; set; }
+        public int Popularity { get; set; }
 
         public IEnumerable<string> Authors { get; set; }
         public IEnumerable<string> Artists { get; set; }

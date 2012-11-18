@@ -225,6 +225,7 @@
             manga.Title = token["title"].Value<string>();
             manga.Description = token["description"].Value<string>();
             manga.AlternativeNames = token["alias"].Children().Values<string>();
+            manga.Popularity = token["hits"].Value<int>();
 
             manga.Authors = token["authors"].Children().Values<string>();
             manga.Artists = token["artists"].Children().Values<string>();
