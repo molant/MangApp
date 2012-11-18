@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MangAppClient.Common;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,7 +15,7 @@ using Windows.UI.Xaml.Navigation;
 
 namespace MangAppClient.Views
 {
-    public sealed partial class MangaDetailView
+    public sealed partial class MangaDetailView : LayoutAwarePage
     {
         public MangaDetailView()
         {

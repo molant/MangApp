@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Xaml.Media.Imaging;
 
 namespace MangAppClient.ViewModel
 {
@@ -28,6 +29,33 @@ namespace MangAppClient.ViewModel
             }
         }
 
+        public BitmapImage Image
+        {
+            get
+            {
+                return new BitmapImage(manga.Image);
+            }
+
+            set
+            {
+                manga.Image = value.UriSource;
+                RaisePropertyChanged();
+            }
+        }
+
+        public string Description 
+        {
+            get
+            {
+                return manga.Description;
+            }
+            set
+            {
+                manga.Description = value;
+                RaisePropertyChanged();
+            }
+        }
+
         public MangaDetailViewModel(IRequests service)
         {
             this.service = service;
@@ -38,11 +66,11 @@ namespace MangAppClient.ViewModel
         {
             if (ViewModelBase.IsInDesignModeStatic)
             {
-                manga = await service.GetMangaDetailAsync(1);
+                manga = await service.GetMangaDetailAsync("1");
             }
             else
             {
-                manga = await service.GetMangaDetailAsync(1);
+                manga = await service.GetMangaDetailAsync("1");
             }
         }
 

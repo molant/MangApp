@@ -7,16 +7,19 @@
                         xmlns:ignore="http://www.ignore.com"
                         mc:Ignorable="d ignore"
                         d:DesignHeight="768"
-                        d:DesignWidth="1366"
-                        DataContext="{Binding MangaDetail, Source={StaticResource Locator}}">
+                        d:DesignWidth="1366">
 
-    <Page.Resources>
+    <common:LayoutAwarePage.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Skins/MainSkin.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
-    </Page.Resources>
+    </common:LayoutAwarePage.Resources>
+
+    <common:LayoutAwarePage.DataContext>
+        <Binding Mode="OneWay" Path="MangaDetail" Source="{StaticResource Locator}"/>
+    </common:LayoutAwarePage.DataContext>
 
     <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
@@ -34,27 +37,32 @@
                     Click="GoBack"
                     IsEnabled="{Binding Frame.CanGoBack, ElementName=pageRoot}"
                     Style="{StaticResource BackButtonStyle}" />
-            
+
             <TextBlock x:Name="pageTitle"
                        Grid.Column="1"
                        Text="{Binding Name}"
                        Style="{StaticResource PageHeaderTextStyle}" />
         </Grid>
-        
+
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="200" />
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="200"></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <Grid>
+
+            <Grid Grid.Column="0">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="200"/>
-                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="200"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
-                
-                <Image Source=""></Image>
+
+                <Image Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Source="{Binding Image}"></Image>
+                <ScrollViewer Grid.Row="1">
+                    <TextBlock Text="{Binding Description}" Style="{StaticResource BodyTextStyle}"></TextBlock>
+                </ScrollViewer>
             </Grid>
         </Grid>
+
         <VisualStateManager.VisualStateGroups>
             <!-- Visual states reflect the application's view state -->
             <VisualStateGroup x:Name="ApplicationViewStates">

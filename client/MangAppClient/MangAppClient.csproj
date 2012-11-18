@@ -110,9 +110,10 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Common\Converters.cs" />
+    <Compile Include="Common\LastChapterConverter.cs" />
     <Compile Include="Common\LayoutAwarePage.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
+    <Compile Include="Common\UriToImageConverter.cs" />
     <Compile Include="Design\MockService.cs" />
     <Compile Include="ViewModel\MangaDetailViewModel.cs" />
     <Compile Include="Design\MockDatabase.cs" />
