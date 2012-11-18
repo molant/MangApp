@@ -1,5 +1,9 @@
 ﻿using GalaSoft.MvvmLight;
-using MangAppClient.Model;
+using MangAppClient.Core.Model;
+using System.Collections.ObjectModel;
+using MangAppClient.Core.Services;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MangAppClient.ViewModel
 {
@@ -11,29 +15,30 @@ namespace MangAppClient.ViewModel
     /// </summary>
     public class MainViewModel : MangAppViewModelBase
     {
-        private readonly IDataService _dataService;
+        private readonly IDatabase dataBase;
 
-        private string _welcomeTitle = string.Empty;
+        private ObservableCollection<MangaGroupViewModel> mangaGroups;
+        private IEnumerable<MangaSummary> mangaSummaries;
 
         /// <summary>
         /// Gets the WelcomeTitle property.
         /// Changes to that property's value raise the PropertyChanged event. 
         /// </summary>
-        public string WelcomeTitle
+        public ObservableCollection<MangaGroupViewModel> MangaGroups
         {
             get
             {
-                return _welcomeTitle;
+                return mangaGroups;
             }
 
             set
             {
-                if (_welcomeTitle == value)
+                if (mangaGroups == value)
                 {
                     return;
                 }
 
-                _welcomeTitle = value;
+                mangaGroups = value;
                 RaisePropertyChanged();
             }
         }
@@ -41,20 +46,29 @@ namespace MangAppClient.ViewModel
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
         /// </summary>
-        public MainViewModel(IDataService dataService)
+        public MainViewModel(IDatabase dataBase)
         {
-            _dataService = dataService;
-            _dataService.GetData(
-                (item, error) =>
-                {
-                    if (error != null)
-                    {
-                        // Report error here
-                        return;
-                    }
+            this.dataBase = dataBase;
+            LoadMangaList();
+        }
 
-                    WelcomeTitle = item.Title;
-                });
+        private async void LoadMangaList()
+        {
+            if (ViewModelBase.IsInDesignModeStatic)
+            {
+                mangaSummaries = (this.dataBase as Design.MockDatabase).GetMangaListDesign();
+            }
+            else
+            {
+                mangaSummaries = await this.dataBase.GetMangaList();
+            }
+            
+            MangaGroups = mangaSummaries.GroupBy(m => m.Genre.First())
+                .Select(group => new MangaGroupViewModel
+                {
+                    Key = group.Key,
+                    GroupItems = group.ToObservableCollection()
+                }).ToObservableCollection();
         }
 
         ////public override void Cleanup()

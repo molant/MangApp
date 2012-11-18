@@ -4,18 +4,18 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{75CCCE90-11AA-405D-A128-FEA952708D15}</ProjectGuid>
+    <ProjectGuid>{49F7FF1A-7FE4-45BF-BC1F-AA4E52269610}</ProjectGuid>
     <OutputType>AppContainerExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MangAppClient</RootNamespace>
-    <AssemblyName>MangAppClient</AssemblyName>
+    <RootNamespace>TestApp</RootNamespace>
+    <AssemblyName>TestApp</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{BC8A1FFA-BEE3-4634-8014-F334798102B3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <PackageCertificateKeyFile>MvvmLight.Win8_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>TestApp_TemporaryKey.pfx</PackageCertificateKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -110,24 +110,16 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Common\LayoutAwarePage.cs" />
-    <Compile Include="Common\SuspensionManager.cs" />
-    <Compile Include="Design\MockDatabase.cs" />
-    <Compile Include="Extensions.cs" />
-    <Compile Include="ViewModel\MangaGroupViewModel.cs" />
-    <Compile Include="ViewModel\MangAppViewModelBase.cs" />
-    <Compile Include="Views\MainPage.xaml.cs">
+    <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ViewModel\MainViewModel.cs" />
-    <Compile Include="ViewModel\ViewModelLocator.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <None Include="MvvmLight.Win8_TemporaryKey.pfx" />
+    <None Include="TestApp_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\Logo.png" />
@@ -144,25 +136,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\MainPage.xaml">
+    <Page Include="MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Skins\MainSkin.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="GalaSoft.MvvmLight.Extras.Win8">
-      <HintPath>..\Libraries\GalaSoft.MvvmLight.Extras.Win8.dll</HintPath>
-    </Reference>
-    <Reference Include="GalaSoft.MvvmLight.Win8">
-      <HintPath>..\Libraries\GalaSoft.MvvmLight.Win8.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.Practices.ServiceLocation">
-      <HintPath>..\Libraries\Microsoft.Practices.ServiceLocation.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '11.0' ">
     <VisualStudioVersion>11.0</VisualStudioVersion>

@@ -9,14 +9,14 @@
     {
         void CreateInitialDB();
 
+        Task<IEnumerable<MangaSummary>> GetMangaList();
+
+        void UpdateMangaList();
+
         BitmapImage GetDefaultBackgroundImage();
 
         BitmapImage GetBackgroundImage(int mangaId);
 
         Task<BitmapImage> UpdateBackgroundImage(int mangaId);
-
-        Task<IEnumerable<MangaSummary>> GetMangaList();
-
-        void UpdateMangaList();
     }
 }

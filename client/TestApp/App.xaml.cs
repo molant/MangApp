@@ -1,8 +1,7 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using GalaSoft.MvvmLight.Threading;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
@@ -14,10 +13,10 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-using MangAppClient.Views;
-using Windows.UI.Popups;
 
-namespace MangAppClient
+// The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=234227
+
+namespace TestApp
 {
     /// <summary>
     /// Provides application-specific behavior to supplement the default Application class.
@@ -30,14 +29,8 @@ namespace MangAppClient
         /// </summary>
         public App()
         {
-            InitializeComponent();
-            Suspending += OnSuspending;
-            DebugSettings.BindingFailed += DebugSettings_BindingFailed;
-        }
-
-        void DebugSettings_BindingFailed(object sender, BindingFailedEventArgs e)
-        {
-            new MessageDialog(e.Message).ShowAsync();
+            this.InitializeComponent();
+            this.Suspending += OnSuspending;
         }
 
         /// <summary>
@@ -78,8 +71,6 @@ namespace MangAppClient
             }
             // Ensure the current window is active
             Window.Current.Activate();
-
-            DispatcherHelper.Initialize();
         }
 
         /// <summary>

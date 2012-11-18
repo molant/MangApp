@@ -8,35 +8,33 @@
     using System.Linq;
     using System.Threading.Tasks;
     using Windows.Storage;
-    using Windows.Storage.Streams;
     using Windows.UI.Xaml.Media.Imaging;
 
     public class Database : IDatabase
     {
         private static readonly string[] Separators = { "#" };
 
-        private static readonly string DbRootPath = Windows.Storage.ApplicationData.Current.LocalFolder.Path;
+        private static readonly string DbRootPath = ApplicationData.Current.LocalFolder.Path;
 
         public async void CreateInitialDB()
         {
-            using (SQLiteConnection db = new SQLiteConnection(Path.Combine(DbRootPath, "mangapp.sqlite")))
-            {
-                db.CreateTable<DbMangaListVersion>();
-                db.CreateTable<DbManga>();
-                db.CreateTable<DbBackgroundImage>();
+            await ApplicationData.Current.LocalFolder.DeleteAsync(StorageDeleteOption.PermanentDelete);
 
-                // Populate the tables
-                Requests requests = new Requests();
-                var result = await requests.GetMangaListAsync();
+            await ApplicationData.Current.LocalFolder.CreateFileAsync("BackgroundImages", CreationCollisionOption.ReplaceExisting);
+            await ApplicationData.Current.LocalFolder.CreateFileAsync("SummaryImages", CreationCollisionOption.ReplaceExisting);
 
-                DbMangaListVersion version = new DbMangaListVersion() { Version = requests.MangaListVersion };
-                db.Insert(version);
+            SQLiteAsyncConnection db = new SQLiteAsyncConnection(Path.Combine(DbRootPath, "mangapp.sqlite"));
+            await db.CreateTableAsync<DbMangaListVersion>();
+            await db.CreateTableAsync<DbManga>();
+            await db.CreateTableAsync<DbBackgroundImage>();
 
-                foreach (var manga in result)
-                {
-                    db.Insert(DbManga.FromMangaSummary(manga));
-                }
-            }
+            // Populate the tables
+            Requests requests = new Requests();
+            var result = await requests.GetMangaListAsync();
+
+            DbMangaListVersion version = new DbMangaListVersion() { Version = requests.MangaListVersion };
+            await db.InsertAsync(version);
+            await db.InsertAllAsync(result.Select(m => DbManga.FromMangaSummary(m)));
         }
 
         public BitmapImage GetDefaultBackgroundImage()
@@ -74,7 +72,7 @@
             await stream.WriteAsync(imageData, 0, imageData.Length);
 
             SQLiteAsyncConnection db = new SQLiteAsyncConnection(Path.Combine(DbRootPath, "mangapp.sqlite"));
-            await db.InsertAsync(new DbBackgroundImage() { Id = mangaId, Path = fileName } );
+            await db.InsertAsync(new DbBackgroundImage() { Id = mangaId, Path = fileName });
 
             return new BitmapImage(new Uri(fileName));
         }
@@ -112,9 +110,9 @@
                         .ToListAsync();
 
             var updatedDbMangas = updates.Join(
-                dbMangas, 
-                update => update.Id, 
-                dbManga => dbManga.Id, 
+                dbMangas,
+                update => update.Id,
+                dbManga => dbManga.Id,
                 (update, dbManga) => dbManga.Update(update));
 
             await db.UpdateAsync(updatedDbMangas);

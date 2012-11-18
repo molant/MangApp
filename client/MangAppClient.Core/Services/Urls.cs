@@ -2,7 +2,8 @@
 {
     internal class Urls
     {
-        internal static readonly string BaseUrl = "http://www.mangapp.net:32810";
+        //internal static readonly string BaseUrl = "http://www.mangapp.net:32810";
+        internal static readonly string BaseUrl = "http://localost:32810";
 
         internal static string GetMangaList { get { return BaseUrl + "/list"; } }
 
@@ -19,5 +20,7 @@
         internal static string GetRelatedMangas { get { return BaseUrl + "/manga/{0}/related"; } }
 
         internal static string GetBackgroundImage { get { return BaseUrl + "/manga/{0}/background"; } }
+
+        internal static string GetFavoriteMangas { get { return BaseUrl + "/favorite/{0}"; } }
     }
 }
