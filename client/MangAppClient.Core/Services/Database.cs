@@ -172,6 +172,7 @@
             return null;
         }
 
+        // Working
         private void CreateSummaryImage(HttpClient client, MangaSummary manga)
         {
             try
@@ -194,6 +195,7 @@
             }
         }
 
+        // Working
         private StorageFile FileExits(StorageFolder folder, string fileName)
         {
             try
@@ -206,6 +208,7 @@
             }
         }
 
+        // Working
         private StorageFolder FolderExists(StorageFolder folder, string fileName)
         {
             try

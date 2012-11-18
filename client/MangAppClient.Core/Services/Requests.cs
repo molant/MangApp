@@ -71,27 +71,6 @@
             }
         }
 
-        public IEnumerable<MangaSummary> GetAuthorMangas(string authorId)
-        {
-            try
-            {
-                List<MangaSummary> results = new List<MangaSummary>();
-
-                HttpClient client = new HttpClient();
-                var response = client.GetStringAsync(string.Format(Urls.GetAuthorMangas, authorId)).Result;
-
-                // Transform JSON into objects
-                JObject json = JObject.Parse(response);
-                results.AddRange(json["manga"].Children().Select(t => this.ParseMangaSummary(t)));
-
-                return results;
-            }
-            catch (HttpRequestException)
-            {
-                return Enumerable.Empty<MangaSummary>();
-            }
-        }
-
         public IEnumerable<MangaSummary> GetRelatedMangas(string mangaId)
         {
             try

@@ -12,8 +12,6 @@
 
         Chapter GetChapterFromProvider(string mangaId, string chapterId, int providerId);
 
-        IEnumerable<MangaSummary> GetAuthorMangas(string authorId);
-
         IEnumerable<MangaSummary> GetRelatedMangas(string mangaId);
 
         IEnumerable<int> GetFavoriteMangas(int userId);
