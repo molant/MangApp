@@ -101,35 +101,39 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+    <ProjectReference Include="..\MangAppClient.Core\MangAppClient.Core.csproj">
+      <Project>{b00e5d2b-d36e-419f-9b5f-a0850203e161}</Project>
+      <Name>MangAppClient.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-<<<<<<< HEAD
-    <Compile Include="ViewModels\MainPageViewModel.cs" />
-    <Compile Include="ViewModels\MangaDetailViewModel.cs" />
-    <Compile Include="ViewModels\ViewModelBase.cs" />
-=======
+    <Compile Include="Common\LastChapterConverter.cs" />
     <Compile Include="Common\LayoutAwarePage.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
->>>>>>> 0af51d51f409cc9611d4023995795a1e674f6a6b
+    <Compile Include="Common\UriToImageConverter.cs" />
+    <Compile Include="Design\MockService.cs" />
+    <Compile Include="ViewModel\MangaDetailViewModel.cs" />
+    <Compile Include="Design\MockDatabase.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="ViewModel\MangaGroupViewModel.cs" />
+    <Compile Include="ViewModel\MangAppViewModelBase.cs" />
+    <Compile Include="ViewModel\MangaReaderViewModel.cs" />
+    <Compile Include="ViewModel\MangaSummaryViewModel.cs" />
     <Compile Include="Views\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Design\DesignDataService.cs" />
-    <Compile Include="Model\DataItem.cs" />
-    <Compile Include="Model\DataService.cs" />
-    <Compile Include="Model\IDataService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-<<<<<<< HEAD
+    <Compile Include="ViewModel\MainViewModel.cs" />
+    <Compile Include="ViewModel\ViewModelLocator.cs" />
+    <Compile Include="Views\MangaReaderView.xaml.cs">
+      <DependentUpon>MangaReaderView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\MangaDetailView.xaml.cs">
       <DependentUpon>MangaDetailView.xaml</DependentUpon>
     </Compile>
-=======
-    <Compile Include="ViewModel\MainViewModel.cs" />
-    <Compile Include="ViewModel\ViewModelLocator.cs" />
->>>>>>> 0af51d51f409cc9611d4023995795a1e674f6a6b
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -140,8 +144,30 @@
   <ItemGroup>
     <Content Include="Assets\Logo.png" />
     <Content Include="Assets\SmallLogo.png" />
+    <Content Include="Assets\souleater_bg.jpg" />
+    <Content Include="Assets\SOUL_EATER-Portada.jpg" />
     <Content Include="Assets\SplashScreen.png" />
     <Content Include="Assets\StoreLogo.png" />
+    <Content Include="BackgroundImages\airgear.jpg" />
+    <Content Include="BackgroundImages\amg.jpg" />
+    <Content Include="BackgroundImages\berserk.jpg" />
+    <Content Include="BackgroundImages\blade of the immortal.jpg" />
+    <Content Include="BackgroundImages\bleach.jpg" />
+    <Content Include="BackgroundImages\claymore.jpg" />
+    <Content Include="BackgroundImages\d. grayman.jpg" />
+    <Content Include="BackgroundImages\dragonball.jpg" />
+    <Content Include="BackgroundImages\fairy tail.jpg" />
+    <Content Include="BackgroundImages\gantz.jpg" />
+    <Content Include="BackgroundImages\hunter x hunter.jpg" />
+    <Content Include="BackgroundImages\initial d.jpg" />
+    <Content Include="BackgroundImages\kenshin.jpg" />
+    <Content Include="BackgroundImages\naruto.jpg" />
+    <Content Include="BackgroundImages\one piece.jpg" />
+    <Content Include="BackgroundImages\pokemon.jpg" />
+    <Content Include="BackgroundImages\ranma.jpg" />
+    <Content Include="BackgroundImages\ravemaster.jpg" />
+    <Content Include="BackgroundImages\rosario vampire.jpg" />
+    <Content Include="BackgroundImages\soul eater.jpg" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -156,37 +182,31 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-<<<<<<< HEAD
-    <Page Include="Views\MangaDetailView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-=======
     <Page Include="Skins\MainSkin.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
->>>>>>> 0af51d51f409cc9611d4023995795a1e674f6a6b
+    </Page>
+    <Page Include="Views\MangaReaderView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\MangaDetailView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="GalaSoft.MvvmLight.Extras.Win8">
-      <HintPath>C:\Program Files (x86)\Laurent Bugnion (GalaSoft)\Mvvm Light Toolkit\Binaries\Win8\GalaSoft.MvvmLight.Extras.Win8.dll</HintPath>
+      <HintPath>..\Libraries\GalaSoft.MvvmLight.Extras.Win8.dll</HintPath>
     </Reference>
     <Reference Include="GalaSoft.MvvmLight.Win8">
-      <HintPath>C:\Program Files (x86)\Laurent Bugnion (GalaSoft)\Mvvm Light Toolkit\Binaries\Win8\GalaSoft.MvvmLight.Win8.dll</HintPath>
+      <HintPath>..\Libraries\GalaSoft.MvvmLight.Win8.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.ServiceLocation">
-      <HintPath>C:\Program Files (x86)\Laurent Bugnion (GalaSoft)\Mvvm Light Toolkit\Binaries\Win8\Microsoft.Practices.ServiceLocation.dll</HintPath>
+      <HintPath>..\Libraries\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
   </ItemGroup>
-<<<<<<< HEAD
-  <ItemGroup>
-    <ProjectReference Include="..\MangAppClient.Core\MangAppClient.Core.csproj">
-      <Project>{b00e5d2b-d36e-419f-9b5f-a0850203e161}</Project>
-      <Name>MangAppClient.Core</Name>
-    </ProjectReference>
-  </ItemGroup>
-=======
->>>>>>> 0af51d51f409cc9611d4023995795a1e674f6a6b
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '11.0' ">
     <VisualStudioVersion>11.0</VisualStudioVersion>
   </PropertyGroup>

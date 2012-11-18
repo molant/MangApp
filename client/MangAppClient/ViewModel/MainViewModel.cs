@@ -49,6 +49,7 @@ namespace MangAppClient.ViewModel
         {
             this.dataBase = dataBase;
             this.mangaGroups = new ObservableCollection<MangaGroupViewModel>();
+            this.dataBase.CreateInitialDb();
             LoadMangaList();
         }
 

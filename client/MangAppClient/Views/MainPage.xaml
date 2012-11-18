@@ -107,11 +107,7 @@
                         <DataTemplate>
                             <Grid Width="130" Height="200">
                                 <Border Background="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}">
-                                    <Image Stretch="UniformToFill">
-                                        <Image.Source>
-                                            <BitmapImage UriSource="{Binding SummaryImageUrl}"/>
-                                        </Image.Source>
-                                    </Image>
+                                    <Image Source="{Binding SummaryImagePath}" Stretch="UniformToFill" />
                                 </Border>
                                 <StackPanel VerticalAlignment="Bottom" Background="{StaticResource ListViewItemOverlayBackgroundThemeBrush}">
                                     <TextBlock Text="{Binding Title}" Foreground="{StaticResource ListViewItemOverlayForegroundThemeBrush}" Style="{StaticResource TitleTextStyle}" Height="50" Margin="15,0,15,0"/>
