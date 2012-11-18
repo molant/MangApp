@@ -19,11 +19,10 @@ process.setMaxListeners(0);
 
 function clean() {
     try {
-        logger.log('Cleaningn DB');
+        logger.log('Cleaning DB');
         db.mangas.remove({});
         db.chapters.remove({});
         db.mangaMap.remove({});
-        db.chapterMap.remove({});
         return true;
     } catch (exc) {
         return false;
@@ -156,11 +155,21 @@ function getChapters(id, limit) {
     return deferred.promise;
 }
 
+function getChapter(chapterId){
+    var deferred = new Deferred();
+    db.chapters.find({_id: ObjectId(chapterId)},{number:1,pages:1,title:1},function(err,docs){
+        deferred.resolve(docs);
+    });
+
+    return deferred.promise;
+}
+
 
 module.exports.clean = clean;
 module.exports.addManga = addManga;
 module.exports.getList = getList;
 module.exports.getManga = getManga;
 module.exports.getChapters = getChapters;
+module.exports.getChapter = getChapter;
 //TODO: add methods to update individual items and to check if they already exist?
 
