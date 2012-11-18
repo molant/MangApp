@@ -123,17 +123,30 @@
             }
         }
 
+        // TODO: add selection of a random default image
         public BitmapImage GetDefaultBackgroundImage()
         {
-            return new BitmapImage(new Uri(Path.Combine(BackgroundImagesFolder, "defaultMangaBackground.png")));
+            return new BitmapImage(new Uri(Path.Combine(BackgroundImagesFolder, "default.jpg")));
         }
 
+        // TODO: add check by name and by id to search for a background image
         public BitmapImage GetBackgroundImage(string mangaId)
         {
-            var file = ApplicationData.Current.LocalFolder.GetFileAsync(Path.Combine(BackgroundImagesFolder, mangaId + ".jpg")).GetResults();
-            if (file != null)
+            DbMangaSummary summary;
+            using (SQLiteConnection db = new SQLiteConnection(Path.Combine(ApplicationData.Current.LocalFolder.Path, "mangapp.db")))
             {
-                return new BitmapImage(new Uri(file.Path));
+                summary = db.Table<DbMangaSummary>().Where(m => m.Key == mangaId).FirstOrDefault();
+            }
+
+            if (summary != null)
+            {
+                string imagePath = Path.Combine(BackgroundImagesFolder, summary.Title + ".jpg");
+
+                var file = this.FileExits(ApplicationData.Current.LocalFolder, imagePath);
+                if (file != null)
+                {
+                    return new BitmapImage(new Uri(file.Path));
+                }
             }
 
             return null;
