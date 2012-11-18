@@ -13,10 +13,10 @@
 
         void UpdateMangaList();
 
-        BitmapImage GetDefaultBackgroundImage();
+        string GetDefaultBackgroundImage();
 
-        BitmapImage GetBackgroundImage(string mangaId);
+        string GetBackgroundImage(string mangaId);
 
-        BitmapImage UpdateBackgroundImage(string mangaId);
+        string UpdateBackgroundImage(string mangaId);
     }
 }

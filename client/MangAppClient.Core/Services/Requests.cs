@@ -33,6 +33,7 @@
             }
         }
 
+        // Working
         public Chapter GetChapter(string mangaId, string chapterId)
         {
             try
@@ -261,6 +262,7 @@
             return chapterSummary;
         }
 
+        // Working
         private Chapter ParseChapter(JToken token)
         {
             Chapter chapter = new Chapter();
@@ -275,6 +277,7 @@
             return chapter;
         }
 
+        // Working
         private List<string> ParsePages(IEnumerable<JToken> pages)
         {
             return pages
@@ -283,6 +286,7 @@
                 .Select(p => p.Url).ToList();
         }
 
+        // Working
         private string ParseString(JToken stringToken)
         {
             if (stringToken == null)
