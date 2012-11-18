@@ -1,22 +1,29 @@
 ﻿namespace MangAppClient.Core.Model
 {
     using System;
-using System.Collections.Generic;
+    using System.Collections.Generic;
 
     public class MangaSummary : DiffResult
     {
-        public MangaSummary(int id)
+        public MangaSummary(string id)
             : base(id)
         {
         }
 
-        public string Name { get; set; }
-        public IEnumerable<string> Author { get; set; }
-        public IEnumerable<string> Genre { get; set; }
-        public IEnumerable<string> Artist { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public IEnumerable<string> AlternativeNames { get; set; }
+
+        public IEnumerable<string> Authors { get; set; }
+        public IEnumerable<string> Artists { get; set; }
+        public IEnumerable<string> Categories { get; set; }
+
+        public int? YearOfRelease { get; set; }
         public MangaStatus Status { get; set; }
-        public int LastChapter { get; set; }
-        public DateTime UpdateDate { get; set; }
+        public ReadingDirection? ReadingDirection { get; set; }
         public Uri SummaryImageUrl { get; set; }
+
+        public int LastChapter { get; set; }
+        public DateTime? LastChapterDate { get; set; }
     }
 }

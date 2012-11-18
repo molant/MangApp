@@ -13,7 +13,7 @@ namespace MangAppClient.ViewModel
         public string Key
         { get; set; }
 
-        public ObservableCollection<MangaSummary> GroupItems
+        public ObservableCollection<MangaSummaryViewModel> GroupItems
         {
             get;
             set;

@@ -18,7 +18,6 @@ namespace MangAppClient.ViewModel
         private readonly IDatabase dataBase;
 
         private ObservableCollection<MangaGroupViewModel> mangaGroups;
-        private IEnumerable<MangaSummary> mangaSummaries;
 
         /// <summary>
         /// Gets the WelcomeTitle property.
@@ -49,26 +48,40 @@ namespace MangAppClient.ViewModel
         public MainViewModel(IDatabase dataBase)
         {
             this.dataBase = dataBase;
+            this.mangaGroups = new ObservableCollection<MangaGroupViewModel>();
             LoadMangaList();
         }
 
         private async void LoadMangaList()
         {
+            IEnumerable<MangaSummary> summaries;
+
             if (ViewModelBase.IsInDesignModeStatic)
             {
-                mangaSummaries = (this.dataBase as Design.MockDatabase).GetMangaListDesign();
+                summaries = (this.dataBase as Design.MockDatabase).GetMangaListDesign();
             }
             else
             {
-                mangaSummaries = await this.dataBase.GetMangaList();
+                summaries = await this.dataBase.GetMangaList();
             }
-            
-            MangaGroups = mangaSummaries.GroupBy(m => m.Genre.First())
-                .Select(group => new MangaGroupViewModel
+
+            var genreList = summaries.SelectMany(s => s.Categories).Distinct();
+
+            foreach (var genre in genreList)
+            {
+                var group = new MangaGroupViewModel
                 {
-                    Key = group.Key,
-                    GroupItems = group.ToObservableCollection()
-                }).ToObservableCollection();
+                    Key = genre
+                };
+
+                group.GroupItems = new ObservableCollection<MangaSummaryViewModel>();
+                foreach(var manga in summaries.Where(s => s.Categories.Contains(genre)))
+                {
+                    group.GroupItems.Add(new MangaSummaryViewModel(manga));
+                }
+
+                mangaGroups.Add(group);
+            }           
         }
 
         ////public override void Cleanup()

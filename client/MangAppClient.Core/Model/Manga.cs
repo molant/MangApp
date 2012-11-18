@@ -1,26 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MangAppClient.Core.Model
+﻿namespace MangAppClient.Core.Model
 {
+    using System;
+    using System.Collections.Generic;
+
     public class Manga
     {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public IEnumerable<string> Author { get; set; }
-        public IEnumerable<string> Genre { get; set; }
-        public IEnumerable<string> Artist { get; set; }
-        public ReadingDirection ReadingDirection { get; set; }
-        public MangaStatus Status { get; set; }
-        public IEnumerable<string> Providers { get; set; }
+        public string Id { get; set; }
+        public string Title { get; set; }
         public string Description { get; set; }
-        public int Year { get; set; }
         public IEnumerable<string> AlternativeNames { get; set; }
-        public Uri Image { get; set; }
-        public int TotalChapters { get; set; }
-        public IEnumerable<ChapterSummary> LastChapters { get; set; }
+
+        public IEnumerable<string> Providers { get; set; }
+
+        public IEnumerable<string> Authors { get; set; }
+        public IEnumerable<string> Artists { get; set; }
+        public IEnumerable<string> Categories { get; set; }
+
+        public int? YearOfRelease { get; set; }
+        public MangaStatus Status { get; set; }
+        public ReadingDirection? ReadingDirection { get; set; }
+        public Uri SummaryImageUrl { get; set; }
+
+        public int LastChapter { get; set; }
+        public DateTime? LastChapterDate { get; set; }
     }
 }
