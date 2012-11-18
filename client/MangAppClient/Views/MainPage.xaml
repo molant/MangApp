@@ -1,117 +1,36 @@
-﻿<common:LayoutAwarePage x:Class="MangAppClient.Views.MainPage"
+﻿<common:LayoutAwarePage
                         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                         xmlns:common="using:MangAppClient.Common"
                         xmlns:ignore="http://www.ignore.com"
+                        x:Class="MangAppClient.Views.MainPage"
                         mc:Ignorable="d ignore"
                         d:DesignHeight="768"
                         d:DesignWidth="1366"
-                        DataContext="{Binding Main, Source={StaticResource Locator}}">
+                        DataContext="{Binding Path=Main, Source={StaticResource Locator}}"
+                        >
 
-    <Page.Resources>
+    <common:LayoutAwarePage.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Skins/MainSkin.xaml" />
-                
+
             </ResourceDictionary.MergedDictionaries>
             <CollectionViewSource x:Name="groupedItemsViewSource"
                                   IsSourceGrouped="True"
                                   Source="{Binding MangaGroups}"
                                   ItemsPath="GroupItems" />
+            <common:LastChapterConverter x:Name="lastChapterConverter"/>
         </ResourceDictionary>
-    </Page.Resources>
+    </common:LayoutAwarePage.Resources>
 
     <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="140" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-
-            <Button x:Name="backButton"
-                    Click="GoBack"
-                    IsEnabled="{Binding Frame.CanGoBack, ElementName=pageRoot}"
-                    Style="{StaticResource BackButtonStyle}" />
-            
-            <TextBlock x:Name="pageTitle"
-                       Grid.Column="1"
-                       Text="MangApp"
-                       Style="{StaticResource PageHeaderTextStyle}" />
-        </Grid>
-
-        <!--<TextBlock x:Name="WelcomeTextBlock"
-                   FontSize="56"
-                   Text="{Binding WelcomeTitle}"
-                   Grid.Row="1"
-                   VerticalAlignment="Top"
-                   HorizontalAlignment="Left"
-                   FontFamily="Segoe UI Light"
-                   Margin="120,49,0,0"
-                   TextAlignment="Center"
-                   FontWeight="Light" />-->
-        <SemanticZoom
-            Grid.Row="1">
-            <SemanticZoom.ZoomedInView>
-                <GridView x:Name="zoomedInGridView"
-                          AutomationProperties.AutomationId="Grouped Items"
-                          AutomationProperties.Name="Grouped Items"
-                          ItemsSource="{Binding Source={StaticResource groupedItemsViewSource}}" 
-                          IsSwipeEnabled="True"
-                          ScrollViewer.IsHorizontalScrollChainingEnabled="False">
-                    <GridView.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal" Margin="10,10,0,0" HorizontalAlignment="Left" Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
-                                <!--<Image Source="{Binding Image}" Height="60" Width="60" VerticalAlignment="Center" Margin="0,0,10,0"/>-->
-                                <TextBlock TextWrapping="Wrap" Foreground="{StaticResource ApplicationForegroundThemeBrush}" Width="200" VerticalAlignment="Center" Text="{Binding Name}" HorizontalAlignment="Left"/>
-                            </StackPanel>
-                        </DataTemplate>
-                    </GridView.ItemTemplate>
-                    <GridView.GroupStyle>
-                        <GroupStyle HidesIfEmpty="True">
-                            <GroupStyle.HeaderTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding Key}" Foreground="{StaticResource ApplicationForegroundThemeBrush}" Margin="5" FontSize="18" FontFamily="Segoe UI Light"/>
-                                </DataTemplate>
-                            </GroupStyle.HeaderTemplate>
-                            <GroupStyle.ContainerStyle>
-                                <Style TargetType="GroupItem">
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="GroupItem">
-                                                <StackPanel Orientation="Vertical">
-                                                    <ContentPresenter Content="{TemplateBinding Content}" />
-                                                    <ItemsControl x:Name="ItemsControl" ItemsSource="{Binding GroupItems}" />
-                                                </StackPanel>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                </Style>
-                            </GroupStyle.ContainerStyle>
-                            <GroupStyle.Panel>
-                                <ItemsPanelTemplate>
-                                    <VariableSizedWrapGrid Orientation="Vertical" MaximumRowsOrColumns="6" Margin="0,0,80,0" />
-                                </ItemsPanelTemplate>
-                            </GroupStyle.Panel>
-                        </GroupStyle>
-                    </GridView.GroupStyle>
-                    <GridView.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapGrid Orientation="Vertical" MaximumRowsOrColumns="1" />
-                        </ItemsPanelTemplate>
-                    </GridView.ItemsPanel>
-                </GridView>
-            </SemanticZoom.ZoomedInView>
-            <SemanticZoom.ZoomedOutView>
-                <GridView />
-            </SemanticZoom.ZoomedOutView>
-        </SemanticZoom>
 
         <VisualStateManager.VisualStateGroups>
             <!-- Visual states reflect the application's view state -->
@@ -122,75 +41,133 @@
                 <!-- The entire page respects the narrower 100-pixel margin convention for portrait -->
                 <VisualState x:Name="FullScreenPortrait">
                     <Storyboard>
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="backButton"
-                                                       Storyboard.TargetProperty="Style">
-                            <DiscreteObjectKeyFrame KeyTime="0"
-                                                    Value="{StaticResource PortraitBackButtonStyle}" />
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="backButton" Storyboard.TargetProperty="Style">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource PortraitBackButtonStyle}"/>
                         </ObjectAnimationUsingKeyFrames>
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(FrameworkElement.HorizontalAlignment)"
-                                                       Storyboard.TargetName="WelcomeTextBlock">
-                            <DiscreteObjectKeyFrame KeyTime="0">
-                                <DiscreteObjectKeyFrame.Value>
-                                    <HorizontalAlignment>Center</HorizontalAlignment>
-                                </DiscreteObjectKeyFrame.Value>
-                            </DiscreteObjectKeyFrame>
+
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="zoomedInGridView" Storyboard.TargetProperty="Padding">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="96,0,10,56"/>
                         </ObjectAnimationUsingKeyFrames>
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(FrameworkElement.Margin)"
-                                                       Storyboard.TargetName="WelcomeTextBlock">
-                            <DiscreteObjectKeyFrame KeyTime="0">
-                                <DiscreteObjectKeyFrame.Value>
-                                    <Thickness>20,49,20,0</Thickness>
-                                </DiscreteObjectKeyFrame.Value>
-                            </DiscreteObjectKeyFrame>
+
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="zoomedOutGridView" Storyboard.TargetProperty="Padding">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="96,0,10,56"/>
                         </ObjectAnimationUsingKeyFrames>
                     </Storyboard>
                 </VisualState>
 
                 <!-- The back button and title have different styles when snapped -->
-                <VisualState x:Name="Snapped">
+                <!--<VisualState x:Name="Snapped">
                     <Storyboard>
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="backButton"
-                                                       Storyboard.TargetProperty="Style">
-                            <DiscreteObjectKeyFrame KeyTime="0"
-                                                    Value="{StaticResource SnappedBackButtonStyle}" />
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="backButton" Storyboard.TargetProperty="Style">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SnappedBackButtonStyle}"/>
                         </ObjectAnimationUsingKeyFrames>
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="pageTitle"
-                                                       Storyboard.TargetProperty="Style">
-                            <DiscreteObjectKeyFrame KeyTime="0"
-                                                    Value="{StaticResource SnappedPageHeaderTextStyle}" />
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="pageTitle" Storyboard.TargetProperty="Style">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource SnappedPageHeaderTextStyle}"/>
                         </ObjectAnimationUsingKeyFrames>
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(TextBlock.TextWrapping)"
-                                                       Storyboard.TargetName="WelcomeTextBlock">
-                            <DiscreteObjectKeyFrame KeyTime="0">
-                                <DiscreteObjectKeyFrame.Value>
-                                    <TextWrapping>Wrap</TextWrapping>
-                                </DiscreteObjectKeyFrame.Value>
-                            </DiscreteObjectKeyFrame>
+
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="zoomedInListView" Storyboard.TargetProperty="Visibility">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="Visible"/>
                         </ObjectAnimationUsingKeyFrames>
-                        <DoubleAnimation Duration="0"
-                                         To="32"
-                                         Storyboard.TargetProperty="(TextBlock.FontSize)"
-                                         Storyboard.TargetName="WelcomeTextBlock"
-                                         d:IsOptimized="True" />
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(FrameworkElement.Margin)"
-                                                       Storyboard.TargetName="WelcomeTextBlock">
-                            <DiscreteObjectKeyFrame KeyTime="0">
-                                <DiscreteObjectKeyFrame.Value>
-                                    <Thickness>20,49,20,0</Thickness>
-                                </DiscreteObjectKeyFrame.Value>
-                            </DiscreteObjectKeyFrame>
-                        </ObjectAnimationUsingKeyFrames>
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(FrameworkElement.HorizontalAlignment)"
-                                                       Storyboard.TargetName="WelcomeTextBlock">
-                            <DiscreteObjectKeyFrame KeyTime="0">
-                                <DiscreteObjectKeyFrame.Value>
-                                    <HorizontalAlignment>Center</HorizontalAlignment>
-                                </DiscreteObjectKeyFrame.Value>
-                            </DiscreteObjectKeyFrame>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="zoomedInGridView" Storyboard.TargetProperty="Visibility">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
                         </ObjectAnimationUsingKeyFrames>
                     </Storyboard>
-                </VisualState>
+                </VisualState>-->
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
+
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Button x:Name="backButton"
+                    Click="GoBack"
+                    IsEnabled="{Binding Frame.CanGoBack, ElementName=pageRoot}"
+                    Style="{StaticResource BackButtonStyle}" />
+
+            <TextBlock x:Name="pageTitle"
+                       Grid.Column="1"
+                       Text="MangApp"
+                       Style="{StaticResource PageHeaderTextStyle}" />
+        </Grid>
+
+        <SemanticZoom Grid.Row="1">
+            <SemanticZoom.ZoomedInView>
+                <GridView x:Name="zoomedInGridView"
+                          AutomationProperties.AutomationId="Grouped Items"
+                          AutomationProperties.Name="Grouped Items"
+                          ItemsSource="{Binding Source={StaticResource groupedItemsViewSource}}" 
+                          Margin="0,-3,0,0"
+                          Padding="116,0,40,46"
+                          SelectionMode="None"
+                          IsItemClickEnabled="True">
+                    <GridView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Width="130" Height="200">
+                                <Border Background="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}">
+                                    <Image Source="/Assets/SOUL_EATER-Portada.jpg" Stretch="UniformToFill"/>
+                                </Border>
+                                <StackPanel VerticalAlignment="Bottom" Background="{StaticResource ListViewItemOverlayBackgroundThemeBrush}">
+                                    <TextBlock Text="{Binding Name}" Foreground="{StaticResource ListViewItemOverlayForegroundThemeBrush}" Style="{StaticResource TitleTextStyle}" Height="50" Margin="15,0,15,0"/>
+                                    <TextBlock Text="{Binding LastChapter, Converter={StaticResource lastChapterConverter }}" Foreground="{StaticResource ListViewItemOverlayForegroundThemeBrush}" Style="{StaticResource CaptionTextStyle}" TextWrapping="NoWrap" Margin="15,0,15,10"/>
+                                </StackPanel>
+                            </Grid>
+                        </DataTemplate>
+                    </GridView.ItemTemplate>
+                    <GridView.GroupStyle>
+                        <GroupStyle HidesIfEmpty="True">
+                            <GroupStyle.HeaderTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="1,0,0,6">
+                                        <Button AutomationProperties.Name="Group Title" Content="{Binding Key}" Style="{StaticResource TextButtonStyle}"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </GroupStyle.HeaderTemplate>
+                            <GroupStyle.Panel>
+                                <ItemsPanelTemplate>
+                                    <VariableSizedWrapGrid Orientation="Vertical" Margin="0,0,80,0"/>
+                                </ItemsPanelTemplate>
+                            </GroupStyle.Panel>
+                        </GroupStyle>
+                    </GridView.GroupStyle>
+                    <GridView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel Orientation="Horizontal" />
+                        </ItemsPanelTemplate>
+                    </GridView.ItemsPanel>
+                </GridView>
+            </SemanticZoom.ZoomedInView>
+            <SemanticZoom.ZoomedOutView>
+                <GridView ScrollViewer.IsHorizontalScrollChainingEnabled="False">
+                    <GridView.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock
+                                Text="{Binding Key}"
+                                FontFamily="Segoe UI Light"
+                                FontSize="24"/>
+                        </DataTemplate>
+
+                    </GridView.ItemTemplate>
+                    <GridView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapGrid ItemWidth="75" ItemHeight="75" MaximumRowsOrColumns="1" VerticalChildrenAlignment="Center" />
+                        </ItemsPanelTemplate>
+                    </GridView.ItemsPanel>
+                    <GridView.ItemContainerStyle>
+                        <Style TargetType="GridViewItem">
+                            <Setter Property="Margin" Value="4" />
+                            <Setter Property="Padding" Value="10" />
+                            <Setter Property="BorderBrush" Value="Gray" />
+                            <Setter Property="BorderThickness" Value="1" />
+                            <Setter Property="HorizontalContentAlignment" Value="Center" />
+                            <Setter Property="VerticalContentAlignment" Value="Center" />
+                        </Style>
+                    </GridView.ItemContainerStyle>
+                </GridView>
+            </SemanticZoom.ZoomedOutView>
+        </SemanticZoom>
+
     </Grid>
 </common:LayoutAwarePage>
