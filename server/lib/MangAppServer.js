@@ -54,7 +54,7 @@ server.get({path:'/manga/:id', version:'1.0.0'}, manga);
 function manga(req, res, next) {
     logger.log('Manga requested - %s', req.params.id);
     mangaDb.getManga(req.params.id).then(function (manga) {
-        mangaDb.getChapters(req.params.id).then(function(chapters){
+        mangaDb.getChapters(req.params.id).then(function (chapters) {
             manga.chapters = chapters;
             res.contentType = 'json';
             res.send(manga);
@@ -69,6 +69,10 @@ server.get({path:'/version/', version:'1.0.0'}, function (req, res, next) {
 
 server.get({path:'/manga/:id/:chapterId', version:'1.0.0'}, chapter);
 function chapter(req, res, next) {
+    mangaDb.getChapter(req.params.chapterId).then(function (chapters) {
+        res.contentType = 'json';
+        res.send(chapters);
+    });
     console.log(req.params);
 }
 
