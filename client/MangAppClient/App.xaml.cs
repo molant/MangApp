@@ -37,7 +37,7 @@ namespace MangAppClient
 
         void DebugSettings_BindingFailed(object sender, BindingFailedEventArgs e)
         {
-            new MessageDialog(e.Message).ShowAsync();
+             new MessageDialog(e.Message).ShowAsync();
         }
 
         /// <summary>
