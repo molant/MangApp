@@ -13,6 +13,7 @@
     {
         internal int MangaListVersion { get; private set; }
 
+        // Working
         public Manga GetMangaDetail(string mangaId)
         {
             try
@@ -133,6 +134,7 @@
             }
         }
 
+        // Working
         internal IEnumerable<MangaSummary> GetMangaList()
         {
             try
@@ -204,6 +206,8 @@
         {
             try
             {
+                return null;
+
                 HttpClient client = new HttpClient();
                 return client.GetByteArrayAsync(string.Format(Urls.GetBackgroundImage, mangaId)).Result;
             }
@@ -213,6 +217,7 @@
             }
         }
 
+        // Working
         private MangaSummary ParseMangaSummary(JToken token)
         {
             MangaSummary manga = new MangaSummary(token["_id"].Value<string>());
@@ -236,6 +241,7 @@
             return manga;
         }
 
+        // Working
         private Manga ParseManga(JToken token)
         {
             Manga manga = new Manga();
@@ -263,6 +269,7 @@
             return manga;
         }
 
+        // Working
         private ChapterSummary ParseChapterSummary(JToken token)
         {
             ChapterSummary chapterSummary = new ChapterSummary();
@@ -288,6 +295,7 @@
             };
         }
 
+        // Working
         private MangaStatus ParseMangaStatus(int id)
         {
             switch (id)
@@ -303,6 +311,7 @@
             return MangaStatus.Ongoing;
         }
 
+        // Working
         private ReadingDirection? ParseReadingDirection(JToken id)
         {
             if (id != null)
@@ -324,6 +333,7 @@
             return null;
         }
 
+        // Working
         private DateTime? ParseDateTime(JToken days)
         {
             if (days != null)
@@ -339,6 +349,7 @@
             return null;
         }
 
+        // Working
         private int? ParseYear(JToken days)
         {
             if (days != null)
