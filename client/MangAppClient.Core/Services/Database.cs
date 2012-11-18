@@ -15,7 +15,7 @@
     {
         private static readonly string[] Separators = { "#" };
 
-        private static readonly string AppRootPath = ApplicationData.Current.LocalFolder.Path;
+        private static string AppRootPath = ApplicationData.Current.LocalFolder.Path;
 
         private static readonly string SummaryImagesFolder = "SummaryImages";
 
@@ -112,11 +112,8 @@
 
         public async void CreateInitialDb()
         {
-            // Remove old information
-            await ApplicationData.Current.LocalFolder.DeleteAsync(StorageDeleteOption.PermanentDelete);
-
             // SQlite database  for manga information
-            SQLiteAsyncConnection db = new SQLiteAsyncConnection(Path.Combine(AppRootPath, "mangapp.sqlite"));
+            SQLiteAsyncConnection db = new SQLiteAsyncConnection(Path.Combine(ApplicationData.Current.LocalFolder.Path, "mangapp.db"));
             await db.CreateTableAsync<DbMangaListVersion>();
             await db.CreateTableAsync<DbMangaSummary>();
             await db.CreateTableAsync<DbBackgroundImage>();

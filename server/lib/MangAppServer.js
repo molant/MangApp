@@ -28,10 +28,7 @@ server.get({path:'/list/clean/', version:'1.0.0'}, cleanDB);
 server.get({path:'/version/', version:'1.0.0'}, function(req,res,next){
     res.send('1.0.0');
 });
-server.get({path:'/list/clean/update/', version:'1.0.0'}, function(req,res,next){
-    mangaDb.clean();
-    updateDB(req,res,next);
-});
+
 server.get({path:'/update/:id', version:'1.0.0'}, update);
 server.get({path:'/manga/:id', version:'1.0.0'}, manga);
 server.get({path:'/manga/:id/:chapterId', version:'1.0.0'}, chapter);
@@ -40,9 +37,10 @@ server.get({path:'/manga/:id/:chapterId', version:'1.0.0'}, chapter);
 server.listen(32810);
 
 function list(req, res, next) {
+    logger.log('List petition');
     mangaDb.getList().then(function(docs){
         var mangas = JSON.stringify(docs);
-        res.send(JSON.stringify(mangas));
+        res.send(mangas);
     },function(err){
         console.log(err);
     });

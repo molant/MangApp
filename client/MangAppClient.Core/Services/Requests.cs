@@ -149,7 +149,7 @@
 
                 return results;
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException ex)
             {
                 return Enumerable.Empty<MangaSummary>();
             }
