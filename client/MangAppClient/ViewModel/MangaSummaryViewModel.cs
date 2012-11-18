@@ -18,7 +18,7 @@ namespace MangAppClient.ViewModel
             Status = summary.Status;
             LastChapter = summary.LastChapter;
             UpdateDate = summary.LastChapterDate;
-            SummaryImageUrl = summary.SummaryImageUrl;
+            SummaryImageUrl = new Uri(summary.SummaryImagePath);
         }
 
         public string Name { get; set; }

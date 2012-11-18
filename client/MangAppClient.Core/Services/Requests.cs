@@ -33,7 +33,7 @@
             }
         }
 
-        public Chapter GetChapter(string mangaId, int chapterId)
+        public Chapter GetChapter(string mangaId, string chapterId)
         {
             try
             {
@@ -52,7 +52,7 @@
             }
         }
 
-        public Chapter GetChapterFromProvider(string mangaId, int chapterId, int providerId)
+        public Chapter GetChapterFromProvider(string mangaId, string chapterId, int providerId)
         {
             try
             {
@@ -234,7 +234,7 @@
             manga.YearOfRelease = this.ParseYear(token["released"]);
             manga.Status = this.ParseMangaStatus(token["status"].Value<int>());
             manga.ReadingDirection = this.ParseReadingDirection(token["direction"]);
-            manga.SummaryImageUrl = new Uri(token["image"].Value<string>());
+            manga.SummaryImageUrl = token["image"].Value<string>();
 
             manga.LastChapter = token["chapters_len"].Value<int>();
             manga.LastChapterDate = this.ParseDateTime(token["last_chapter_date"]);

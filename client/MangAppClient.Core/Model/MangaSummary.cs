@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
 
     public class MangaSummary : DiffResult
     {
@@ -22,7 +23,11 @@
         public int? YearOfRelease { get; set; }
         public MangaStatus Status { get; set; }
         public ReadingDirection? ReadingDirection { get; set; }
-        public Uri SummaryImageUrl { get; set; }
+        internal string SummaryImageUrl { get; set; }
+        public string SummaryImagePath
+        {
+            get { return Path.Combine("SummaryImages", this.Id + Path.GetExtension(this.SummaryImageUrl.ToString())); }
+        }
 
         public int LastChapter { get; set; }
         public DateTime? LastChapterDate { get; set; }
