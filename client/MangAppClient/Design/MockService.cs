@@ -36,12 +36,12 @@ namespace MangAppClient.Design
             return manga;
         }
 
-        public Chapter GetChapter(string mangaId, int chapterId)
+        public Chapter GetChapter(string mangaId, string chapterId)
         {
             throw new NotImplementedException();
         }
 
-        public Chapter GetChapterFromProvider(string mangaId, int chapterId, int providerId)
+        public Chapter GetChapterFromProvider(string mangaId, string chapterId, int providerId)
         {
             throw new NotImplementedException();
         }
