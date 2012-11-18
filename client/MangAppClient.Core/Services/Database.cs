@@ -93,8 +93,8 @@
             backgroundFolder = ApplicationData.Current.LocalFolder.CreateFolderAsync(BackgroundImagesFolder, CreationCollisionOption.ReplaceExisting).AsTask().Result;
 
             // Copy the background images from the installed folder to the app folder
-            var installFolder = await Package.Current.InstalledLocation.GetFolderAsync(BackgroundImagesFolder);
-            foreach (var file in await installFolder.GetFilesAsync())
+            var installFolder = Package.Current.InstalledLocation.GetFolderAsync(BackgroundImagesFolder).AsTask().Result;
+            foreach (var file in installFolder.GetFilesAsync().AsTask().Result)
             {
                 var copiedFile = file.CopyAsync(backgroundFolder, file.Name, NameCollisionOption.ReplaceExisting).AsTask().Result;
             }
