@@ -38,9 +38,9 @@ server.listen(32810);
 
 function list(req, res, next) {
     logger.log('List petition');
-    mangaDb.getList().then(function(docs){
-        //var mangas = JSON.stringify(docs);
-	res.contentType = "json";
+    mangaDb.getList().then(function(docs){        
+        res.contentType = 'json';
+        res.send(docs);
         res.send(docs);
     },function(err){
         console.log(err);
