@@ -25,6 +25,6 @@
         public DateTime? LastChapterDate { get; set; }
         public int? LastChapterRead { get; set; }
 
-        public IEnumerable<ChapterSummary> Chapters { get; set; }
+        public IEnumerable<Chapter> Chapters { get; set; }
     }
 }

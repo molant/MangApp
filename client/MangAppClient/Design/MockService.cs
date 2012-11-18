@@ -24,9 +24,9 @@ namespace MangAppClient.Design
                 Status = MangaStatus.Ongoing,
             };
 
-            var chapters = new List<ChapterSummary>();
+            var chapters = new List<Chapter>();
             for (int i = 1; i <= 12; i++)
-                chapters.Add(new ChapterSummary() { Title = "Chapter" + i });
+                chapters.Add(new Chapter() { Title = "Chapter" + i });
 
             manga.Chapters = chapters;
         }

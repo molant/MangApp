@@ -342,7 +342,7 @@
             public string Description { get; set; }
             public string AlternativeNames { get; set; }
             public int Popularity { get; set; }
-
+            
             public string Authors { get; set; }
             public string Artists { get; set; }
             public string Categories { get; set; }
