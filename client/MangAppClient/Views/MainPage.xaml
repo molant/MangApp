@@ -28,6 +28,9 @@
     </common:LayoutAwarePage.Resources>
 
     <Grid>
+        <Grid.Background>
+            <ImageBrush ImageSource="{Binding BackgroundImage}" Opacity="0.7" />
+        </Grid.Background>
         <Grid.RowDefinitions>
             <RowDefinition Height="140" />
             <RowDefinition Height="*" />
@@ -162,6 +165,11 @@
                             <Setter Property="BorderThickness" Value="1" />
                             <Setter Property="HorizontalContentAlignment" Value="Center" />
                             <Setter Property="VerticalContentAlignment" Value="Center" />
+                            <Setter Property="Background">
+                                <Setter.Value>
+                                    <SolidColorBrush Color="#ac1818" />
+                                </Setter.Value>
+                            </Setter>
                         </Style>
                     </GridView.ItemContainerStyle>
                     <GridView.ItemsPanel>

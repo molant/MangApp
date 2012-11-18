@@ -1,6 +1,7 @@
 ﻿namespace MangAppClient.Core.Services
 {
     using MangAppClient.Core.Model;
+    using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using Windows.UI.Xaml.Media.Imaging;
@@ -13,7 +14,7 @@
 
         void UpdateMangaList();
 
-        string GetDefaultBackgroundImage();
+        Uri GetDefaultBackgroundImage();
 
         string GetBackgroundImage(string mangaId);
 

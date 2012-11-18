@@ -133,7 +133,7 @@
             }
         }
 
-        public Uri GetDefaultBackgroundImage()
+        public string GetDefaultBackgroundImage()
         {
             var folder = this.FolderExists(ApplicationData.Current.LocalFolder, BackgroundImagesFolder);
             if (folder != null)
@@ -142,10 +142,10 @@
                     .Where(f => f.Name.Contains("default"))
                     .ToList();
 
-                return new Uri(defaultFiles[random.Next(0, defaultFiles.Count)].Path);
+                return defaultFiles[random.Next(0, defaultFiles.Count)].Path;
             }
 
-            return new Uri(Path.Combine(BackgroundImagesFolder, "default.jpg"));
+            return Path.Combine(BackgroundImagesFolder, "default.jpg");
         }
 
         public string GetBackgroundImage(string mangaId)

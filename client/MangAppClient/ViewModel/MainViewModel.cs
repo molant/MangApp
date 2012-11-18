@@ -5,6 +5,7 @@ using MangAppClient.Core.Services;
 using System.Collections.Generic;
 using System.Linq;
 using Windows.UI.Xaml.Media.Imaging;
+using System;
 
 namespace MangAppClient.ViewModel
 {
@@ -43,7 +44,7 @@ namespace MangAppClient.ViewModel
             }
         }
 
-        public BitmapImage BackgroundImage
+        public Uri BackgroundImage
         {
             get
             {
@@ -58,7 +59,7 @@ namespace MangAppClient.ViewModel
         {
             this.dataBase = dataBase;
             this.mangaGroups = new ObservableCollection<MangaGroupViewModel>();
-            this.dataBase.CreateInitialDb();
+            //this.dataBase.CreateInitialDb();
             LoadMangaList();
         }
 

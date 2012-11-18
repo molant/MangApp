@@ -1,5 +1,6 @@
 ﻿using MangAppClient.Core.Model;
 using MangAppClient.Core.Services;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
@@ -34,7 +35,7 @@ namespace MangAppClient.Design
             };
         }
 
-        public string GetDefaultBackgroundImage()
+        public Uri GetDefaultBackgroundImage()
         {
             throw new System.NotImplementedException();
         }
