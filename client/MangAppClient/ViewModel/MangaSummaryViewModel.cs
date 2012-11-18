@@ -12,9 +12,9 @@ namespace MangAppClient.ViewModel
         public MangaSummaryViewModel(MangaSummary summary)
         {
             Name = summary.Title;
-            Author = summary.Authors;
-            Genre = summary.Categories;
-            Artist = summary.Artists;
+            Authors = summary.Authors;
+            Categories = summary.Categories;
+            Artists = summary.Artists;
             Status = summary.Status;
             LastChapter = summary.LastChapter;
             UpdateDate = summary.LastChapterDate;
@@ -22,9 +22,9 @@ namespace MangAppClient.ViewModel
         }
 
         public string Name { get; set; }
-        public IEnumerable<string> Author { get; set; }
-        public IEnumerable<string> Genre { get; set; }
-        public IEnumerable<string> Artist { get; set; }
+        public IEnumerable<string> Authors { get; set; }
+        public IEnumerable<string> Categories { get; set; }
+        public IEnumerable<string> Artists { get; set; }
         public MangaStatus Status { get; set; }
         public int LastChapter { get; set; }
         public DateTime? UpdateDate { get; set; }

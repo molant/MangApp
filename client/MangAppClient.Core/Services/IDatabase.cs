@@ -9,7 +9,7 @@
     {
         void CreateInitialDb();
 
-        Task<IEnumerable<MangaSummary>> GetMangaList();
+        IEnumerable<MangaSummary> GetMangaList();
 
         void UpdateMangaList();
 
@@ -17,6 +17,6 @@
 
         BitmapImage GetBackgroundImage(string mangaId);
 
-        Task<BitmapImage> UpdateBackgroundImage(string mangaId);
+        BitmapImage UpdateBackgroundImage(string mangaId);
     }
 }

@@ -62,7 +62,7 @@ namespace MangAppClient.ViewModel
             }
             else
             {
-                summaries = await this.dataBase.GetMangaList();
+                summaries = this.dataBase.GetMangaList();
             }
 
             var genreList = summaries.SelectMany(s => s.Categories).Distinct();
@@ -75,7 +75,7 @@ namespace MangAppClient.ViewModel
                 };
 
                 group.GroupItems = new ObservableCollection<MangaSummaryViewModel>();
-                foreach(var manga in summaries.Where(s => s.Categories.Contains(genre)))
+                foreach(var manga in summaries.Where(s => s.Categories.Contains(genre)).Take(20))
                 {
                     group.GroupItems.Add(new MangaSummaryViewModel(manga));
                 }

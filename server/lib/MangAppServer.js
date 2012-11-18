@@ -13,40 +13,24 @@ var restify = require('restify'),
     logger = require('tracer').console({
         format:"{{timestamp}} <{{title}}> {{message}}",
         dateformat:"HH:MM:ss.L"
-    }),
-    Deferred = require('promised-io').Deferred;
+    });
 
 var server = restify.createServer({
     name:'MangApp'
 });
 
-//server.use(restify.bodyParser());
-
 server.get({path:'/list/', version:'1.0.0'}, list);
-server.get({path:'/list/update/', version:'1.0.0'}, updateDB);
-server.get({path:'/list/clean/', version:'1.0.0'}, cleanDB);
-server.get({path:'/version/', version:'1.0.0'}, function(req,res,next){
-    res.send('1.0.0');
-});
-
-server.get({path:'/update/:id', version:'1.0.0'}, update);
-server.get({path:'/manga/:id', version:'1.0.0'}, manga);
-server.get({path:'/manga/:id/:chapterId', version:'1.0.0'}, chapter);
-/*server.get({path:'/list/', version:'1.0.0'}, list);
- server.get({path:'/list/', version:'1.0.0'}, list);*/
-server.listen(32810);
-
 function list(req, res, next) {
     logger.log('List petition');
-    mangaDb.getList().then(function(docs){        
+    mangaDb.getList().then(function (docs) {
         res.contentType = 'json';
         res.send(docs);
-        res.send(docs);
-    },function(err){
+    }, function (err) {
         console.log(err);
     });
 }
 
+server.get({path:'/list/update/', version:'1.0.0'}, updateDB);
 function updateDB(req, res, next) {
     var updaters = [];
     logger.log('updating DB');
@@ -60,19 +44,38 @@ function updateDB(req, res, next) {
     });
 }
 
+server.get({path:'/list/clean/', version:'1.0.0'}, cleanDB);
 function cleanDB(req, res, next) {
     var cleaned = mangaDb.clean();
     res.send('Database clean: ' + cleaned);
 }
 
-function update(req, res, next) {
-    //check for mangas updated since the requested version
-}
-
+server.get({path:'/manga/:id', version:'1.0.0'}, manga);
 function manga(req, res, next) {
+    logger.log('Manga requested - %s', req.params.id);
+    mangaDb.getManga(req.params.id).then(function (manga) {
+        mangaDb.getChapters(req.params.id).then(function (chapters) {
+            manga.chapters = chapters;
+            res.contentType = 'json';
+            res.send(manga);
+        });
+    });
+}
+
+
+server.get({path:'/version/', version:'1.0.0'}, function (req, res, next) {
+    res.send('1.0.0');
+});
+
+server.get({path:'/manga/:id/:chapterId', version:'1.0.0'}, chapter);
+function chapter(req, res, next) {
+    mangaDb.getChapter(req.params.chapterId).then(function (chapters) {
+        res.contentType = 'json';
+        res.send(chapters);
+    });
     console.log(req.params);
 }
 
-function chapter(req, res, next) {
-    console.log(req.params);
-}
+server.listen(32810);
+
+

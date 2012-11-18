@@ -8,6 +8,7 @@
     using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using Windows.ApplicationModel;
     using Windows.Storage;
     using Windows.UI.Xaml.Media.Imaging;
 
@@ -19,11 +20,13 @@
 
         private static readonly string BackgroundImagesFolder = "BackgroundImages";
 
-        public async Task<IEnumerable<MangaSummary>> GetMangaList()
+        public IEnumerable<MangaSummary> GetMangaList()
         {
-            SQLiteAsyncConnection db = new SQLiteAsyncConnection("mangapp.db");
-            var mangas = await db.Table<DbMangaSummary>().ToListAsync();
-            return mangas.Select(m => DbMangaSummary.ToMangaSummary(m));
+            using (SQLiteConnection db = new SQLiteConnection(Path.Combine(ApplicationData.Current.LocalFolder.Path, "mangapp.db")))
+            {
+                var mangas = db.Table<DbMangaSummary>().ToList();
+                return mangas.Select(m => DbMangaSummary.ToMangaSummary(m));
+            }
         }
 
         public async void UpdateMangaList()
@@ -32,7 +35,7 @@
             DbMangaListVersion listVersion = await db.Table<DbMangaListVersion>().FirstOrDefaultAsync();
 
             Requests requests = new Requests();
-            var diffs = await requests.GetMangaListDiffAsync(listVersion.Version);
+            var diffs = requests.GetMangaListDiff(listVersion.Version);
 
             // Update our local manga list version
             listVersion.Version = requests.MangaListVersion;
@@ -70,37 +73,29 @@
 
         public BitmapImage GetBackgroundImage(string mangaId)
         {
-            DbBackgroundImage dbImage;
-            using (SQLiteConnection db = new SQLiteConnection("mangapp.db"))
+            var file = ApplicationData.Current.LocalFolder.GetFileAsync(Path.Combine(BackgroundImagesFolder, mangaId + ".jpg")).GetResults();
+
+            if (file != null)
             {
-                dbImage = db.Table<DbBackgroundImage>()
-                        .Where(b => b.Key == mangaId)
-                        .FirstOrDefault();
+                return new BitmapImage(new Uri(file.Path));
             }
 
-            if (dbImage == null)
-            {
-                return null;
-            }
-            else
-            {
-                return new BitmapImage(new Uri(dbImage.Path));
-            }
+            return null;
         }
 
-        public async Task<BitmapImage> UpdateBackgroundImage(string mangaId)
+        public BitmapImage UpdateBackgroundImage(string mangaId)
         {
-            byte[] imageData = await new Requests().GetBackgroundImageAsync(mangaId);
+            byte[] imageData = new Requests().GetBackgroundImage(mangaId);
 
             if (imageData != null && imageData.Length > 0)
             {
-                string fileName = mangaId + ".png";
-                var file = await ApplicationData.Current.LocalFolder.CreateFileAsync(fileName, Windows.Storage.CreationCollisionOption.ReplaceExisting);
-                var stream = await file.OpenStreamForWriteAsync();
-                await stream.WriteAsync(imageData, 0, imageData.Length);
-
-                SQLiteAsyncConnection db = new SQLiteAsyncConnection("mangapp.db");
-                await db.InsertAsync(new DbBackgroundImage() { Key = mangaId, Path = fileName });
+                string fileName = mangaId + ".jpg";
+                var file = ApplicationData.Current.LocalFolder.CreateFileAsync(Path.Combine(BackgroundImagesFolder, fileName), Windows.Storage.CreationCollisionOption.ReplaceExisting).GetResults();
+                
+                using (var stream = file.OpenStreamForWriteAsync().Result)
+                {
+                    stream.Write(imageData, 0, imageData.Length);
+                }
 
                 return new BitmapImage(new Uri(fileName));
             }
@@ -111,43 +106,55 @@
         public async void CreateInitialDb()
         {
             // SQlite database  for manga information
-            SQLiteAsyncConnection db = new SQLiteAsyncConnection("mangapp.db");
-            await db.CreateTableAsync<DbMangaListVersion>();
-            await db.CreateTableAsync<DbMangaSummary>();
-            await db.CreateTableAsync<DbBackgroundImage>();
+            var dbFile = await this.FileExits(ApplicationData.Current.LocalFolder, "mangapp.db");
+            if (dbFile != null)
+            {
+                await dbFile.DeleteAsync();
+            }
 
-            // Populate the tables from the server information
-            Requests requests = new Requests();
-            var mangas = await requests.GetMangaListAsync();
+            IEnumerable<MangaSummary> mangas;
+            using (SQLiteConnection db = new SQLiteConnection("mangapp.db"))
+            {
+                db.CreateTable<DbMangaListVersion>();
+                db.CreateTable<DbMangaSummary>();
 
-            DbMangaListVersion version = new DbMangaListVersion() { Version = requests.MangaListVersion };
-            await db.InsertAsync(version);
-            await db.InsertAllAsync(mangas.Select(m => DbMangaSummary.FromMangaSummary(m)));
+                // Populate the manga list from the server information
+                Requests requests = new Requests();
+                mangas = requests.GetMangaList();
+
+                db.Insert(new DbMangaListVersion(requests.MangaListVersion));
+                db.InsertAll(mangas.Select(m => DbMangaSummary.FromMangaSummary(m)));
+            }
 
             // Folders for caching images
-            try
+            var folder = await this.FolderExists(ApplicationData.Current.LocalFolder, SummaryImagesFolder);
+            if (folder != null)
             {
-                await ApplicationData.Current.LocalFolder.CreateFolderAsync(SummaryImagesFolder, CreationCollisionOption.ReplaceExisting);
-                await ApplicationData.Current.LocalFolder.CreateFolderAsync(BackgroundImagesFolder, CreationCollisionOption.ReplaceExisting);
-            }
-            catch (Exception)
-            {
-                try
-                {
-                    ApplicationData.Current.LocalFolder.CreateFolderAsync(SummaryImagesFolder, CreationCollisionOption.ReplaceExisting).GetResults();
-                    ApplicationData.Current.LocalFolder.CreateFolderAsync(BackgroundImagesFolder, CreationCollisionOption.ReplaceExisting).GetResults();
-                }
-                catch (Exception)
-                {
-                }
+                await folder.DeleteAsync();
             }
 
-            // Create the local images
+            var backgroundFolder = await this.FolderExists(ApplicationData.Current.LocalFolder, BackgroundImagesFolder);
+            if (backgroundFolder != null)
+            {
+                await backgroundFolder.DeleteAsync();
+            }
+
+            await ApplicationData.Current.LocalFolder.CreateFolderAsync(SummaryImagesFolder, CreationCollisionOption.ReplaceExisting);
+            backgroundFolder = await ApplicationData.Current.LocalFolder.CreateFolderAsync(BackgroundImagesFolder, CreationCollisionOption.ReplaceExisting);
+
+            // Copy the background images from the installed folder to the app folder
+            var installFolder = await Package.Current.InstalledLocation.GetFolderAsync(BackgroundImagesFolder);
+            foreach (var file in await installFolder.GetFilesAsync())
+            {
+                await file.CopyAsync(backgroundFolder, file.Name, NameCollisionOption.ReplaceExisting);
+            }
+
+            // Get additional summary and background images from the server
             HttpClient client = new HttpClient();
             foreach (var manga in mangas)
             {
                 this.CreateSummaryImage(client, manga);
-                await this.UpdateBackgroundImage(manga.Id);
+                this.UpdateBackgroundImage(manga.Id);
             }
         }
 
@@ -162,18 +169,50 @@
                     string fileName = manga.Id + extension;
 
                     var file = await ApplicationData.Current.LocalFolder.CreateFileAsync(Path.Combine(SummaryImagesFolder, fileName), CreationCollisionOption.ReplaceExisting);
-                    var stream = await file.OpenStreamForWriteAsync();
-                    await stream.WriteAsync(imageData, 0, imageData.Length);
-                    stream.Dispose();
+                    using (var stream = await file.OpenStreamForWriteAsync())
+                    {
+                        stream.Write(imageData, 0, imageData.Length);
+                    }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+            }
+        }
+
+        private async Task<StorageFile> FileExits(StorageFolder folder, string fileName)
+        {
+            try
+            {
+                return await folder.GetFileAsync(fileName);
+            }
+            catch (FileNotFoundException)
+            {
+                return null;
+            }
+        }
+
+        private async Task<StorageFolder> FolderExists(StorageFolder folder, string fileName)
+        {
+            try
+            {
+                return await folder.GetFolderAsync(fileName);
+            }
+            catch (FileNotFoundException)
+            {
+                return null;
             }
         }
 
         private class DbMangaListVersion
         {
+            public DbMangaListVersion() { }
+
+            public DbMangaListVersion(int version)
+            {
+                this.Version = version;
+            }
+
             [PrimaryKey, AutoIncrement]
             public int Id { get; set; }
 
@@ -224,7 +263,7 @@
 
                             YearOfRelease = summary.YearOfRelease,
                             Status = (int)summary.Status,
-                            ReadingDirection = (int?) summary.ReadingDirection,
+                            ReadingDirection = (int?)summary.ReadingDirection,
 
                             LastChapter = summary.LastChapter,
                             LastChapterDate = summary.LastChapterDate
@@ -251,13 +290,6 @@
                             LastChapterDate = dbManga.LastChapterDate
                         };
             }
-        }
-
-        private class DbBackgroundImage
-        {
-            public string Key { get; set; }
-
-            public string Path { get; set; }
         }
     }
 }

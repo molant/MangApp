@@ -23,5 +23,7 @@
 
         public int LastChapter { get; set; }
         public DateTime? LastChapterDate { get; set; }
+
+        public IEnumerable<ChapterSummary> Chapters { get; set; }
     }
 }

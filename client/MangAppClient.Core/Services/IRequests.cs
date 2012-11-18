@@ -6,16 +6,16 @@
 
     public interface IRequests
     {
-        Task<Manga> GetMangaDetailAsync(string mangaId);
+        Manga GetMangaDetail(string mangaId);
 
-        Task<Chapter> GetChapterAsync(string mangaId, int chapterId);
+        Chapter GetChapter(string mangaId, int chapterId);
 
-        Task<Chapter> GetChapterFromProviderAsync(string mangaId, int chapterId, int providerId);
+        Chapter GetChapterFromProvider(string mangaId, int chapterId, int providerId);
 
-        Task<IEnumerable<MangaSummary>> GetAuthorMangasAsync(string authorId);
+        IEnumerable<MangaSummary> GetAuthorMangas(string authorId);
 
-        Task<IEnumerable<MangaSummary>> GetRelatedMangasAsync(string mangaId);
+        IEnumerable<MangaSummary> GetRelatedMangas(string mangaId);
 
-        Task<IEnumerable<int>> GetFavoriteMangasAsync(int userId);
+        IEnumerable<int> GetFavoriteMangas(int userId);
     }
 }
