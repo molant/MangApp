@@ -15,22 +15,20 @@
     {
         private static readonly string[] Separators = { "#" };
 
-        private static string AppRootPath = ApplicationData.Current.LocalFolder.Path;
-
         private static readonly string SummaryImagesFolder = "SummaryImages";
 
         private static readonly string BackgroundImagesFolder = "BackgroundImages";
 
         public async Task<IEnumerable<MangaSummary>> GetMangaList()
         {
-            SQLiteAsyncConnection db = new SQLiteAsyncConnection(Path.Combine(AppRootPath, "mangapp.sqlite"));
+            SQLiteAsyncConnection db = new SQLiteAsyncConnection("mangapp.db");
             var mangas = await db.Table<DbMangaSummary>().ToListAsync();
             return mangas.Select(m => DbMangaSummary.ToMangaSummary(m));
         }
 
         public async void UpdateMangaList()
         {
-            SQLiteAsyncConnection db = new SQLiteAsyncConnection(Path.Combine(AppRootPath, "mangapp.sqlite"));
+            SQLiteAsyncConnection db = new SQLiteAsyncConnection("mangapp.db");
             DbMangaListVersion listVersion = await db.Table<DbMangaListVersion>().FirstOrDefaultAsync();
 
             Requests requests = new Requests();
@@ -67,16 +65,16 @@
 
         public BitmapImage GetDefaultBackgroundImage()
         {
-            return new BitmapImage(new Uri(Path.Combine(AppRootPath, "defaultMangaBackground.png")));
+            return new BitmapImage(new Uri(Path.Combine(BackgroundImagesFolder, "defaultMangaBackground.png")));
         }
 
         public BitmapImage GetBackgroundImage(string mangaId)
         {
             DbBackgroundImage dbImage;
-            using (SQLiteConnection db = new SQLiteConnection(Path.Combine(AppRootPath, "mangapp.sqlite")))
+            using (SQLiteConnection db = new SQLiteConnection("mangapp.db"))
             {
                 dbImage = db.Table<DbBackgroundImage>()
-                        .Where(b => b.Id == mangaId)
+                        .Where(b => b.Key == mangaId)
                         .FirstOrDefault();
             }
 
@@ -101,8 +99,8 @@
                 var stream = await file.OpenStreamForWriteAsync();
                 await stream.WriteAsync(imageData, 0, imageData.Length);
 
-                SQLiteAsyncConnection db = new SQLiteAsyncConnection(Path.Combine(AppRootPath, "mangapp.sqlite"));
-                await db.InsertAsync(new DbBackgroundImage() { Id = mangaId, Path = fileName });
+                SQLiteAsyncConnection db = new SQLiteAsyncConnection("mangapp.db");
+                await db.InsertAsync(new DbBackgroundImage() { Key = mangaId, Path = fileName });
 
                 return new BitmapImage(new Uri(fileName));
             }
@@ -162,7 +160,6 @@
                 {
                     string extension = Path.GetExtension(manga.SummaryImageUrl.ToString());
                     string fileName = manga.Id + extension;
-                    //fileName = "1.jpg";
 
                     var file = await ApplicationData.Current.LocalFolder.CreateFileAsync(Path.Combine(SummaryImagesFolder, fileName), CreationCollisionOption.ReplaceExisting);
                     var stream = await file.OpenStreamForWriteAsync();
@@ -186,20 +183,20 @@
         private class DbMangaSummary
         {
             public string Key { get; set; }
-
             public string Title { get; set; }
-
             public string Description { get; set; }
+            public string AlternativeNames { get; set; }
 
             public string Authors { get; set; }
-
             public string Artists { get; set; }
-
             public string Categories { get; set; }
 
+            public int? YearOfRelease { get; set; }
             public int Status { get; set; }
+            public int? ReadingDirection { get; set; }
 
             public int LastChapter { get; set; }
+            public DateTime? LastChapterDate { get; set; }
 
             public DbMangaSummary Update(UpdateDiffResult update)
             {
@@ -215,15 +212,23 @@
             public static DbMangaSummary FromMangaSummary(MangaSummary summary)
             {
                 return new DbMangaSummary()
-                {
-                    Key = summary.Id,
-                    Title = summary.Title,
-                    Authors = string.Join(Database.Separators[0], summary.Authors),
-                    Artists = string.Join(Database.Separators[0], summary.Artists),
-                    Categories = string.Join(Database.Separators[0], summary.Categories),
-                    Status = (int)summary.Status,
-                    LastChapter = summary.LastChapter
-                };
+                        {
+                            Key = summary.Id,
+                            Title = summary.Title,
+                            Description = summary.Description,
+                            AlternativeNames = string.Join(Database.Separators[0], summary.AlternativeNames),
+
+                            Authors = string.Join(Database.Separators[0], summary.Authors),
+                            Artists = string.Join(Database.Separators[0], summary.Artists),
+                            Categories = string.Join(Database.Separators[0], summary.Categories),
+
+                            YearOfRelease = summary.YearOfRelease,
+                            Status = (int)summary.Status,
+                            ReadingDirection = (int?) summary.ReadingDirection,
+
+                            LastChapter = summary.LastChapter,
+                            LastChapterDate = summary.LastChapterDate
+                        };
             }
 
             public static MangaSummary ToMangaSummary(DbMangaSummary dbManga)
@@ -231,19 +236,26 @@
                 return new MangaSummary(dbManga.Key)
                         {
                             Title = dbManga.Title,
+                            Description = dbManga.Description,
+                            AlternativeNames = dbManga.AlternativeNames.Split(Database.Separators, StringSplitOptions.RemoveEmptyEntries),
+
                             Authors = dbManga.Authors.Split(Database.Separators, StringSplitOptions.RemoveEmptyEntries),
                             Artists = dbManga.Artists.Split(Database.Separators, StringSplitOptions.RemoveEmptyEntries),
                             Categories = dbManga.Categories.Split(Database.Separators, StringSplitOptions.RemoveEmptyEntries),
+
+                            YearOfRelease = dbManga.YearOfRelease,
                             Status = (MangaStatus)dbManga.Status,
-                            LastChapter = dbManga.LastChapter
+                            ReadingDirection = (ReadingDirection?)dbManga.ReadingDirection,
+
+                            LastChapter = dbManga.LastChapter,
+                            LastChapterDate = dbManga.LastChapterDate
                         };
             }
         }
 
         private class DbBackgroundImage
         {
-            [PrimaryKey]
-            public string Id { get; set; }
+            public string Key { get; set; }
 
             public string Path { get; set; }
         }
