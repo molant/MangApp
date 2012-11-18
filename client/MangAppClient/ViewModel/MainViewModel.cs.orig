@@ -65,17 +65,22 @@ namespace MangAppClient.ViewModel
                 summaries = await this.dataBase.GetMangaList();
             }
 
-            var genreList = summaries.SelectMany(s => s.Categories).Distinct();
+<<<<<<< HEAD
+            var genreList = summaries.SelectMany(s => s.Genre).Distinct();
 
             foreach (var genre in genreList)
             {
                 var group = new MangaGroupViewModel
+=======
+            MangaGroups = mangaSummaries.GroupBy(m => m.Categories.First())
+                .Select(group => new MangaGroupViewModel
+>>>>>>> e85caef6bf3ef70875efa850787a2d516688bdeb
                 {
                     Key = genre
                 };
 
                 group.GroupItems = new ObservableCollection<MangaSummaryViewModel>();
-                foreach(var manga in summaries.Where(s => s.Categories.Contains(genre)))
+                foreach(var manga in summaries.Where(s => s.Genre.Contains(genre)))
                 {
                     group.GroupItems.Add(new MangaSummaryViewModel(manga));
                 }

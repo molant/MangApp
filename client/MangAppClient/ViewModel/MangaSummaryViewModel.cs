@@ -11,10 +11,10 @@ namespace MangAppClient.ViewModel
     {
         public MangaSummaryViewModel(MangaSummary summary)
         {
-            Name = summary.Name;
-            Author = summary.Author;
-            Genre = summary.Genre;
-            Artist = summary.Artist;
+            Name = summary.Title;
+            Author = summary.Authors;
+            Genre = summary.Categories;
+            Artist = summary.Artists;
             Status = summary.Status;
             LastChapter = summary.LastChapter;
             UpdateDate = summary.UpdateDate;
