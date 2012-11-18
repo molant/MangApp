@@ -42,9 +42,8 @@
                 HttpClient client = new HttpClient();
                 var response = client.GetStringAsync(string.Format(Urls.GetMangaChapter, mangaId, chapterId)).Result;
 
-                // Transform JSON into manga
-                JObject json = JObject.Parse(response);
-                return this.ParseChapter(json["chapter"]);
+                // Transform JSON into chapter
+                return this.ParseChapter(JObject.Parse(response));
             }
             catch (HttpRequestException)
             {
@@ -226,7 +225,7 @@
         {
             Manga manga = new Manga();
 
-            manga.Id = token["_id"].Value<string>(); 
+            manga.Id = token["_id"].Value<string>();
             manga.Title = token["title"].Value<string>();
             manga.Description = token["description"].Value<string>();
             manga.AlternativeNames = token["alias"].Children().Values<string>();
@@ -264,15 +263,34 @@
 
         private Chapter ParseChapter(JToken token)
         {
-            return new Chapter()
+            Chapter chapter = new Chapter();
+
+            chapter.Id = token["_id"].Value<string>();
+            chapter.PreviousChapterId = this.ParseString(token["previous"]);
+            chapter.NextChapterId = this.ParseString(token["next"]);
+            chapter.Number = token["number"].Value<int>();
+            chapter.Title = this.ParseString(token["title"]);
+            chapter.Pages = this.ParsePages(token["pages"].Children());
+
+            return chapter;
+        }
+
+        private List<string> ParsePages(IEnumerable<JToken> pages)
+        {
+            return pages
+                .Select(t => new { Number = t["number"].Value<int>(), Url = t["url"].Value<string>() })
+                .OrderBy(p => p.Number)
+                .Select(p => p.Url).ToList();
+        }
+
+        private string ParseString(JToken stringToken)
+        {
+            if (stringToken == null)
             {
-                Id = token["_id"].Value<string>(),
-                PreviousChapterId = token["previous"].Value<string>(),
-                NextChapterId = token["next"].Value<string>(),
-                Number = token["number"].Value<int>(),
-                Title = token["title"].Value<string>(),
-                Pages = token["pages"].Children().Values<string>().Select(s => new Uri(s))
-            };
+                return null;
+            }
+
+            return stringToken.Value<string>();
         }
 
         // Working

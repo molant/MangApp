@@ -46,11 +46,6 @@ namespace MangAppClient.Design
             throw new NotImplementedException();
         }
 
-        public IEnumerable<MangaSummary> GetAuthorMangas(string authorId)
-        {
-            throw new NotImplementedException();
-        }
-
         public IEnumerable<MangaSummary> GetRelatedMangas(string mangaId)
         {
             throw new NotImplementedException();

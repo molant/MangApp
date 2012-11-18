@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace MangAppClient.Core.Model
+﻿namespace MangAppClient.Core.Model
 {
+    using System;
+    using System.Collections.Generic;
+
     public class Chapter
     {
         public string Id { get; set; }
@@ -10,6 +10,6 @@ namespace MangAppClient.Core.Model
         public string NextChapterId { get; set; }
         public int Number { get; set; }
         public string Title { get; set; }
-        public IEnumerable<Uri> Pages { get; set; }
+        public List<string> Pages { get; set; }
     }
 }

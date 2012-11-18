@@ -68,7 +68,7 @@
         }
 
         // Working
-        public async void CreateInitialDb()
+        public void CreateInitialDb()
         {
             // Recreate the local files and folders
             var dbFile = this.FileExits(ApplicationData.Current.LocalFolder, "mangapp.db");
