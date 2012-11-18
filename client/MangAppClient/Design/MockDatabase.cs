@@ -34,6 +34,18 @@ namespace MangAppClient.Design
             };
         }
 
+        public void AddFavoriteManga(string mangaId)
+        {
+        }
+
+        public void RemoveFavoriteManga(string mangaId)
+        {
+        }
+
+        public void UpdateFavoriteManga(string mangaId, int lastChapterRead)
+        {
+        }
+
         public string GetDefaultBackgroundImage()
         {
             throw new System.NotImplementedException();

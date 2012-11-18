@@ -217,6 +217,7 @@
 
             manga.LastChapter = token["chapters_len"].Value<int>();
             manga.LastChapterDate = this.ParseDateTime(token["last_chapter_date"]);
+            manga.LastChapterRead = null;
 
             return manga;
         }
@@ -244,6 +245,7 @@
 
             manga.LastChapter = token["chapters_len"].Value<int>();
             manga.LastChapterDate = this.ParseDateTime(token["last_chapter_date"]);
+            manga.LastChapterRead = null;
 
             manga.Chapters = token["chapters"].Children().Select(c => this.ParseChapterSummary(c)).OrderBy(c => c.Number);
             return manga;
