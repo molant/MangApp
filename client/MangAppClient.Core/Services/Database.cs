@@ -112,6 +112,7 @@
 
         public async void CreateInitialDb()
         {
+            // Remove old information
             await ApplicationData.Current.LocalFolder.DeleteAsync(StorageDeleteOption.PermanentDelete);
 
             // SQlite database  for manga information
@@ -134,23 +135,25 @@
 
             // Create the local images
             HttpClient client = new HttpClient();
-
             foreach (var manga in mangas)
             {
-                // Summary image
-                byte[] imageData = await client.GetByteArrayAsync(manga.SummaryImageUrl);
-                if (imageData != null && imageData.Length > 0)
-                {
-                    string extension = Path.GetExtension(manga.SummaryImageUrl.ToString());
-                    string fileName = manga.Id + extension;
-
-                    var file = await ApplicationData.Current.LocalFolder.CreateFileAsync(Path.Combine(AppRootPath, SummaryImagesFolder, fileName), CreationCollisionOption.ReplaceExisting);
-                    var stream = await file.OpenStreamForWriteAsync();
-                    await stream.WriteAsync(imageData, 0, imageData.Length);
-                }
-
-                // Background image
+                this.CreateBackgroundImage(client, manga);
                 await this.UpdateBackgroundImage(manga.Id);
+            }
+        }
+
+        private async void CreateBackgroundImage(HttpClient client, MangaSummary manga)
+        {
+            // Summary image
+            byte[] imageData = await client.GetByteArrayAsync(manga.SummaryImageUrl);
+            if (imageData != null && imageData.Length > 0)
+            {
+                string extension = Path.GetExtension(manga.SummaryImageUrl.ToString());
+                string fileName = manga.Id + extension;
+
+                var file = await ApplicationData.Current.LocalFolder.CreateFileAsync(Path.Combine(AppRootPath, SummaryImagesFolder, fileName), CreationCollisionOption.ReplaceExisting);
+                var stream = await file.OpenStreamForWriteAsync();
+                await stream.WriteAsync(imageData, 0, imageData.Length);
             }
         }
 

@@ -12,10 +12,10 @@ namespace MangAppClient.Design
 
         public MockDatabase()
         {
-            CreateInitialDB();
+            CreateInitialDb();
         }
 
-        public void CreateInitialDB()
+        public void CreateInitialDb()
         {
             mangaList = new ObservableCollection<MangaSummary>
             {
