@@ -24,7 +24,7 @@
 
                 // Transform JSON into manga
                 JObject json = JObject.Parse(response);
-                return this.ParseManga(json["manga"]);
+                return this.ParseManga(json);
             }
             catch (Exception)
             {
@@ -259,26 +259,29 @@
             manga.LastChapter = token["chapters_len"].Value<int>();
             manga.LastChapterDate = this.ParseDateTime(token["last_chapter_date"]);
 
+            manga.Chapters = token["chapters"].Children().Select(c => this.ParseChapterSummary(c)).OrderBy(c => c.Number);
             return manga;
         }
 
         private ChapterSummary ParseChapterSummary(JToken token)
         {
-            return new ChapterSummary()
-                    {
-                        Id = token["_id"].Value<int>(),
-                        Number = token["number"].Value<int>(),
-                        Title = token["title"].Value<string>()
-                    };
+            ChapterSummary chapterSummary = new ChapterSummary();
+
+            chapterSummary.Id = token["_id"].Value<string>();
+            chapterSummary.Number = token["number"].Value<int>();
+            chapterSummary.Title = token["title"].Value<string>();
+            chapterSummary.UploadedDate = this.ParseDateTime(token["uploadedDate"]);
+
+            return chapterSummary;
         }
 
         private Chapter ParseChapter(JToken token)
         {
             return new Chapter()
             {
-                Id = token["id"].Value<int>(),
-                PreviousChapterId = token["previous"].Value<int>(),
-                NextChapterId = token["next"].Value<int>(),
+                Id = token["_id"].Value<string>(),
+                PreviousChapterId = token["previous"].Value<string>(),
+                NextChapterId = token["next"].Value<string>(),
                 Number = token["number"].Value<int>(),
                 Title = token["title"].Value<string>(),
                 Pages = token["pages"].Children().Values<string>().Select(s => new Uri(s))
