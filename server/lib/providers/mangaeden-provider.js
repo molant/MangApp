@@ -80,22 +80,43 @@ function normalizeManga(manga) {
     delete manga['aka'];
     delete manga['type'];
     delete manga.imageURL;
-    delete manga.chapters;
     manga.authors = [manga.author];
     delete manga.author;
     manga.artists = [manga.artist];
     delete manga.artist;
     manga.image = 'http://cdn.mangaeden.com/mangasimg/' + manga.image;
+    manga.alias = [manga.alias];
+
+    //MangaEden chapter structure is something like:
+    //[8, 734074, "8", "4e738898c09225616d2e5b65"]
+    //first value is the number, second is the added date (days from year 1), third is again the number
+    //in string format and finally the last is the id
+    var chapters = manga.chapters;
+    for (var i = 0; i < chapters.length; i++) {
+        chapters[i] = {
+            externalId: chapters[i][3],
+            number: chapters[i][0],
+            uploadedDate: chapters[i][1],
+            //we should download the pages here
+            pages:[],
+            title : ''
+        };
+    }
 }
+
 
 function updateManga(externalId, index) {
     var uri = 'http://www.mangaeden.com/api/manga/' + externalId;
 
     return requestParser(uri, function (content, promise) {
-        var manga = JSON.parse(content);
+        var manga = JSON.parse(content),
+            chapters = manga.chapters;
+
         //we clean up all the information we don't need
         normalizeManga(manga);
+
         mangaDb.addManga(manga, externalId, providerId).then(function (result) {
+            //updateChapters with images here
             promise.resolve(result);
         });
     });
