@@ -110,6 +110,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Common\Converters.cs" />
     <Compile Include="Common\LayoutAwarePage.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="Design\MockService.cs" />
@@ -137,6 +138,7 @@
   <ItemGroup>
     <Content Include="Assets\Logo.png" />
     <Content Include="Assets\SmallLogo.png" />
+    <Content Include="Assets\SOUL_EATER-Portada.jpg" />
     <Content Include="Assets\SplashScreen.png" />
     <Content Include="Assets\StoreLogo.png" />
   </ItemGroup>

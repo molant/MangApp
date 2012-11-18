@@ -81,6 +81,10 @@ function normalizeManga(manga) {
     delete manga['type'];
     delete manga.imageURL;
     delete manga.chapters;
+    manga.authors = [manga.author];
+    delete manga.author;
+    manga.artists = [manga.artist];
+    delete manga.artist;
     manga.image = 'http://cdn.mangaeden.com/mangasimg/' + manga.image;
 }
 
