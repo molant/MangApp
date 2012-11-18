@@ -8,9 +8,9 @@
     {
         Manga GetMangaDetail(string mangaId);
 
-        Chapter GetChapter(string mangaId, int chapterId);
+        Chapter GetChapter(string mangaId, string chapterId);
 
-        Chapter GetChapterFromProvider(string mangaId, int chapterId, int providerId);
+        Chapter GetChapterFromProvider(string mangaId, string chapterId, int providerId);
 
         IEnumerable<MangaSummary> GetAuthorMangas(string authorId);
 

@@ -21,7 +21,7 @@ namespace MangAppClient.ViewModel
             YearOfRelease = summary.YearOfRelease;
             Status = summary.Status;
             ReadingDirection = summary.ReadingDirection;
-            SummaryImageUrl = summary.SummaryImageUrl;
+            SummaryImageUrl = new Uri(summary.SummaryImagePath);
             LastChapter = summary.LastChapter;
             LastChapterDate = summary.LastChapterDate;
         }

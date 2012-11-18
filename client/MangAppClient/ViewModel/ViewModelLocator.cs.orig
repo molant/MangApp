@@ -36,8 +36,12 @@ namespace MangAppClient.ViewModel
             }
             else
             {
-                SimpleIoc.Default.Register<IDatabase, Database>();
+<<<<<<< HEAD
+                SimpleIoc.Default.Register<IDatabase, Design.MockDatabase>();
                 SimpleIoc.Default.Register<IRequests, Design.MockService>();
+=======
+                SimpleIoc.Default.Register<IDatabase, Database>();
+>>>>>>> ee34d8c97f2bb6b5311f4294c6874e9712f9d083
             }
 
             RegisterViewModels();

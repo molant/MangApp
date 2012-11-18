@@ -20,6 +20,7 @@
 
         private static readonly string BackgroundImagesFolder = "BackgroundImages";
 
+        // Working
         public IEnumerable<MangaSummary> GetMangaList()
         {
             using (SQLiteConnection db = new SQLiteConnection(Path.Combine(ApplicationData.Current.LocalFolder.Path, "mangapp.db")))
@@ -69,28 +70,13 @@
         // Working
         public async void CreateInitialDb()
         {
-            // SQlite database  for manga information
+            // Recreate the local files and folders
             var dbFile = this.FileExits(ApplicationData.Current.LocalFolder, "mangapp.db");
             if (dbFile != null)
             {
                 dbFile.DeleteAsync().AsTask().Wait();
             }
 
-            IEnumerable<MangaSummary> mangas;
-            using (SQLiteConnection db = new SQLiteConnection(Path.Combine(ApplicationData.Current.LocalFolder.Path, "mangapp.db")))
-            {
-                db.CreateTable<DbMangaListVersion>();
-                db.CreateTable<DbMangaSummary>();
-
-                // Populate the manga list from the server information
-                Requests requests = new Requests();
-                mangas = requests.GetMangaList();
-
-                db.Insert(new DbMangaListVersion(requests.MangaListVersion));
-                db.InsertAll(mangas.Select(m => DbMangaSummary.FromMangaSummary(m)));
-            }
-
-            // Folders for caching images
             var summaryFolder = this.FolderExists(ApplicationData.Current.LocalFolder, SummaryImagesFolder);
             if (summaryFolder != null)
             {
@@ -113,12 +99,27 @@
                 var copiedFile = file.CopyAsync(backgroundFolder, file.Name, NameCollisionOption.ReplaceExisting).AsTask().Result;
             }
 
+            // Populate the manga list from the server information
+            IEnumerable<MangaSummary> mangas;
+            Requests requests = new Requests();
+            mangas = requests.GetMangaList().OrderByDescending(m => m.Popularity);
+
             // Get additional summary and background images from the server
             HttpClient client = new HttpClient();
             foreach (var manga in mangas)
             {
                 this.CreateSummaryImage(client, manga);
                 this.UpdateBackgroundImage(manga.Id);
+            }
+
+            // Add mangas to the database
+            using (SQLiteConnection db = new SQLiteConnection(Path.Combine(ApplicationData.Current.LocalFolder.Path, "mangapp.db")))
+            {
+                db.CreateTable<DbMangaListVersion>();
+                db.CreateTable<DbMangaSummary>();
+
+                db.Insert(new DbMangaListVersion(requests.MangaListVersion));
+                db.InsertAll(mangas.Select(m => DbMangaSummary.FromMangaSummary(m)));
             }
         }
 
@@ -234,6 +235,7 @@
             public int? YearOfRelease { get; set; }
             public int Status { get; set; }
             public int? ReadingDirection { get; set; }
+            public string SummaryImageUrl { get; set; }
 
             public int LastChapter { get; set; }
             public DateTime? LastChapterDate { get; set; }
@@ -266,6 +268,7 @@
                             YearOfRelease = summary.YearOfRelease,
                             Status = (int)summary.Status,
                             ReadingDirection = (int?)summary.ReadingDirection,
+                            SummaryImageUrl = summary.SummaryImageUrl,
 
                             LastChapter = summary.LastChapter,
                             LastChapterDate = summary.LastChapterDate
@@ -288,6 +291,7 @@
                             YearOfRelease = dbManga.YearOfRelease,
                             Status = (MangaStatus)dbManga.Status,
                             ReadingDirection = (ReadingDirection?)dbManga.ReadingDirection,
+                            SummaryImageUrl = dbManga.SummaryImageUrl,
 
                             LastChapter = dbManga.LastChapter,
                             LastChapterDate = dbManga.LastChapterDate

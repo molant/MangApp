@@ -16,20 +16,16 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
         <Button Grid.Row="0" Margin="3" Content="Database.CreateInitialDb" Click="CreateInitialDbClick" />
         <Button Grid.Row="1" Margin="3" Content="Database.GetMangaList" />
         <Button Grid.Row="2" Margin="3" Content="Database.UpdateMangaList" />
-        <Button Grid.Row="3" Margin="3" Content="Request.GetMangaDetailAsync" Click="GetMangaDetailAsyncClick"/>
-        <Button Grid.Row="4" Margin="3" Content="Request.GetChapterAsync" />
-        <Button Grid.Row="5" Margin="3" Content="Request.GetAuthorMangasAsync" />
-        <Button Grid.Row="6" Margin="3" Content="Request.GetRelatedMangasAsync" />
-        <Button Grid.Row="7" Margin="3" Content="Request.GetFavoriteMangasAsync" />
-        <TextBlock Grid.Row="8" HorizontalAlignment="Stretch" Name="TitleTB" TextWrapping="Wrap" Text="Title" />
-        <TextBlock Grid.Row="9" HorizontalAlignment="Stretch" Name="DescriptionTB" VerticalAlignment="Stretch" TextWrapping="Wrap" Text="Description" />
+        <Button Grid.Row="3" Margin="3" Content="Request.GetMangaDetail" Click="GetMangaDetailAsyncClick"/>
+        <Button Grid.Row="4" Margin="3" Content="Request.GetChapter" Click="GetChapter" />
+        <Button Grid.Row="5" Margin="3" Content="Request.GetFavoriteMangas" />
+        <TextBlock Grid.Row="6" HorizontalAlignment="Stretch" Name="TitleTB" TextWrapping="Wrap" Text="Title" />
+        <TextBlock Grid.Row="7" HorizontalAlignment="Stretch" Name="DescriptionTB" VerticalAlignment="Stretch" TextWrapping="Wrap" Text="Description" />
     </Grid>
 </Page>
