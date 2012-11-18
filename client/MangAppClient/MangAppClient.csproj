@@ -110,6 +110,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Common\Converters.cs" />
     <Compile Include="Common\LastChapterConverter.cs" />
     <Compile Include="Common\LayoutAwarePage.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
@@ -134,7 +135,6 @@
     <Compile Include="Views\MangaDetailView.xaml.cs">
       <DependentUpon>MangaDetailView.xaml</DependentUpon>
     </Compile>
-    
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">

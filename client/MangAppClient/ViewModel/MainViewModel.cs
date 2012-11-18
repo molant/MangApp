@@ -49,7 +49,7 @@ namespace MangAppClient.ViewModel
         {
             this.dataBase = dataBase;
             this.mangaGroups = new ObservableCollection<MangaGroupViewModel>();
-            this.dataBase.CreateInitialDb();
+            //this.dataBase.CreateInitialDb();
             LoadMangaList();
         }
 
@@ -77,7 +77,7 @@ namespace MangAppClient.ViewModel
                 };
 
                 group.GroupItems = new ObservableCollection<MangaSummaryViewModel>();
-                foreach(var manga in summaries.Where(s => s.Categories.Contains(genre)).Take(20))
+                foreach(var manga in summaries.Where(s => s.Categories.Contains(genre)).Take(6))
                 {
                     group.GroupItems.Add(new MangaSummaryViewModel(manga));
                 }
@@ -85,10 +85,17 @@ namespace MangAppClient.ViewModel
                 mangaGroupList.Add(group);
             }
 
+            var latestGroup = new MangaGroupViewModel
+            {
+                Key = "Latest",
+                GroupItems = summaries.OrderByDescending(s => s.LastChapterDate).Take(10).Select(s => { return new MangaSummaryViewModel(s); }).ToObservableCollection()
+            };
+            MangaGroups.Add(latestGroup);
+
             var popularGroup = new MangaGroupViewModel
             {
                 Key = "Popular",
-                GroupItems = summaries.Take(20).Select(s => { return new MangaSummaryViewModel(s); }).ToObservableCollection()
+                GroupItems = summaries.Take(6).Select(s => { return new MangaSummaryViewModel(s); }).ToObservableCollection()
             };
             MangaGroups.Add(popularGroup);
 

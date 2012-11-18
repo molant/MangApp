@@ -1,9 +1,11 @@
 ﻿using MangAppClient.Core.Model;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Storage;
 
 namespace MangAppClient.ViewModel
 {
@@ -21,7 +23,7 @@ namespace MangAppClient.ViewModel
             YearOfRelease = summary.YearOfRelease;
             Status = summary.Status;
             ReadingDirection = summary.ReadingDirection;
-            SummaryImageUrl = new Uri(summary.SummaryImagePath);
+            SummaryImagePath = new Uri(Path.Combine(ApplicationData.Current.LocalFolder.Path, summary.SummaryImagePath));
             LastChapter = summary.LastChapter;
             LastChapterDate = summary.LastChapterDate;
         }
@@ -38,7 +40,7 @@ namespace MangAppClient.ViewModel
         public int? YearOfRelease { get; set; }
         public MangaStatus Status { get; set; }
         public ReadingDirection? ReadingDirection { get; set; }
-        public Uri SummaryImageUrl { get; set; }
+        public Uri SummaryImagePath { get; set; }
 
         public int LastChapter { get; set; }
         public DateTime? LastChapterDate { get; set; }
