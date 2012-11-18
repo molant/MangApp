@@ -77,10 +77,10 @@ function insertManga(manga) {
 
 function insertChapter(chapter) {
     var deferred = new Deferred();
-    db.chapters.save(chapter,function(err){
-        if(!err){
+    db.chapters.save(chapter, function (err) {
+        if (!err) {
             deferred.resolve(true);
-        }else{
+        } else {
             deferred.resolve(false);
         }
     });
@@ -103,6 +103,7 @@ function insertChapters(chapters, mangaId, providerId) {
             deferred.resolve();
         }
     }
+
     next();
 
     return deferred.promise;
@@ -142,23 +143,35 @@ function getList(diff) {
 function getManga(id) {
     var deferred = new Deferred();
     db.mangas.findOne({_id:ObjectId(id)}, function (err, docs) {
-        deferred.resolve(docs);
+        if (!err) {
+            deferred.resolve(docs);
+        } else {
+            deferred.reject();
+        }
     });
     return deferred.promise;
 }
 
 function getChapters(id, limit) {
     var deferred = new Deferred();
-    db.chapters.find({mangaId:id},{_id:1,uploadedDate:1,number:1,title:1}, function (err, docs) {
-        deferred.resolve(docs);
+    db.chapters.find({mangaId:id}, {_id:1, uploadedDate:1, number:1, title:1}, function (err, docs) {
+        if (!err) {
+            deferred.resolve(docs);
+        } else {
+            deferred.reject();
+        }
     });
     return deferred.promise;
 }
 
-function getChapter(chapterId){
+function getChapter(chapterId) {
     var deferred = new Deferred();
-    db.chapters.find({_id: ObjectId(chapterId)},{number:1,pages:1,title:1},function(err,docs){
-        deferred.resolve(docs);
+    db.chapters.find({_id:ObjectId(chapterId)}, {number:1, pages:1, title:1}, function (err, docs) {
+        if (err) {
+            deferred.resolve(docs);
+        } else {
+            deferred.reject();
+        }
     });
 
     return deferred.promise;
