@@ -124,9 +124,9 @@
         }
 
         // TODO: add selection of a random default image
-        public BitmapImage GetDefaultBackgroundImage()
+        public Uri GetDefaultBackgroundImage()
         {
-            return new BitmapImage(new Uri(Path.Combine(BackgroundImagesFolder, "default.jpg")));
+            return new Uri(Path.Combine(BackgroundImagesFolder, "default.jpg"));
         }
 
         // TODO: add check by name and by id to search for a background image

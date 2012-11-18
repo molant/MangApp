@@ -27,7 +27,7 @@
         </ResourceDictionary>
     </common:LayoutAwarePage.Resources>
 
-    <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="140" />
             <RowDefinition Height="*" />
