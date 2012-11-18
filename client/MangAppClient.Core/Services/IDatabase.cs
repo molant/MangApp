@@ -7,7 +7,7 @@
 
     public interface IDatabase
     {
-        void CreateInitialDB();
+        void CreateInitialDb();
 
         Task<IEnumerable<MangaSummary>> GetMangaList();
 
