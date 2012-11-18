@@ -4,7 +4,7 @@
 
     public sealed class UpdateDiffResult : DiffResult
     {
-        internal UpdateDiffResult(int id, int lastChapter, MangaStatus? newStatus = null) :
+        internal UpdateDiffResult(string id, int lastChapter, MangaStatus? newStatus = null) :
             base(id)
         {
             this.LastChapter = lastChapter;

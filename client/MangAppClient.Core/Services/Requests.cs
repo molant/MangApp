@@ -7,12 +7,13 @@
     using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using Windows.Data.Json;
 
     public class Requests : IRequests
     {
         internal int MangaListVersion { get; private set ; }
 
-        public async Task<Manga> GetMangaDetailAsync(int mangaId)
+        public async Task<Manga> GetMangaDetailAsync(string mangaId)
         {
             try
             {
@@ -31,7 +32,7 @@
             }
         }
 
-        public async Task<Chapter> GetChapterAsync(int mangaId, int chapterId)
+        public async Task<Chapter> GetChapterAsync(string mangaId, int chapterId)
         {
             try
             {
@@ -50,7 +51,7 @@
             }
         }
 
-        public async Task<Chapter> GetChapterFromProviderAsync(int mangaId, int chapterId, int providerId)
+        public async Task<Chapter> GetChapterFromProviderAsync(string mangaId, int chapterId, int providerId)
         {
             try
             {
@@ -90,7 +91,7 @@
             }
         }
 
-        public async Task<IEnumerable<MangaSummary>> GetRelatedMangasAsync(int mangaId)
+        public async Task<IEnumerable<MangaSummary>> GetRelatedMangasAsync(string mangaId)
         {
             try
             {
@@ -141,13 +142,11 @@
                 HttpClient client = new HttpClient();
                 var response = await client.GetStringAsync(Urls.GetMangaList);
 
-                response = "{\"status\":1,\"description\":\"Kyousuke is a member of his school's kenpo club, and is the son of a detective and a part time S&M mistress. One day, he meets a girl being bullied and saves her from the bullies. She becomes the manager of his kenpo club to show her appreciation. She then gets caught in a bank heist and Kyousuke goes to save her. During the heroic rescue, Kyousuke gets panties stuck on his head. Due to his mother's perverted blood coursing through his veins, 100% of his potential is unlocked. When his potential is unlocked, Kyousuke becomes Hentai Kamen (Perverted Masked Man).\",\"image\":\"http://cdn.mangaeden.com/mangasimg/c0/c0ae3c990f5c90192dac396a157e8724a9841dd630d7367de5b0e38e.jpg\",\"released\":null,\"categories\":[\"Comedy\",\"Romance\",\"Adventure\",\"Action\"],\"hits\":12334,\"author\":\"\",\"last_chapter_date\":733925,\"artist\":\"\",\"chapters_len\":18,\"created\":734394,\"alias\":\"ultimate-h-kamen\",\"title\":\"Ultimate!! H Kamen\",\"_id\":\"50a8393a68a58df845000001\"}";
-
                 // Transform JSON into objects
-                JObject json = JObject.Parse(response);
+                JArray json = JArray.Parse(response);
 
                 this.MangaListVersion = 1; // json["version"].Value<int>();
-                results.AddRange(json["manga"].Children().Select(t => this.ParseMangaSummary(t)));
+                results.AddRange(json.Children().Select(t => this.ParseMangaSummary(t)));
 
                 return results;
             }
@@ -176,14 +175,14 @@
                 results.AddRange(groups
                     .Where(group => group.Key.Equals("delete", StringComparison.CurrentCultureIgnoreCase))
                     .SelectMany(group => group)
-                    .Select(item => new RemoveDiffResult(item["id"].Value<int>())));
+                    .Select(item => new RemoveDiffResult(item["id"].Value<string>())));
 
                 // Get the mangas that were updated
                 results.AddRange(groups
                     .Where(group => group.Key.Equals("update", StringComparison.CurrentCultureIgnoreCase))
                     .SelectMany(group => group)
                     .Select(item => new UpdateDiffResult(
-                        item["id"].Value<int>(),
+                        item["id"].Value<string>(),
                         item["chapter"].Value<int>(),
                         string.IsNullOrEmpty(item["status"].Value<string>()) ? null : (MangaStatus?)Enum.Parse(typeof(MangaStatus), item["status"].Value<string>()))));
 
@@ -201,7 +200,7 @@
             }
         }
 
-        internal async Task<byte[]> GetBackgroundImageAsync(int mangaId)
+        internal async Task<byte[]> GetBackgroundImageAsync(string mangaId)
         {
             try
             {
@@ -216,12 +215,12 @@
 
         private MangaSummary ParseMangaSummary(JToken token)
         {
-            return new MangaSummary(token["id"].Value<int>())
+            return new MangaSummary(token["id"].Value<string>())
                     {
-                        Name = token["name"].Value<string>(),
-                        Author = token["authors"].Children().Values<string>(),
-                        Artist = token["artists"].Children().Values<string>(),
-                        Genre = token["genres"].Children().Values<string>(),
+                        Title = token["name"].Value<string>(),
+                        Authors = token["authors"].Children().Values<string>(),
+                        Artists = token["artists"].Children().Values<string>(),
+                        Categories = token["genres"].Children().Values<string>(),
                         LastChapter = token["chapter"].Value<int>(),
                         Status = (MangaStatus)Enum.Parse(typeof(MangaStatus), token["status"].Value<string>())
                     };
@@ -231,7 +230,7 @@
         {
             return new Manga()
                     {
-                        Id = token["id"].Value<int>(),
+                        Id = token["id"].Value<string>(),
                         Name = token["name"].Value<string>(),
                         AlternativeNames = token["alternativeNames"].Children().Values<string>(),
                         Description = token["description"].Value<string>(),

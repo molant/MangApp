@@ -2,7 +2,7 @@
 {
     public sealed class RemoveDiffResult : DiffResult
     {
-        public RemoveDiffResult(int id)
+        public RemoveDiffResult(string id)
             : base(id)
         { }
     }

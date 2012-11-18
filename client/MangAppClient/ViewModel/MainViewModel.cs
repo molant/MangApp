@@ -62,8 +62,8 @@ namespace MangAppClient.ViewModel
             {
                 mangaSummaries = await this.dataBase.GetMangaList();
             }
-            
-            MangaGroups = mangaSummaries.GroupBy(m => m.Genre.First())
+
+            MangaGroups = mangaSummaries.GroupBy(m => m.Categories.First())
                 .Select(group => new MangaGroupViewModel
                 {
                     Key = group.Key,

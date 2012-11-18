@@ -2,11 +2,11 @@
 {
     public abstract class DiffResult
     {
-        protected DiffResult(int id)
+        protected DiffResult(string id)
         {
             this.Id = id;
         }
 
-        public int Id { get; private set; }
+        public string Id { get; private set; }
     }
 }

@@ -15,8 +15,8 @@
 
         BitmapImage GetDefaultBackgroundImage();
 
-        BitmapImage GetBackgroundImage(int mangaId);
+        BitmapImage GetBackgroundImage(string mangaId);
 
-        Task<BitmapImage> UpdateBackgroundImage(int mangaId);
+        Task<BitmapImage> UpdateBackgroundImage(string mangaId);
     }
 }
