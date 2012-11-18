@@ -40,8 +40,12 @@ server.get({path:'/manga/:id/:chapterId', version:'1.0.0'}, chapter);
 server.listen(32810);
 
 function list(req, res, next) {
-    var mangas = mangaDb.getList();
-    res.send(JSON.stringify(mangas));
+    mangaDb.getList().then(function(docs){
+        var mangas = JSON.stringify(docs);
+        res.send(JSON.stringify(mangas));
+    },function(err){
+        console.log(err);
+    });
 }
 
 function updateDB(req, res, next) {

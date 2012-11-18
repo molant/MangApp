@@ -101,6 +101,10 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+    <ProjectReference Include="..\MangAppClient.Core\MangAppClient.Core.csproj">
+      <Project>{b00e5d2b-d36e-419f-9b5f-a0850203e161}</Project>
+      <Name>MangAppClient.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App.xaml.cs">
@@ -109,14 +113,13 @@
     <Compile Include="Common\LayoutAwarePage.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="ViewModel\MangaDetailViewModel.cs" />
+    <Compile Include="Design\MockDatabase.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="ViewModel\MangaGroupViewModel.cs" />
     <Compile Include="ViewModel\MangAppViewModelBase.cs" />
     <Compile Include="Views\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Design\DesignDataService.cs" />
-    <Compile Include="Model\DataItem.cs" />
-    <Compile Include="Model\DataService.cs" />
-    <Compile Include="Model\IDataService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
