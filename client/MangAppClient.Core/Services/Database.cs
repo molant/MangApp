@@ -50,13 +50,13 @@
             // Update mangas
             var updates = diffs.OfType<UpdateDiffResult>();
             var dbMangas = await db.Table<DbMangaSummary>()
-                        .Where(m => updates.Any(u => u.Id == m.Id))
+                        .Where(m => updates.Any(u => u.Id == m.Key))
                         .ToListAsync();
 
             var updatedDbMangas = updates.Join(
                 dbMangas,
                 update => update.Id,
-                dbManga => dbManga.Id,
+                dbManga => dbManga.Key,
                 (update, dbManga) => dbManga.Update(update));
 
             await db.UpdateAsync(updatedDbMangas);
@@ -113,7 +113,7 @@
         public async void CreateInitialDb()
         {
             // SQlite database  for manga information
-            SQLiteAsyncConnection db = new SQLiteAsyncConnection(Path.Combine(ApplicationData.Current.LocalFolder.Path, "mangapp.db"));
+            SQLiteAsyncConnection db = new SQLiteAsyncConnection("mangapp.db");
             await db.CreateTableAsync<DbMangaListVersion>();
             await db.CreateTableAsync<DbMangaSummary>();
             await db.CreateTableAsync<DbBackgroundImage>();
@@ -127,30 +127,51 @@
             await db.InsertAllAsync(mangas.Select(m => DbMangaSummary.FromMangaSummary(m)));
 
             // Folders for caching images
-            await ApplicationData.Current.LocalFolder.CreateFolderAsync(SummaryImagesFolder, CreationCollisionOption.ReplaceExisting);
-            await ApplicationData.Current.LocalFolder.CreateFolderAsync(BackgroundImagesFolder, CreationCollisionOption.ReplaceExisting);
+            try
+            {
+                await ApplicationData.Current.LocalFolder.CreateFolderAsync(SummaryImagesFolder, CreationCollisionOption.ReplaceExisting);
+                await ApplicationData.Current.LocalFolder.CreateFolderAsync(BackgroundImagesFolder, CreationCollisionOption.ReplaceExisting);
+            }
+            catch (Exception)
+            {
+                try
+                {
+                    ApplicationData.Current.LocalFolder.CreateFolderAsync(SummaryImagesFolder, CreationCollisionOption.ReplaceExisting).GetResults();
+                    ApplicationData.Current.LocalFolder.CreateFolderAsync(BackgroundImagesFolder, CreationCollisionOption.ReplaceExisting).GetResults();
+                }
+                catch (Exception)
+                {
+                }
+            }
 
             // Create the local images
             HttpClient client = new HttpClient();
             foreach (var manga in mangas)
             {
-                this.CreateBackgroundImage(client, manga);
+                this.CreateSummaryImage(client, manga);
                 await this.UpdateBackgroundImage(manga.Id);
             }
         }
 
-        private async void CreateBackgroundImage(HttpClient client, MangaSummary manga)
+        private async void CreateSummaryImage(HttpClient client, MangaSummary manga)
         {
-            // Summary image
-            byte[] imageData = await client.GetByteArrayAsync(manga.SummaryImageUrl);
-            if (imageData != null && imageData.Length > 0)
+            try
             {
-                string extension = Path.GetExtension(manga.SummaryImageUrl.ToString());
-                string fileName = manga.Id + extension;
+                byte[] imageData = await client.GetByteArrayAsync(manga.SummaryImageUrl);
+                if (imageData != null && imageData.Length > 0)
+                {
+                    string extension = Path.GetExtension(manga.SummaryImageUrl.ToString());
+                    string fileName = manga.Id + extension;
+                    //fileName = "1.jpg";
 
-                var file = await ApplicationData.Current.LocalFolder.CreateFileAsync(Path.Combine(AppRootPath, SummaryImagesFolder, fileName), CreationCollisionOption.ReplaceExisting);
-                var stream = await file.OpenStreamForWriteAsync();
-                await stream.WriteAsync(imageData, 0, imageData.Length);
+                    var file = await ApplicationData.Current.LocalFolder.CreateFileAsync(Path.Combine(SummaryImagesFolder, fileName), CreationCollisionOption.ReplaceExisting);
+                    var stream = await file.OpenStreamForWriteAsync();
+                    await stream.WriteAsync(imageData, 0, imageData.Length);
+                    stream.Dispose();
+                }
+            }
+            catch (Exception)
+            {
             }
         }
 
@@ -164,18 +185,19 @@
 
         private class DbMangaSummary
         {
-            [PrimaryKey]
-            public string Id { get; set; }
+            public string Key { get; set; }
 
-            public string Name { get; set; }
+            public string Title { get; set; }
 
-            public string Author { get; set; }
+            public string Description { get; set; }
 
-            public string Genre { get; set; }
+            public string Authors { get; set; }
 
-            public string Artist { get; set; }
+            public string Artists { get; set; }
 
-            public MangaStatus Status { get; set; }
+            public string Categories { get; set; }
+
+            public int Status { get; set; }
 
             public int LastChapter { get; set; }
 
@@ -184,7 +206,7 @@
                 this.LastChapter = update.LastChapter;
                 if (update.NewStatus.HasValue)
                 {
-                    this.Status = update.NewStatus.Value;
+                    this.Status = (int)update.NewStatus.Value;
                 }
 
                 return this;
@@ -194,25 +216,25 @@
             {
                 return new DbMangaSummary()
                 {
-                    Id = summary.Id,
-                    Name = summary.Title,
-                    Author = string.Join(Database.Separators[0], summary.Authors),
-                    Artist = string.Join(Database.Separators[0], summary.Artists),
-                    Genre = string.Join(Database.Separators[0], summary.Categories),
-                    Status = summary.Status,
+                    Key = summary.Id,
+                    Title = summary.Title,
+                    Authors = string.Join(Database.Separators[0], summary.Authors),
+                    Artists = string.Join(Database.Separators[0], summary.Artists),
+                    Categories = string.Join(Database.Separators[0], summary.Categories),
+                    Status = (int)summary.Status,
                     LastChapter = summary.LastChapter
                 };
             }
 
             public static MangaSummary ToMangaSummary(DbMangaSummary dbManga)
             {
-                return new MangaSummary(dbManga.Id)
+                return new MangaSummary(dbManga.Key)
                         {
-                            Title = dbManga.Name,
-                            Authors = dbManga.Author.Split(Database.Separators, StringSplitOptions.RemoveEmptyEntries),
-                            Artists = dbManga.Artist.Split(Database.Separators, StringSplitOptions.RemoveEmptyEntries),
-                            Categories = dbManga.Genre.Split(Database.Separators, StringSplitOptions.RemoveEmptyEntries),
-                            Status = dbManga.Status,
+                            Title = dbManga.Title,
+                            Authors = dbManga.Authors.Split(Database.Separators, StringSplitOptions.RemoveEmptyEntries),
+                            Artists = dbManga.Artists.Split(Database.Separators, StringSplitOptions.RemoveEmptyEntries),
+                            Categories = dbManga.Categories.Split(Database.Separators, StringSplitOptions.RemoveEmptyEntries),
+                            Status = (MangaStatus)dbManga.Status,
                             LastChapter = dbManga.LastChapter
                         };
             }

@@ -11,7 +11,7 @@
 
     public class Requests : IRequests
     {
-        internal int MangaListVersion { get; private set ; }
+        internal int MangaListVersion { get; private set; }
 
         public async Task<Manga> GetMangaDetailAsync(string mangaId)
         {
@@ -150,7 +150,7 @@
 
                 return results;
             }
-            catch (HttpRequestException ex)
+            catch (HttpRequestException)
             {
                 return Enumerable.Empty<MangaSummary>();
             }
@@ -215,17 +215,18 @@
 
         private MangaSummary ParseMangaSummary(JToken token)
         {
-            return new MangaSummary(token["_id"].Value<string>())
-                    {
-                        Title = token["title"].Value<string>(),
-                        Description = token["description"].Value<string>(),
-                        Authors = token["authors"].Children().Values<string>(),
-                        Artists = token["artists"].Children().Values<string>(),
-                        Categories = token["categories"].Children().Values<string>(),
-                        LastChapter = token["chapters_len"].Value<int>(),
-                        Status = this.ParseMangaStatus(token["status"].Value<int>()),
-                        SummaryImageUrl = new Uri(token["image"].Value<string>())
-                    };
+            MangaSummary manga = new MangaSummary(token["_id"].Value<string>());
+
+            manga.Title = token["title"].Value<string>();
+            manga.Description = token["description"].Value<string>();
+            manga.Authors = token["authors"].Children().Values<string>();
+            manga.Artists = token["artists"].Children().Values<string>();
+            manga.Categories = token["categories"].Children().Values<string>();
+            manga.LastChapter = token["chapters_len"].Value<int>();
+            manga.Status = this.ParseMangaStatus(token["status"].Value<int>());
+            manga.SummaryImageUrl = new Uri(token["image"].Value<string>());
+
+            return manga;
         }
 
         private Manga ParseManga(JToken token)
@@ -240,7 +241,7 @@
                         Author = token["authors"].Children().Values<string>(),
                         Artist = token["artists"].Children().Values<string>(),
                         Genre = token["genres"].Children().Values<string>(),
-                        Status = (MangaStatus) Enum.Parse(typeof(MangaStatus), token["status"].Value<string>()),
+                        Status = (MangaStatus)Enum.Parse(typeof(MangaStatus), token["status"].Value<string>()),
                         Year = token["year"].Value<int>(),
                         TotalChapters = token["totalChapters"].Value<int>(),
                         Image = new Uri(token["image"].Value<string>()),
