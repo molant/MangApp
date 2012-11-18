@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MangAppClient.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -19,6 +20,7 @@ namespace MangAppClient.Views
         public MainPage()
         {
             this.InitializeComponent();
+            this.groupGridView.ItemsSource = groupedItemsViewSource.View.CollectionGroups;
         }
 
         /// <summary>
@@ -28,6 +30,7 @@ namespace MangAppClient.Views
         /// property is typically used to configure the page.</param>
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
+            //(semanticZoom.ZoomedOutView as ListViewBase).ItemsSource = groupedItemsViewSource.View.CollectionGroups;
         }
     }
 }
