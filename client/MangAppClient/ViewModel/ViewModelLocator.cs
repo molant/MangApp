@@ -32,17 +32,25 @@ namespace MangAppClient.ViewModel
             if (ViewModelBase.IsInDesignModeStatic)
             {
                 SimpleIoc.Default.Register<IDatabase, Design.MockDatabase>();
+                SimpleIoc.Default.Register<IRequests, Design.MockService>();
             }
             else
             {
                 SimpleIoc.Default.Register<IDatabase, Design.MockDatabase>();
+                SimpleIoc.Default.Register<IRequests, Design.MockService>();
             }
 
+            RegisterViewModels();
+        }
+
+        private static void RegisterViewModels()
+        {
             SimpleIoc.Default.Register<MainViewModel>();
+            SimpleIoc.Default.Register<MangaDetailViewModel>();
         }
 
         /// <summary>
-        /// Gets the Main property.
+        /// Gets the Main view model.
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance",
             "CA1822:MarkMembersAsStatic",
@@ -54,6 +62,20 @@ namespace MangAppClient.ViewModel
                 return ServiceLocator.Current.GetInstance<MainViewModel>();
             }
         }
+
+        /// <summary>
+        /// Gets the Manga Detail view model
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance",
+            "CA1822:MarkMembersAsStatic",
+            Justification = "This non-static member is needed for data binding purposes.")]
+        public MangaDetailViewModel MangaDetail
+        {
+            get
+            {
+                return ServiceLocator.Current.GetInstance<MangaDetailViewModel>();
+            }
+        }       
 
         /// <summary>
         /// Cleans up all the resources.
