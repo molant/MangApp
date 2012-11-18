@@ -17,7 +17,7 @@ namespace MangAppClient.ViewModel
             Artist = summary.Artists;
             Status = summary.Status;
             LastChapter = summary.LastChapter;
-            UpdateDate = summary.UpdateDate;
+            UpdateDate = summary.LastChapterDate;
             SummaryImageUrl = summary.SummaryImageUrl;
         }
 
@@ -27,7 +27,7 @@ namespace MangAppClient.ViewModel
         public IEnumerable<string> Artist { get; set; }
         public MangaStatus Status { get; set; }
         public int LastChapter { get; set; }
-        public DateTime UpdateDate { get; set; }
+        public DateTime? UpdateDate { get; set; }
         public Uri SummaryImageUrl { get; set; }
 
         public MangaGroupViewModel Group { get; set; }
