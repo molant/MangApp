@@ -9,13 +9,7 @@
                         d:DesignHeight="768"
                         d:DesignWidth="1366">
 
-    <common:LayoutAwarePage.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Skins/MainSkin.xaml" />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </common:LayoutAwarePage.Resources>
+    <common:LayoutAwarePage.Resources/>
 
     <common:LayoutAwarePage.DataContext>
         <Binding Mode="OneWay" Path="MangaDetail" Source="{StaticResource Locator}"/>
@@ -40,27 +34,34 @@
 
             <TextBlock x:Name="pageTitle"
                        Grid.Column="1"
-                       Text="{Binding Name}"
+                       Text="{Binding Title}"
                        Style="{StaticResource PageHeaderTextStyle}" />
         </Grid>
 
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="200"></ColumnDefinition>
-                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition Width="300"></ColumnDefinition>
+                <ColumnDefinition Width="*"></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
             <Grid Grid.Column="0">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="200"></RowDefinition>
+                    <RowDefinition Height="300"></RowDefinition>
                     <RowDefinition Height="*"></RowDefinition>
                 </Grid.RowDefinitions>
-
-                <Image Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center" Source="{Binding Image}"></Image>
+                <Image Grid.Row="0" Source="{Binding Image}"/>
                 <ScrollViewer Grid.Row="1">
-                    <TextBlock Text="{Binding Description}" Style="{StaticResource BodyTextStyle}"></TextBlock>
+                    <TextBlock Text="{Binding Description}" TextWrapping="Wrap"/>
                 </ScrollViewer>
             </Grid>
+            
+            <ListView Grid.Column="1" ItemsSource="{Binding Chapters}">
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapGrid Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+            </ListView>
         </Grid>
 
         <VisualStateManager.VisualStateGroups>
@@ -144,3 +145,5 @@
         </VisualStateManager.VisualStateGroups>
     </Grid>
 </common:LayoutAwarePage>
+
+    

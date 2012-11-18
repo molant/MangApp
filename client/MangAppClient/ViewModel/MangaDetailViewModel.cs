@@ -3,6 +3,7 @@ using MangAppClient.Core.Model;
 using MangAppClient.Core.Services;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,31 +15,54 @@ namespace MangAppClient.ViewModel
     {
         private Manga manga;
         private IRequests service;
+        private ObservableCollection<Chapter> chapters;
 
-        public string Name
+        public string Title
         {
             get
             {
-                return manga.Name;
+                return manga.Title;
             }
 
             set
             {
-                manga.Name = value;
+                manga.Title= value;
                 RaisePropertyChanged();
             }
         }
 
-        public BitmapImage Image
+        public ObservableCollection<Chapter> Chapters
         {
             get
             {
-                return new BitmapImage(manga.Image);
+                if (chapters == null)
+                {
+                    chapters = new ObservableCollection<Chapter>();
+
+                    for (int i = 0; i < 10; i++)
+                        chapters.Add(new Chapter() { Title = "Chapter" + 1, });
+                }
+
+                return chapters;
             }
 
             set
             {
-                manga.Image = value.UriSource;
+                chapters = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        public Uri Image
+        {
+            get
+            {
+                return manga.SummaryImageUrl;
+            }
+
+            set
+            {
+                manga.SummaryImageUrl = value;
                 RaisePropertyChanged();
             }
         }
