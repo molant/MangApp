@@ -19,6 +19,7 @@ process.setMaxListeners(0);
 
 function clean() {
     try {
+        logger.log('Cleaningn DB');
         db.mangas.remove({});
         db.chapters.remove({});
         db.mangaMap.remove({});
