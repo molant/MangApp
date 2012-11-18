@@ -106,10 +106,14 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+<<<<<<< HEAD
+    <Compile Include="ViewModels\MainPageViewModel.cs" />
+    <Compile Include="ViewModels\MangaDetailViewModel.cs" />
+    <Compile Include="ViewModels\ViewModelBase.cs" />
+=======
     <Compile Include="Common\LayoutAwarePage.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
-    <Compile Include="ViewModel\MangaDetailViewModel.cs" />
-    <Compile Include="ViewModel\MangAppViewModelBase.cs" />
+>>>>>>> 0af51d51f409cc9611d4023995795a1e674f6a6b
     <Compile Include="Views\MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
@@ -118,8 +122,14 @@
     <Compile Include="Model\DataService.cs" />
     <Compile Include="Model\IDataService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+<<<<<<< HEAD
+    <Compile Include="Views\MangaDetailView.xaml.cs">
+      <DependentUpon>MangaDetailView.xaml</DependentUpon>
+    </Compile>
+=======
     <Compile Include="ViewModel\MainViewModel.cs" />
     <Compile Include="ViewModel\ViewModelLocator.cs" />
+>>>>>>> 0af51d51f409cc9611d4023995795a1e674f6a6b
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -146,22 +156,37 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+<<<<<<< HEAD
+    <Page Include="Views\MangaDetailView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+=======
     <Page Include="Skins\MainSkin.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+>>>>>>> 0af51d51f409cc9611d4023995795a1e674f6a6b
     </Page>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="GalaSoft.MvvmLight.Extras.Win8">
-      <HintPath>..\Libraries\GalaSoft.MvvmLight.Extras.Win8.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\Laurent Bugnion (GalaSoft)\Mvvm Light Toolkit\Binaries\Win8\GalaSoft.MvvmLight.Extras.Win8.dll</HintPath>
     </Reference>
     <Reference Include="GalaSoft.MvvmLight.Win8">
-      <HintPath>..\Libraries\GalaSoft.MvvmLight.Win8.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\Laurent Bugnion (GalaSoft)\Mvvm Light Toolkit\Binaries\Win8\GalaSoft.MvvmLight.Win8.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Practices.ServiceLocation">
-      <HintPath>..\Libraries\Microsoft.Practices.ServiceLocation.dll</HintPath>
+      <HintPath>C:\Program Files (x86)\Laurent Bugnion (GalaSoft)\Mvvm Light Toolkit\Binaries\Win8\Microsoft.Practices.ServiceLocation.dll</HintPath>
     </Reference>
   </ItemGroup>
+<<<<<<< HEAD
+  <ItemGroup>
+    <ProjectReference Include="..\MangAppClient.Core\MangAppClient.Core.csproj">
+      <Project>{b00e5d2b-d36e-419f-9b5f-a0850203e161}</Project>
+      <Name>MangAppClient.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+=======
+>>>>>>> 0af51d51f409cc9611d4023995795a1e674f6a6b
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '11.0' ">
     <VisualStudioVersion>11.0</VisualStudioVersion>
   </PropertyGroup>
