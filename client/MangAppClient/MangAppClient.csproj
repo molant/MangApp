@@ -143,6 +143,9 @@
     <None Include="MvvmLight.Win8_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="BackgroundImages\berserk_2.jpg" />
+    <Content Include="BackgroundImages\bleach_2.jpg" />
+    <Content Include="BackgroundImages\bleach_3.jpg" />
     <Content Include="BackgroundImages\default.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -166,12 +169,20 @@
     <Content Include="BackgroundImages\initial d.jpg" />
     <Content Include="BackgroundImages\kenshin.jpg" />
     <Content Include="BackgroundImages\naruto.jpg" />
+    <Content Include="BackgroundImages\naruto_2.jpg" />
+    <Content Include="BackgroundImages\naruto_3.jpg" />
     <Content Include="BackgroundImages\one piece.jpg" />
+    <Content Include="BackgroundImages\one piece_2.jpg" />
     <Content Include="BackgroundImages\pokemon.jpg" />
     <Content Include="BackgroundImages\ranma.jpg" />
     <Content Include="BackgroundImages\ravemaster.jpg" />
     <Content Include="BackgroundImages\rosario vampire.jpg" />
     <Content Include="BackgroundImages\soul eater.jpg" />
+    <Content Include="SummaryImages\default1.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="SummaryImages\default2.jpg" />
+    <Content Include="SummaryImages\default3.jpg" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">

@@ -10,6 +10,7 @@
     using System.Threading.Tasks;
     using Windows.ApplicationModel;
     using Windows.Storage;
+    using Windows.Storage.Search;
     using Windows.UI.Xaml.Media.Imaging;
 
     public class Database : IDatabase
@@ -19,6 +20,8 @@
         private static readonly string SummaryImagesFolder = "SummaryImages";
 
         private static readonly string BackgroundImagesFolder = "BackgroundImages";
+
+        private static Random random = new Random();
 
         // Working
         public IEnumerable<MangaSummary> GetMangaList()
@@ -93,10 +96,17 @@
             backgroundFolder = ApplicationData.Current.LocalFolder.CreateFolderAsync(BackgroundImagesFolder, CreationCollisionOption.ReplaceExisting).AsTask().Result;
 
             // Copy the background images from the installed folder to the app folder
-            var installFolder = Package.Current.InstalledLocation.GetFolderAsync(BackgroundImagesFolder).AsTask().Result;
-            foreach (var file in installFolder.GetFilesAsync().AsTask().Result)
+            var backgroundInstallFolder = Package.Current.InstalledLocation.GetFolderAsync(BackgroundImagesFolder).AsTask().Result;
+            foreach (var file in backgroundInstallFolder.GetFilesAsync().AsTask().Result)
             {
                 var copiedFile = file.CopyAsync(backgroundFolder, file.Name, NameCollisionOption.ReplaceExisting).AsTask().Result;
+            }
+
+            // Copy the summary images from the installed folder to the app folder
+            var summaryInstallFolder = Package.Current.InstalledLocation.GetFolderAsync(SummaryImagesFolder).AsTask().Result;
+            foreach (var file in summaryInstallFolder.GetFilesAsync().AsTask().Result)
+            {
+                var copiedFile = file.CopyAsync(summaryFolder, file.Name, NameCollisionOption.ReplaceExisting).AsTask().Result;
             }
 
             // Populate the manga list from the server information
@@ -123,14 +133,22 @@
             }
         }
 
-        // TODO: add selection of a random default image
-        public Uri GetDefaultBackgroundImage()
+        public string GetDefaultBackgroundImage()
         {
-            return new Uri(Path.Combine(BackgroundImagesFolder, "default.jpg"));
+            var folder = this.FolderExists(ApplicationData.Current.LocalFolder, BackgroundImagesFolder);
+            if (folder != null)
+            {
+                var defaultFiles = folder.GetFilesAsync().AsTask().Result
+                    .Where(f => f.Name.Contains("default"))
+                    .ToList();
+
+                return defaultFiles[random.Next(0, defaultFiles.Count)].Path;
+            }
+
+            return Path.Combine(BackgroundImagesFolder, "default.jpg");
         }
 
-        // TODO: add check by name and by id to search for a background image
-        public BitmapImage GetBackgroundImage(string mangaId)
+        public string GetBackgroundImage(string mangaId)
         {
             DbMangaSummary summary;
             using (SQLiteConnection db = new SQLiteConnection(Path.Combine(ApplicationData.Current.LocalFolder.Path, "mangapp.db")))
@@ -140,19 +158,35 @@
 
             if (summary != null)
             {
-                string imagePath = Path.Combine(BackgroundImagesFolder, summary.Title + ".jpg");
-
-                var file = this.FileExits(ApplicationData.Current.LocalFolder, imagePath);
-                if (file != null)
+                var folder = this.FolderExists(ApplicationData.Current.LocalFolder, BackgroundImagesFolder);
+                if (folder != null)
                 {
-                    return new BitmapImage(new Uri(file.Path));
+                    // Let's search first by manga key
+                    var defaultFiles = folder.GetFilesAsync().AsTask().Result
+                        .Where(f => f.Name.Contains(summary.Key))
+                        .ToList();
+
+                    if (defaultFiles.Count > 1)
+                    {
+                        return defaultFiles[random.Next(0, defaultFiles.Count)].Path;
+                    }
+
+                    // Let's search first by manga name
+                    defaultFiles = folder.GetFilesAsync().AsTask().Result
+                        .Where(f => f.Name.Contains(summary.Title))
+                        .ToList();
+
+                    if (defaultFiles.Count > 1)
+                    {
+                        return defaultFiles[random.Next(0, defaultFiles.Count)].Path;
+                    }
                 }
             }
 
             return null;
         }
 
-        public BitmapImage UpdateBackgroundImage(string mangaId)
+        public string UpdateBackgroundImage(string mangaId)
         {
             byte[] imageData = new Requests().GetBackgroundImage(mangaId);
 
@@ -166,7 +200,7 @@
                     stream.Write(imageData, 0, imageData.Length);
                 }
 
-                return new BitmapImage(new Uri(fileName));
+                return fileName;
             }
 
             return null;
@@ -188,10 +222,26 @@
                     {
                         stream.Write(imageData, 0, imageData.Length);
                     }
+
+                    manga.SummaryImagePath = Path.Combine(SummaryImagesFolder, manga.Id + Path.GetExtension(manga.SummaryImageUrl.ToString()));
                 }
             }
             catch (Exception)
             {
+                // No image in the server, let's use a random default one
+                var folder = this.FolderExists(ApplicationData.Current.LocalFolder, SummaryImagesFolder);
+                if (folder != null)
+                {
+                    var defaultFiles = folder.GetFilesAsync().AsTask().Result
+                        .Where(f => f.Name.Contains("default"))
+                        .ToList();
+
+                    manga.SummaryImagePath = defaultFiles[random.Next(0, defaultFiles.Count)].Path;
+                }
+                else
+                {
+                    manga.SummaryImagePath = null;
+                }
             }
         }
 
@@ -252,6 +302,7 @@
             public int Status { get; set; }
             public int? ReadingDirection { get; set; }
             public string SummaryImageUrl { get; set; }
+            public string SummaryImagePath { get; set; }
 
             public int LastChapter { get; set; }
             public DateTime? LastChapterDate { get; set; }
@@ -285,6 +336,7 @@
                             Status = (int)summary.Status,
                             ReadingDirection = (int?)summary.ReadingDirection,
                             SummaryImageUrl = summary.SummaryImageUrl,
+                            SummaryImagePath = summary.SummaryImagePath,
 
                             LastChapter = summary.LastChapter,
                             LastChapterDate = summary.LastChapterDate
@@ -308,6 +360,7 @@
                             Status = (MangaStatus)dbManga.Status,
                             ReadingDirection = (ReadingDirection?)dbManga.ReadingDirection,
                             SummaryImageUrl = dbManga.SummaryImageUrl,
+                            SummaryImagePath = dbManga.SummaryImagePath,
 
                             LastChapter = dbManga.LastChapter,
                             LastChapterDate = dbManga.LastChapterDate
