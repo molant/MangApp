@@ -15,6 +15,7 @@
         <Binding Mode="OneWay" Path="MangaDetail" Source="{StaticResource Locator}"/>
     </common:LayoutAwarePage.DataContext>
 
+
     <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="140" />
@@ -38,31 +39,45 @@
                        Style="{StaticResource PageHeaderTextStyle}" />
         </Grid>
 
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="300"></ColumnDefinition>
-                <ColumnDefinition Width="*"></ColumnDefinition>
-            </Grid.ColumnDefinitions>
+        <ScrollViewer Grid.Row="1" HorizontalScrollMode="Auto" HorizontalScrollBarVisibility="Auto" VerticalScrollMode="Disabled" VerticalScrollBarVisibility="Disabled">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="300"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
 
-            <Grid Grid.Column="0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="300"></RowDefinition>
-                    <RowDefinition Height="*"></RowDefinition>
-                </Grid.RowDefinitions>
-                <Image Grid.Row="0" Source="{Binding Image}"/>
-                <ScrollViewer Grid.Row="1">
-                    <TextBlock Text="{Binding Description}" TextWrapping="Wrap"/>
-                </ScrollViewer>
+                <Grid Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="300"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Image Grid.Row="0" Source="{Binding Image}"/>
+                    <ScrollViewer HorizontalScrollMode="Disabled" HorizontalScrollBarVisibility="Disabled" VerticalScrollMode="Auto" VerticalScrollBarVisibility="Auto" Grid.Row="1">
+                        <TextBlock Text="{Binding Description}" TextWrapping="Wrap"/>
+                    </ScrollViewer>
+                </Grid>
+
+                <ListView Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" ScrollViewer.HorizontalScrollMode="Disabled" ScrollViewer.VerticalScrollMode="Disabled" ItemsSource="{Binding Chapters}">
+                    <ListView.Template>
+                        <ControlTemplate>
+                            <ItemsPresenter/>
+                        </ControlTemplate>
+                    </ListView.Template>
+                    
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapGrid MaximumRowsOrColumns="2" ItemWidth="200" ItemHeight="200" Orientation="Vertical"/>
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Title}"></TextBlock>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
             </Grid>
-            
-            <ListView Grid.Column="1" ItemsSource="{Binding Chapters}">
-                <ListView.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <WrapGrid Orientation="Horizontal"/>
-                    </ItemsPanelTemplate>
-                </ListView.ItemsPanel>
-            </ListView>
-        </Grid>
+        </ScrollViewer>
 
         <VisualStateManager.VisualStateGroups>
             <!-- Visual states reflect the application's view state -->

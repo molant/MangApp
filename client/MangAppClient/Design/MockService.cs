@@ -21,36 +21,42 @@ namespace MangAppClient.Design
                 Description = "You think water moves fast? You should see ice. It moves like it has a mind. Like it knows it killed the world once and got a taste for murder. After the avalanche, it took us a week to climb out. Now, I don't know exactly when we turned on each other, but I know that seven of us survived the slide... and only five made it out. Now we took an oath, that I'm breaking now. We said we'd say it was the snow that killed the other two, but it wasn't. Nature is lethal but it doesn't hold a candle to man. /nYou think water moves fast? You should see ice. It moves like it has a mind. Like it knows it killed the world once and got a taste for murder. After the avalanche, it took us a week to climb out. Now, I don't know exactly when we turned on each other, but I know that seven of us survived the slide... and only five made it out. Now we took an oath, that I'm breaking now. We said we'd say it was the snow that killed the other two, but it wasn't. Nature is lethal but it doesn't hold a candle to man.",
                 YearOfRelease = 9999,
                 LastChapter = 10,
-                Status = MangaStatus.Ongoing
+                Status = MangaStatus.Ongoing,
             };
+
+            var chapters = new List<ChapterSummary>();
+            for (int i = 1; i <= 12; i++)
+                chapters.Add(new ChapterSummary() { Title = "Chapter" + i });
+
+            manga.Chapters = chapters;
         }
 
-        public Task<Manga> GetMangaDetailAsync(string mangaId)
+        public Manga GetMangaDetail(string mangaId)
         {
-            return Task.Factory.StartNew<Manga>(() => { return manga; });
+            return manga;
         }
 
-        public Task<Chapter> GetChapterAsync(string mangaId, int chapterId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Chapter> GetChapterFromProviderAsync(string mangaId, int chapterId, int providerId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable<MangaSummary>> GetAuthorMangasAsync(string authorId)
+        public Chapter GetChapter(string mangaId, int chapterId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<MangaSummary>> GetRelatedMangasAsync(string mangaId)
+        public Chapter GetChapterFromProvider(string mangaId, int chapterId, int providerId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<int>> GetFavoriteMangasAsync(int userId)
+        public IEnumerable<MangaSummary> GetAuthorMangas(string authorId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<MangaSummary> GetRelatedMangas(string mangaId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<int> GetFavoriteMangas(int userId)
         {
             throw new NotImplementedException();
         }

@@ -15,7 +15,7 @@ namespace MangAppClient.ViewModel
     {
         private Manga manga;
         private IRequests service;
-        private ObservableCollection<Chapter> chapters;
+        private ObservableCollection<ChapterSummary> chapters;
 
         public string Title
         {
@@ -31,16 +31,13 @@ namespace MangAppClient.ViewModel
             }
         }
 
-        public ObservableCollection<Chapter> Chapters
+        public ObservableCollection<ChapterSummary> Chapters
         {
             get
             {
                 if (chapters == null)
                 {
-                    chapters = new ObservableCollection<Chapter>();
-
-                    for (int i = 0; i < 10; i++)
-                        chapters.Add(new Chapter() { Title = "Chapter" + 1, });
+                    chapters = new ObservableCollection<ChapterSummary>(manga.Chapters);
                 }
 
                 return chapters;
@@ -90,11 +87,11 @@ namespace MangAppClient.ViewModel
         {
             if (ViewModelBase.IsInDesignModeStatic)
             {
-                manga = await service.GetMangaDetailAsync("1");
+                manga = service.GetMangaDetail("1");
             }
             else
             {
-                manga = await service.GetMangaDetailAsync("1");
+                manga = service.GetMangaDetail("1");
             }
         }
 
