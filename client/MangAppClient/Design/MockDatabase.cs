@@ -44,14 +44,14 @@ namespace MangAppClient.Design
             throw new System.NotImplementedException();
         }
 
-        public System.Threading.Tasks.Task<Windows.UI.Xaml.Media.Imaging.BitmapImage> UpdateBackgroundImage(string mangaId)
+        public Windows.UI.Xaml.Media.Imaging.BitmapImage UpdateBackgroundImage(string mangaId)
         {
             throw new System.NotImplementedException();
         }
 
-        public System.Threading.Tasks.Task<System.Collections.Generic.IEnumerable<Core.Model.MangaSummary>> GetMangaList()
+        public System.Collections.Generic.IEnumerable<Core.Model.MangaSummary> GetMangaList()
         {
-            return Task.Factory.StartNew<IEnumerable<MangaSummary>>(() => { return this.mangaList; });
+            return this.mangaList;
         }
 
         public System.Collections.Generic.IEnumerable<Core.Model.MangaSummary> GetMangaListDesign()

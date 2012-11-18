@@ -20,11 +20,13 @@
 
         private static readonly string BackgroundImagesFolder = "BackgroundImages";
 
-        public async Task<IEnumerable<MangaSummary>> GetMangaList()
+        public IEnumerable<MangaSummary> GetMangaList()
         {
-            SQLiteAsyncConnection db = new SQLiteAsyncConnection("mangapp.db");
-            var mangas = await db.Table<DbMangaSummary>().ToListAsync();
-            return mangas.Select(m => DbMangaSummary.ToMangaSummary(m));
+            using (SQLiteConnection db = new SQLiteConnection(Path.Combine(ApplicationData.Current.LocalFolder.Path, "mangapp.db")))
+            {
+                var mangas = db.Table<DbMangaSummary>().ToList();
+                return mangas.Select(m => DbMangaSummary.ToMangaSummary(m));
+            }
         }
 
         public async void UpdateMangaList()
@@ -33,7 +35,7 @@
             DbMangaListVersion listVersion = await db.Table<DbMangaListVersion>().FirstOrDefaultAsync();
 
             Requests requests = new Requests();
-            var diffs = await requests.GetMangaListDiffAsync(listVersion.Version);
+            var diffs = requests.GetMangaListDiff(listVersion.Version);
 
             // Update our local manga list version
             listVersion.Version = requests.MangaListVersion;
@@ -81,17 +83,19 @@
             return null;
         }
 
-        public async Task<BitmapImage> UpdateBackgroundImage(string mangaId)
+        public BitmapImage UpdateBackgroundImage(string mangaId)
         {
-            byte[] imageData = await new Requests().GetBackgroundImageAsync(mangaId);
+            byte[] imageData = new Requests().GetBackgroundImage(mangaId);
 
             if (imageData != null && imageData.Length > 0)
             {
                 string fileName = mangaId + ".jpg";
-                var file = await ApplicationData.Current.LocalFolder.CreateFileAsync(Path.Combine(BackgroundImagesFolder, fileName), Windows.Storage.CreationCollisionOption.ReplaceExisting);
-                var stream = await file.OpenStreamForWriteAsync();
-                await stream.WriteAsync(imageData, 0, imageData.Length);
-                stream.Dispose();
+                var file = ApplicationData.Current.LocalFolder.CreateFileAsync(Path.Combine(BackgroundImagesFolder, fileName), Windows.Storage.CreationCollisionOption.ReplaceExisting).GetResults();
+                
+                using (var stream = file.OpenStreamForWriteAsync().Result)
+                {
+                    stream.Write(imageData, 0, imageData.Length);
+                }
 
                 return new BitmapImage(new Uri(fileName));
             }
@@ -108,17 +112,19 @@
                 await dbFile.DeleteAsync();
             }
 
-            SQLiteAsyncConnection db = new SQLiteAsyncConnection("mangapp.db");
-            await db.CreateTableAsync<DbMangaListVersion>();
-            await db.CreateTableAsync<DbMangaSummary>();
+            IEnumerable<MangaSummary> mangas;
+            using (SQLiteConnection db = new SQLiteConnection("mangapp.db"))
+            {
+                db.CreateTable<DbMangaListVersion>();
+                db.CreateTable<DbMangaSummary>();
 
-            // Populate the manga list from the server information
-            Requests requests = new Requests();
-            var mangas = await requests.GetMangaListAsync();
+                // Populate the manga list from the server information
+                Requests requests = new Requests();
+                mangas = requests.GetMangaList();
 
-            DbMangaListVersion version = new DbMangaListVersion() { Version = requests.MangaListVersion };
-            await db.InsertAsync(version);
-            await db.InsertAllAsync(mangas.Select(m => DbMangaSummary.FromMangaSummary(m)));
+                db.Insert(new DbMangaListVersion(requests.MangaListVersion));
+                db.InsertAll(mangas.Select(m => DbMangaSummary.FromMangaSummary(m)));
+            }
 
             // Folders for caching images
             var folder = await this.FolderExists(ApplicationData.Current.LocalFolder, SummaryImagesFolder);
@@ -148,7 +154,7 @@
             foreach (var manga in mangas)
             {
                 this.CreateSummaryImage(client, manga);
-                await this.UpdateBackgroundImage(manga.Id);
+                this.UpdateBackgroundImage(manga.Id);
             }
         }
 
@@ -176,14 +182,14 @@
 
         private async Task<StorageFile> FileExits(StorageFolder folder, string fileName)
         {
-	        try
+            try
             {
                 return await folder.GetFileAsync(fileName);
-	        } 
+            }
             catch (FileNotFoundException)
             {
-		        return null;
-	        }
+                return null;
+            }
         }
 
         private async Task<StorageFolder> FolderExists(StorageFolder folder, string fileName)
@@ -200,6 +206,13 @@
 
         private class DbMangaListVersion
         {
+            public DbMangaListVersion() { }
+
+            public DbMangaListVersion(int version)
+            {
+                this.Version = version;
+            }
+
             [PrimaryKey, AutoIncrement]
             public int Id { get; set; }
 
@@ -250,7 +263,7 @@
 
                             YearOfRelease = summary.YearOfRelease,
                             Status = (int)summary.Status,
-                            ReadingDirection = (int?) summary.ReadingDirection,
+                            ReadingDirection = (int?)summary.ReadingDirection,
 
                             LastChapter = summary.LastChapter,
                             LastChapterDate = summary.LastChapterDate

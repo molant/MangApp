@@ -41,5 +41,19 @@ namespace App1
             Database database = new Database();
             database.CreateInitialDb();
         }
+
+        private void GetMangaDetailAsyncClick(object sender, RoutedEventArgs e)
+        {
+            Database database = new Database();
+            var mangas = database.GetMangaList();
+            if (mangas.Count() > 0)
+            {
+                Requests request = new Requests();
+                var mangaDetails = request.GetMangaDetail(mangas.First().Id);
+
+                this.TitleTB.Text = mangaDetails.Title;
+                this.DescriptionTB.Text = mangaDetails.Description;
+            }
+        }
     }
 }

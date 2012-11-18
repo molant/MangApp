@@ -62,7 +62,7 @@ namespace MangAppClient.ViewModel
             }
             else
             {
-                summaries = await this.dataBase.GetMangaList();
+                summaries = this.dataBase.GetMangaList();
             }
 
             var genreList = summaries.SelectMany(s => s.Categories).Distinct();
