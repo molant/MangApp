@@ -7,7 +7,7 @@
  */
 "use strict";
 var restify = require('restify'),
-    providers = require('./providers/provider-loader.js').providers,
+    providers = require('./providers/provider-loader.js'),
     promised = require("promised-io/promise"),
     mangaDb = require('./helpers/database.js'),
     logger = require('tracer').console({
@@ -32,15 +32,13 @@ function list(req, res, next) {
 
 server.get({path:'/list/update/', version:'1.0.0'}, updateDB);
 function updateDB(req, res, next) {
-    var updaters = [];
     logger.log('updating DB');
-    for (var i = 0; i < providers.length; i++) {
-        updaters.push(providers[i].update());
-    }
 
-    promised.all(updaters).then(function (array) {
+    providers.update().then(function (array) {
         res.send(array.length + ' servers updated');
         logger.log('DB updated');
+    },function(err){
+        res.send('Error uploading the server');
     });
 }
 
@@ -58,7 +56,11 @@ function manga(req, res, next) {
             manga.chapters = chapters;
             res.contentType = 'json';
             res.send(manga);
+        },function(err){
+            res.send('Manga ' + req.params.id + ' not found');
         });
+    },function(err){
+        res.send('Manga ' + req.params.id + ' not found');
     });
 }
 
@@ -72,10 +74,10 @@ function chapter(req, res, next) {
     mangaDb.getChapter(req.params.chapterId).then(function (chapters) {
         res.contentType = 'json';
         res.send(chapters);
+    },function(err){
+        res.send('Chapter ' + req.params.id + ' not found');
     });
     console.log(req.params);
 }
 
 server.listen(32810);
-
-
