@@ -167,7 +167,7 @@ function getChapters(id, limit) {
 function getChapter(chapterId) {
     var deferred = new Deferred();
     db.chapters.find({_id:ObjectId(chapterId)}, {number:1, pages:1, title:1}, function (err, docs) {
-        if (err) {
+        if (!err) {
             deferred.resolve(docs);
         } else {
             deferred.reject();
