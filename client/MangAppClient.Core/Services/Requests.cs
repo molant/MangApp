@@ -219,41 +219,54 @@
 
             manga.Title = token["title"].Value<string>();
             manga.Description = token["description"].Value<string>();
+            manga.AlternativeNames = token["alias"].Children().Values<string>();
+
             manga.Authors = token["authors"].Children().Values<string>();
             manga.Artists = token["artists"].Children().Values<string>();
             manga.Categories = token["categories"].Children().Values<string>();
-            manga.LastChapter = token["chapters_len"].Value<int>();
+
+            manga.YearOfRelease = this.ParseYear(token["released"]);
             manga.Status = this.ParseMangaStatus(token["status"].Value<int>());
+            manga.ReadingDirection = this.ParseReadingDirection(token["direction"]);
             manga.SummaryImageUrl = new Uri(token["image"].Value<string>());
+
+            manga.LastChapter = token["chapters_len"].Value<int>();
+            manga.LastChapterDate = this.ParseDateTime(token["last_chapter_date"]);
 
             return manga;
         }
 
         private Manga ParseManga(JToken token)
         {
-            return new Manga()
-                    {
-                        Id = token["id"].Value<string>(),
-                        Name = token["name"].Value<string>(),
-                        AlternativeNames = token["alternativeNames"].Children().Values<string>(),
-                        Description = token["description"].Value<string>(),
-                        Providers = token["providers"].Children().Values<string>(),
-                        Author = token["authors"].Children().Values<string>(),
-                        Artist = token["artists"].Children().Values<string>(),
-                        Genre = token["genres"].Children().Values<string>(),
-                        Status = (MangaStatus)Enum.Parse(typeof(MangaStatus), token["status"].Value<string>()),
-                        Year = token["year"].Value<int>(),
-                        TotalChapters = token["totalChapters"].Value<int>(),
-                        Image = new Uri(token["image"].Value<string>()),
-                        LastChapters = token["chapters"].Children().Select(c => this.ParseChapterSummary(c))
-                    };
+            Manga manga = new Manga();
+
+            manga.Id = token["_id"].Value<string>(); 
+            manga.Title = token["title"].Value<string>();
+            manga.Description = token["description"].Value<string>();
+            manga.AlternativeNames = token["alias"].Children().Values<string>();
+
+            //manga.Providers = token["providers"].Children().Values<string>();
+
+            manga.Authors = token["authors"].Children().Values<string>();
+            manga.Artists = token["artists"].Children().Values<string>();
+            manga.Categories = token["categories"].Children().Values<string>();
+
+            manga.YearOfRelease = this.ParseYear(token["released"]);
+            manga.Status = this.ParseMangaStatus(token["status"].Value<int>());
+            manga.ReadingDirection = this.ParseReadingDirection(token["direction"]);
+            manga.SummaryImageUrl = new Uri(token["image"].Value<string>());
+
+            manga.LastChapter = token["chapters_len"].Value<int>();
+            manga.LastChapterDate = this.ParseDateTime(token["last_chapter_date"]);
+
+            return manga;
         }
 
         private ChapterSummary ParseChapterSummary(JToken token)
         {
             return new ChapterSummary()
                     {
-                        Id = token["id"].Value<int>(),
+                        Id = token["_id"].Value<int>(),
                         Number = token["number"].Value<int>(),
                         Title = token["title"].Value<string>()
                     };
@@ -285,6 +298,57 @@
             }
 
             return MangaStatus.Ongoing;
+        }
+
+        private ReadingDirection? ParseReadingDirection(JToken id)
+        {
+            if (id != null)
+            {
+                int? d = id.Value<int?>();
+                if (d.HasValue)
+                {
+                    switch (d.Value)
+                    {
+                        case 0:
+                            return ReadingDirection.LTR;
+
+                        case 1:
+                            return ReadingDirection.RTL;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private DateTime? ParseDateTime(JToken days)
+        {
+            if (days != null)
+            {
+                int? d = days.Value<int?>();
+                if (d.HasValue)
+                {
+                    DateTime dateTime = new DateTime();
+                    return dateTime.AddDays(d.Value);
+                }
+            }
+
+            return null;
+        }
+
+        private int? ParseYear(JToken days)
+        {
+            if (days != null)
+            {
+                int? d = days.Value<int?>();
+                if (d.HasValue)
+                {
+                    DateTime dateTime = new DateTime();
+                    return dateTime.AddDays(d.Value).Year;
+                }
+            }
+
+            return null;
         }
     }
 }

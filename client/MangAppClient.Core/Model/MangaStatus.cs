@@ -2,9 +2,9 @@
 {
     public enum MangaStatus
     {
-        Ongoing,
-        Completed,
-        Cancelled,
-        Suspended
+        Cancelled = 0,
+        Ongoing = 1,
+        Completed = 2,
+        Suspended = 3
     }
 }
