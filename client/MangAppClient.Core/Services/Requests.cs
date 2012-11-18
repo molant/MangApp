@@ -149,7 +149,7 @@
 
                 return results;
             }
-            catch (HttpRequestException)
+            catch (HttpRequestException ex)
             {
                 return Enumerable.Empty<MangaSummary>();
             }
@@ -203,8 +203,6 @@
         {
             try
             {
-                List<MangaSummary> results = new List<MangaSummary>();
-
                 HttpClient client = new HttpClient();
                 return await client.GetByteArrayAsync(string.Format(Urls.GetBackgroundImage, mangaId));
             }

@@ -17,5 +17,6 @@ using System.Collections.Generic;
         public MangaStatus Status { get; set; }
         public int LastChapter { get; set; }
         public DateTime UpdateDate { get; set; }
+        public Uri SummaryImageUrl { get; set; }
     }
 }

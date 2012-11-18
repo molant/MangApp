@@ -74,7 +74,7 @@ namespace SQLite
     /// <summary>
     /// Represents an open connection to a SQLite database.
     /// </summary>
-    public partial class SQLiteConnection : IDisposable
+    public class SQLiteConnection : IDisposable
     {
         private bool _open;
         private TimeSpan _busyTimeout;
@@ -124,9 +124,6 @@ namespace SQLite
                 throw SQLiteException.New(r, String.Format("Could not open database file: {0} ({1})", DatabasePath, r));
             }
             _open = true;
-#if NETFX_CORE
-            SQLite3.SetDirectory(/*temp directory type*/2, Windows.Storage.ApplicationData.Current.TemporaryFolder.Path);
-#endif
 
             StoreDateTimeAsTicks = storeDateTimeAsTicks;
 
@@ -172,9 +169,6 @@ namespace SQLite
                 throw SQLiteException.New(r, String.Format("Could not open database file: {0} ({1})", DatabasePath, r));
             }
             _open = true;
-#if NETFX_CORE
-            SQLite3.SetDirectory(/*temp directory type*/2, Windows.Storage.ApplicationData.Current.TemporaryFolder.Path);
-#endif
 
             StoreDateTimeAsTicks = storeDateTimeAsTicks;
 
@@ -985,66 +979,21 @@ namespace SQLite
         /// <returns>
         /// The number of rows added to the table.
         /// </returns>
-        public int InsertAll(System.Collections.IEnumerable objects)
+        public int InsertAll(System.Collections.IEnumerable objects, bool beginTransaction = true)
         {
-            var c = 0;
-            RunInTransaction(() =>
+            if (beginTransaction)
             {
-                foreach (var r in objects)
-                {
-                    c += Insert(r);
-                }
-            });
-            return c;
-        }
-
-        /// <summary>
-        /// Inserts all specified objects.
-        /// </summary>
-        /// <param name="objects">
-        /// An <see cref="IEnumerable"/> of the objects to insert.
-        /// </param>
-        /// <param name="extra">
-        /// Literal SQL code that gets placed into the command. INSERT {extra} INTO ...
-        /// </param>
-        /// <returns>
-        /// The number of rows added to the table.
-        /// </returns>
-        public int InsertAll(System.Collections.IEnumerable objects, string extra)
-        {
+                BeginTransaction();
+            }
             var c = 0;
-            RunInTransaction(() =>
+            foreach (var r in objects)
             {
-                foreach (var r in objects)
-                {
-                    c += Insert(r, extra);
-                }
-            });
-            return c;
-        }
-
-        /// <summary>
-        /// Inserts all specified objects.
-        /// </summary>
-        /// <param name="objects">
-        /// An <see cref="IEnumerable"/> of the objects to insert.
-        /// </param>
-        /// <param name="objType">
-        /// The type of object to insert.
-        /// </param>
-        /// <returns>
-        /// The number of rows added to the table.
-        /// </returns>
-        public int InsertAll(System.Collections.IEnumerable objects, Type objType)
-        {
-            var c = 0;
-            RunInTransaction(() =>
+                c += Insert(r);
+            }
+            if (beginTransaction)
             {
-                foreach (var r in objects)
-                {
-                    c += Insert(r, objType);
-                }
-            });
+                Commit();
+            }
             return c;
         }
 
@@ -1067,37 +1016,11 @@ namespace SQLite
             return Insert(obj, "", obj.GetType());
         }
 
-        /// <summary>
-        /// Inserts the given object and retrieves its
-        /// auto incremented primary key if it has one.
-        /// </summary>
-        /// <param name="obj">
-        /// The object to insert.
-        /// </param>
-        /// <param name="objType">
-        /// The type of object to insert.
-        /// </param>
-        /// <returns>
-        /// The number of rows added to the table.
-        /// </returns>
         public int Insert(object obj, Type objType)
         {
             return Insert(obj, "", objType);
         }
 
-        /// <summary>
-        /// Inserts the given object and retrieves its
-        /// auto incremented primary key if it has one.
-        /// </summary>
-        /// <param name="obj">
-        /// The object to insert.
-        /// </param>
-        /// <param name="extra">
-        /// Literal SQL code that gets placed into the command. INSERT {extra} INTO ...
-        /// </param>
-        /// <returns>
-        /// The number of rows added to the table.
-        /// </returns>
         public int Insert(object obj, string extra)
         {
             if (obj == null)
@@ -1171,20 +1094,6 @@ namespace SQLite
             return Update(obj, obj.GetType());
         }
 
-        /// <summary>
-        /// Updates all of the columns of a table using the specified object
-        /// except for its primary key.
-        /// The object is required to have a primary key.
-        /// </summary>
-        /// <param name="obj">
-        /// The object to update. It must have a primary key designated using the PrimaryKeyAttribute.
-        /// </param>
-        /// <param name="objType">
-        /// The type of object to insert.
-        /// </param>
-        /// <returns>
-        /// The number of rows updated.
-        /// </returns>
         public int Update(object obj, Type objType)
         {
             if (obj == null || objType == null)
@@ -1211,28 +1120,6 @@ namespace SQLite
             var q = string.Format("update \"{0}\" set {1} where {2} = ? ", map.TableName, string.Join(",", (from c in cols
                                                                                                             select "\"" + c.Name + "\" = ? ").ToArray()), pk.Name);
             return Execute(q, ps.ToArray());
-        }
-
-        /// <summary>
-        /// Updates all specified objects.
-        /// </summary>
-        /// <param name="objects">
-        /// An <see cref="IEnumerable"/> of the objects to insert.
-        /// </param>
-        /// <returns>
-        /// The number of rows modified.
-        /// </returns>
-        public int UpdateAll(System.Collections.IEnumerable objects)
-        {
-            var c = 0;
-            RunInTransaction(() =>
-            {
-                foreach (var r in objects)
-                {
-                    c += Update(r);
-                }
-            });
-            return c;
         }
 
         /// <summary>
@@ -1298,18 +1185,7 @@ namespace SQLite
             return Execute(query);
         }
 
-        ~SQLiteConnection()
-        {
-            Dispose(false);
-        }
-
         public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected virtual void Dispose(bool disposing)
         {
             Close();
         }
@@ -1802,7 +1678,7 @@ namespace SQLite
         }
     }
 
-    public partial class SQLiteCommand
+    public class SQLiteCommand
     {
         SQLiteConnection _conn;
         private List<Binding> _bindings;
@@ -1843,12 +1719,12 @@ namespace SQLite
             }
         }
 
-        public IEnumerable<T> ExecuteDeferredQuery<T>()
+        public IEnumerable<T> ExecuteDeferredQuery<T>() where T : new()
         {
             return ExecuteDeferredQuery<T>(_conn.GetMapping(typeof(T)));
         }
 
-        public List<T> ExecuteQuery<T>()
+        public List<T> ExecuteQuery<T>() where T : new()
         {
             return ExecuteDeferredQuery<T>(_conn.GetMapping(typeof(T))).ToList();
         }
@@ -2262,16 +2138,7 @@ namespace SQLite
         }
     }
 
-    public abstract class BaseTableQuery
-    {
-        protected class Ordering
-        {
-            public string ColumnName { get; set; }
-            public bool Ascending { get; set; }
-        }
-    }
-
-    public class TableQuery<T> : BaseTableQuery, IEnumerable<T>
+    public class TableQuery<T> : IEnumerable<T> where T : new()
     {
         public SQLiteConnection Connection { get; private set; }
 
@@ -2282,13 +2149,12 @@ namespace SQLite
         int? _limit;
         int? _offset;
 
-        BaseTableQuery _joinInner;
-        Expression _joinInnerKeySelector;
-        BaseTableQuery _joinOuter;
-        Expression _joinOuterKeySelector;
-        Expression _joinSelector;
+        class Ordering
+        {
+            public string ColumnName { get; set; }
 
-        Expression _selector;
+            public bool Ascending { get; set; }
+        }
 
         TableQuery(SQLiteConnection conn, TableMapping table)
         {
@@ -2302,9 +2168,9 @@ namespace SQLite
             Table = Connection.GetMapping(typeof(T));
         }
 
-        public TableQuery<U> Clone<U>()
+        public TableQuery<T> Clone()
         {
-            var q = new TableQuery<U>(Connection, Table);
+            var q = new TableQuery<T>(Connection, Table);
             q._where = _where;
             q._deferred = _deferred;
             if (_orderBys != null)
@@ -2313,12 +2179,6 @@ namespace SQLite
             }
             q._limit = _limit;
             q._offset = _offset;
-            q._joinInner = _joinInner;
-            q._joinInnerKeySelector = _joinInnerKeySelector;
-            q._joinOuter = _joinOuter;
-            q._joinOuterKeySelector = _joinOuterKeySelector;
-            q._joinSelector = _joinSelector;
-            q._selector = _selector;
             return q;
         }
 
@@ -2328,7 +2188,7 @@ namespace SQLite
             {
                 var lambda = (LambdaExpression)predExpr;
                 var pred = lambda.Body;
-                var q = Clone<T>();
+                var q = Clone();
                 q.AddWhere(pred);
                 return q;
             }
@@ -2340,14 +2200,14 @@ namespace SQLite
 
         public TableQuery<T> Take(int n)
         {
-            var q = Clone<T>();
+            var q = Clone();
             q._limit = n;
             return q;
         }
 
         public TableQuery<T> Skip(int n)
         {
-            var q = Clone<T>();
+            var q = Clone();
             q._offset = n;
             return q;
         }
@@ -2360,7 +2220,7 @@ namespace SQLite
         bool _deferred = false;
         public TableQuery<T> Deferred()
         {
-            var q = Clone<T>();
+            var q = Clone();
             q._deferred = true;
             return q;
         }
@@ -2383,7 +2243,7 @@ namespace SQLite
                 var mem = lambda.Body as MemberExpression;
                 if (mem != null && (mem.Expression.NodeType == ExpressionType.Parameter))
                 {
-                    var q = Clone<T>();
+                    var q = Clone();
                     if (q._orderBys == null)
                     {
                         q._orderBys = new List<Ordering>();
@@ -2422,60 +2282,41 @@ namespace SQLite
             TableQuery<TInner> inner,
             Expression<Func<T, TKey>> outerKeySelector,
             Expression<Func<TInner, TKey>> innerKeySelector,
-            Expression<Func<T, TInner, TResult>> resultSelector)
+            Expression<Func<T, TInner, TResult>> resultSelector
+        )
+            where TResult : new()
+            where TInner : new()
         {
-            var q = new TableQuery<TResult>(Connection, Connection.GetMapping(typeof(TResult)))
-            {
-                _joinOuter = this,
-                _joinOuterKeySelector = outerKeySelector,
-                _joinInner = inner,
-                _joinInnerKeySelector = innerKeySelector,
-                _joinSelector = resultSelector,
-            };
-            return q;
-        }
-
-        public TableQuery<TResult> Select<TResult>(Expression<Func<T, TResult>> selector)
-        {
-            var q = Clone<TResult>();
-            q._selector = selector;
-            return q;
+            throw new NotImplementedException();
         }
 
         private SQLiteCommand GenerateCommand(string selectionList)
         {
-            if (_joinInner != null && _joinOuter != null)
+            var cmdText = "select " + selectionList + " from \"" + Table.TableName + "\"";
+            var args = new List<object>();
+            if (_where != null)
             {
-                throw new NotSupportedException("Joins are not supported.");
+                var w = CompileExpr(_where, args);
+                cmdText += " where " + w.CommandText;
             }
-            else
+            if ((_orderBys != null) && (_orderBys.Count > 0))
             {
-                var cmdText = "select " + selectionList + " from \"" + Table.TableName + "\"";
-                var args = new List<object>();
-                if (_where != null)
-                {
-                    var w = CompileExpr(_where, args);
-                    cmdText += " where " + w.CommandText;
-                }
-                if ((_orderBys != null) && (_orderBys.Count > 0))
-                {
-                    var t = string.Join(", ", _orderBys.Select(o => "\"" + o.ColumnName + "\"" + (o.Ascending ? "" : " desc")).ToArray());
-                    cmdText += " order by " + t;
-                }
-                if (_limit.HasValue)
-                {
-                    cmdText += " limit " + _limit.Value;
-                }
-                if (_offset.HasValue)
-                {
-                    if (!_limit.HasValue)
-                    {
-                        cmdText += " limit -1 ";
-                    }
-                    cmdText += " offset " + _offset.Value;
-                }
-                return Connection.CreateCommand(cmdText, args.ToArray());
+                var t = string.Join(", ", _orderBys.Select(o => "\"" + o.ColumnName + "\"" + (o.Ascending ? "" : " desc")).ToArray());
+                cmdText += " order by " + t;
             }
+            if (_limit.HasValue)
+            {
+                cmdText += " limit " + _limit.Value;
+            }
+            if (_offset.HasValue)
+            {
+                if (!_limit.HasValue)
+                {
+                    cmdText += " limit -1 ";
+                }
+                cmdText += " offset " + _offset.Value;
+            }
+            return Connection.CreateCommand(cmdText, args.ToArray());
         }
 
         class CompileResult
@@ -2712,7 +2553,7 @@ namespace SQLite
             }
             else if (n == ExpressionType.And)
             {
-                return "&";
+                return "and";
             }
             else if (n == ExpressionType.AndAlso)
             {
@@ -2720,7 +2561,7 @@ namespace SQLite
             }
             else if (n == ExpressionType.Or)
             {
-                return "|";
+                return "or";
             }
             else if (n == ExpressionType.OrElse)
             {
@@ -2831,9 +2672,6 @@ namespace SQLite
 
         [DllImport("sqlite3", EntryPoint = "sqlite3_config", CallingConvention = CallingConvention.Cdecl)]
         public static extern Result Config(ConfigOption option);
-
-        [DllImport("sqlite3", EntryPoint = "sqlite3_win32_set_directory", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
-        public static extern int SetDirectory(uint directoryType, string directoryPath);
 
         [DllImport("sqlite3", EntryPoint = "sqlite3_busy_timeout", CallingConvention = CallingConvention.Cdecl)]
         public static extern Result BusyTimeout(IntPtr db, int milliseconds);
@@ -2976,7 +2814,7 @@ namespace SQLite
 		public static Sqlite3.Vdbe Prepare2(Sqlite3.sqlite3 db, string query)
 		{
 			Sqlite3.Vdbe stmt = new Sqlite3.Vdbe();
-			var r = Sqlite3.sqlite3_prepare_v2(db, query, System.Text.UTF8Encoding.UTF8.GetByteCount(query), ref stmt, 0);
+			var r = Sqlite3.sqlite3_prepare_v2(db, query, query.Length, ref stmt, 0);
 			if (r != 0)
 			{
 				throw SQLiteException.New((Result)r, GetErrmsg(db));

@@ -32,3 +32,6 @@ client/MangAppClient.Core/obj/Debug/MangAppClient.Core.csprojResolveAssemblyRefe
 client/MangAppClient.Core/obj/Debug/MangAppClient.Core.dll
 client/MangAppClient.Core/obj/Debug/MangAppClient.Core.pdb
 client/TestApp/obj
+client/TestApp/bin
+client/App1/bin
+client/App1/obj
