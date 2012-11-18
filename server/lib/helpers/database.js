@@ -63,23 +63,31 @@ function updateManga(manga) {
         id = manga._id;
 
     //if we are going to do an update we cannot update the ._id
-    delete manga._id;
+    //delete manga._id;
 
-    //TODO: here we should check what has changed or not and update accordingly (+ adding a timestamp or something)
-    db.mangas.update({_id:manga._id}, {$set:manga}, {upsert:true}, function (err) {
+    db.mangas.save(manga, function (err) {
         if (!err) {
-            deferred.resolve({
-                id:manga._id,
-                status:true
-            });
+            deferred.resolve(true);
         } else {
-            logger.log('Error inserting %s', manga.title);
-            deferred.resolve({
-                id:manga._id,
-                status:false
-            });
+            deferred.resolve(false);
         }
     });
+
+    //TODO: here we should check what has changed or not and update accordingly (+ adding a timestamp or something)
+    /*db.mangas.update({_id:manga._id}, {$set:manga}, {upsert:true}, function (err) {
+     if (!err) {
+     deferred.resolve({
+     id:manga._id,
+     status:true
+     });
+     } else {
+     logger.log('Error inserting %s', manga.title);
+     deferred.resolve({
+     id:manga._id,
+     status:false
+     });
+     }
+     });*/
 
     return deferred.promise;
 }
@@ -89,15 +97,24 @@ function addManga(manga, externalId, providerId) {
 
     getMangaIndex(manga, externalId, providerId)
         .then(updateManga).then(function (result) {
-            logger.log('Manga %s updated', manga.title);
+            logger.log('Manga %s %s', manga.title, result ? 'updated' : 'not updated');
             deferred.resolve(result);
         });
 
     return deferred.promise;
 }
 
-function getList(diff){
-    return db.mangas.find({});
+function getList(diff) {
+    var deferred = new Deferred();
+    db.mangas.find(function (err, docs) {
+        if (!err) {
+            deferred.resolve(docs);
+        } else {
+            deferred.reject();
+        }
+    });
+
+    return deferred.promise;
 };
 
 

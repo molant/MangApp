@@ -15,6 +15,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using MangAppClient.Views;
+using Windows.UI.Popups;
 
 namespace MangAppClient
 {
@@ -31,6 +32,12 @@ namespace MangAppClient
         {
             InitializeComponent();
             Suspending += OnSuspending;
+            DebugSettings.BindingFailed += DebugSettings_BindingFailed;
+        }
+
+        void DebugSettings_BindingFailed(object sender, BindingFailedEventArgs e)
+        {
+            new MessageDialog(e.Message).ShowAsync();
         }
 
         /// <summary>

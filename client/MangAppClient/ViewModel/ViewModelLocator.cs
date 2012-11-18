@@ -11,8 +11,8 @@
 
 using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
+using MangAppClient.Core.Services;
 using Microsoft.Practices.ServiceLocation;
-using MangAppClient.Model;
 
 namespace MangAppClient.ViewModel
 {
@@ -31,11 +31,11 @@ namespace MangAppClient.ViewModel
 
             if (ViewModelBase.IsInDesignModeStatic)
             {
-                SimpleIoc.Default.Register<IDataService, Design.DesignDataService>();
+                SimpleIoc.Default.Register<IDatabase, Design.MockDatabase>();
             }
             else
             {
-                SimpleIoc.Default.Register<IDataService, DataService>();
+                SimpleIoc.Default.Register<IDatabase, Design.MockDatabase>();
             }
 
             SimpleIoc.Default.Register<MainViewModel>();
