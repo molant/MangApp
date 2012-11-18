@@ -52,7 +52,6 @@ function updateAllMangas(mangas) {
         deferred = new Deferred();
     logger.log('MangaEden - Updating Mangas');
 
-
     function error(data) {
         logger.error('MangaEden - ' + data);
     }
@@ -144,8 +143,11 @@ function updateManga(externalId, index) {
     var uri = 'http://www.mangaeden.com/api/manga/' + externalId;
 
     return requestParser(uri, function (content, promise) {
-        var manga = JSON.parse(content),
-            chapters = manga.chapters;
+        var manga = JSON.parse(content);
+
+        //getMangaIndex then
+        //normalize manga
+        //then updateManga in db?
 
         //we clean up all the information we don't need
         normalizeManga(manga).then(function(manga){

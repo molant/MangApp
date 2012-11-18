@@ -64,6 +64,8 @@ function insertManga(manga) {
     //if we are going to do an update we cannot update the ._id
     //delete manga._id;
 
+    //TODO: insert date or version here
+
     db.mangas.save(manga, function (err) {
         if (!err) {
             deferred.resolve(true);
