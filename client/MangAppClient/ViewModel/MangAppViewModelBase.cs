@@ -10,7 +10,7 @@ namespace MangAppClient.ViewModel
 {
     public class MangAppViewModelBase : ViewModelBase
     {
-        protected void RaisePropertyChanged([CallerMemberName] string propertyName = null)
+        protected new void RaisePropertyChanged([CallerMemberName] string propertyName = null)
         {
             base.RaisePropertyChanged(propertyName);
         }
