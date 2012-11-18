@@ -19,18 +19,18 @@ namespace MangAppClient.Design
         {
             mangaList = new ObservableCollection<MangaSummary>
             {
-                new MangaSummary(0) { Name = "Manga Title 1", Author = new string[] { "Author 1"}, Genre = new string[] { "Action"} },
-                new MangaSummary(1) { Name = "Manga Title 2", Author = new string[] { "Author 2"}, Genre = new string[] { "Comedy"} },
-                new MangaSummary(2) { Name = "Manga Title 3", Author = new string[] { "Author 3"}, Genre = new string[] { "Horror"} },
-                new MangaSummary(3) { Name = "Manga Title 4", Author = new string[] { "Author 4"}, Genre = new string[] { "Mystery"} },
-                new MangaSummary(4) { Name = "Manga Title 5", Author = new string[] { "Author 5"}, Genre = new string[] { "One Shot"} },
-                new MangaSummary(5) { Name = "Manga Title 6", Author = new string[] { "Author 6"}, Genre = new string[] { "Action"} },
-                new MangaSummary(6) { Name = "Manga Title 7", Author = new string[] { "Author 7"}, Genre = new string[] { "Comedy"} },
-                new MangaSummary(7) { Name = "Manga Title 8", Author = new string[] { "Author 8"}, Genre = new string[] { "Action"} },
-                new MangaSummary(8) { Name = "Manga Title 9", Author = new string[] { "Author 9"}, Genre = new string[] { "Action"} },
-                new MangaSummary(9) { Name = "Manga Title 10", Author = new string[] { "Author 10"}, Genre = new string[] { "Horror"} },
-                new MangaSummary(10) { Name = "Manga Title 11", Author = new string[] { "Author 11"}, Genre = new string[] { "Comedy"} },
-                new MangaSummary(11) { Name = "Manga Title 12", Author = new string[] { "Author 12"}, Genre = new string[] { "Comedy"} }
+                new MangaSummary("0") { Title = "Manga Title 1", Authors = new string[] { "Author 1"}, Categories = new string[] { "Action"} },
+                new MangaSummary("1") { Title = "Manga Title 2", Authors = new string[] { "Author 2"}, Categories = new string[] { "Comedy"} },
+                new MangaSummary("2") { Title = "Manga Title 3", Authors = new string[] { "Author 3"}, Categories = new string[] { "Horror"} },
+                new MangaSummary("3") { Title = "Manga Title 4", Authors = new string[] { "Author 4"}, Categories = new string[] { "Mystery"} },
+                new MangaSummary("4") { Title = "Manga Title 5", Authors = new string[] { "Author 5"}, Categories = new string[] { "One Shot"} },
+                new MangaSummary("5") { Title = "Manga Title 6", Authors = new string[] { "Author 6"}, Categories = new string[] { "Action"} },
+                new MangaSummary("6") { Title = "Manga Title 7", Authors = new string[] { "Author 7"}, Categories = new string[] { "Comedy"} },
+                new MangaSummary("7") { Title = "Manga Title 8", Authors = new string[] { "Author 8"}, Categories = new string[] { "Action"} },
+                new MangaSummary("8") { Title = "Manga Title 9", Authors = new string[] { "Author 9"}, Categories = new string[] { "Action"} },
+                new MangaSummary("9") { Title = "Manga Title 10", Authors = new string[] { "Author 10"}, Categories = new string[] { "Horror"} },
+                new MangaSummary("10") { Title = "Manga Title 11", Authors = new string[] { "Author 11"}, Categories = new string[] { "Comedy"} },
+                new MangaSummary("11") { Title = "Manga Title 12", Authors = new string[] { "Author 12"}, Categories = new string[] { "Comedy"} }
             };
         }
 
@@ -39,12 +39,12 @@ namespace MangAppClient.Design
             throw new System.NotImplementedException();
         }
 
-        public Windows.UI.Xaml.Media.Imaging.BitmapImage GetBackgroundImage(int mangaId)
+        public Windows.UI.Xaml.Media.Imaging.BitmapImage GetBackgroundImage(string mangaId)
         {
             throw new System.NotImplementedException();
         }
 
-        public System.Threading.Tasks.Task<Windows.UI.Xaml.Media.Imaging.BitmapImage> UpdateBackgroundImage(int mangaId)
+        public System.Threading.Tasks.Task<Windows.UI.Xaml.Media.Imaging.BitmapImage> UpdateBackgroundImage(string mangaId)
         {
             throw new System.NotImplementedException();
         }

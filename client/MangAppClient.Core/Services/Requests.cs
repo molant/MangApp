@@ -7,12 +7,13 @@
     using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
+    using Windows.Data.Json;
 
     public class Requests : IRequests
     {
         internal int MangaListVersion { get; private set ; }
 
-        public async Task<Manga> GetMangaDetailAsync(int mangaId)
+        public async Task<Manga> GetMangaDetailAsync(string mangaId)
         {
             try
             {
@@ -31,7 +32,7 @@
             }
         }
 
-        public async Task<Chapter> GetChapterAsync(int mangaId, int chapterId)
+        public async Task<Chapter> GetChapterAsync(string mangaId, int chapterId)
         {
             try
             {
@@ -50,7 +51,7 @@
             }
         }
 
-        public async Task<Chapter> GetChapterFromProviderAsync(int mangaId, int chapterId, int providerId)
+        public async Task<Chapter> GetChapterFromProviderAsync(string mangaId, int chapterId, int providerId)
         {
             try
             {
@@ -90,7 +91,7 @@
             }
         }
 
-        public async Task<IEnumerable<MangaSummary>> GetRelatedMangasAsync(int mangaId)
+        public async Task<IEnumerable<MangaSummary>> GetRelatedMangasAsync(string mangaId)
         {
             try
             {
@@ -142,10 +143,10 @@
                 var response = await client.GetStringAsync(Urls.GetMangaList);
 
                 // Transform JSON into objects
-                JObject json = JObject.Parse(response);
+                JArray json = JArray.Parse(response);
 
-                this.MangaListVersion = json["version"].Value<int>();
-                results.AddRange(json["manga"].Children().Select(t => this.ParseMangaSummary(t)));
+                this.MangaListVersion = 1; // json["version"].Value<int>();
+                results.AddRange(json.Children().Select(t => this.ParseMangaSummary(t)));
 
                 return results;
             }
@@ -174,14 +175,14 @@
                 results.AddRange(groups
                     .Where(group => group.Key.Equals("delete", StringComparison.CurrentCultureIgnoreCase))
                     .SelectMany(group => group)
-                    .Select(item => new RemoveDiffResult(item["id"].Value<int>())));
+                    .Select(item => new RemoveDiffResult(item["id"].Value<string>())));
 
                 // Get the mangas that were updated
                 results.AddRange(groups
                     .Where(group => group.Key.Equals("update", StringComparison.CurrentCultureIgnoreCase))
                     .SelectMany(group => group)
                     .Select(item => new UpdateDiffResult(
-                        item["id"].Value<int>(),
+                        item["id"].Value<string>(),
                         item["chapter"].Value<int>(),
                         string.IsNullOrEmpty(item["status"].Value<string>()) ? null : (MangaStatus?)Enum.Parse(typeof(MangaStatus), item["status"].Value<string>()))));
 
@@ -199,7 +200,7 @@
             }
         }
 
-        internal async Task<byte[]> GetBackgroundImageAsync(int mangaId)
+        internal async Task<byte[]> GetBackgroundImageAsync(string mangaId)
         {
             try
             {
@@ -214,14 +215,16 @@
 
         private MangaSummary ParseMangaSummary(JToken token)
         {
-            return new MangaSummary(token["id"].Value<int>())
+            return new MangaSummary(token["_id"].Value<string>())
                     {
-                        Name = token["name"].Value<string>(),
-                        Author = token["authors"].Children().Values<string>(),
-                        Artist = token["artists"].Children().Values<string>(),
-                        Genre = token["genres"].Children().Values<string>(),
-                        LastChapter = token["chapter"].Value<int>(),
-                        Status = (MangaStatus)Enum.Parse(typeof(MangaStatus), token["status"].Value<string>())
+                        Title = token["title"].Value<string>(),
+                        Description = token["description"].Value<string>(),
+                        Authors = token["authors"].Children().Values<string>(),
+                        Artists = token["artists"].Children().Values<string>(),
+                        Categories = token["categories"].Children().Values<string>(),
+                        LastChapter = token["chapters_len"].Value<int>(),
+                        Status = this.ParseMangaStatus(token["status"].Value<int>()),
+                        SummaryImageUrl = new Uri(token["image"].Value<string>())
                     };
         }
 
@@ -229,7 +232,7 @@
         {
             return new Manga()
                     {
-                        Id = token["id"].Value<int>(),
+                        Id = token["id"].Value<string>(),
                         Name = token["name"].Value<string>(),
                         AlternativeNames = token["alternativeNames"].Children().Values<string>(),
                         Description = token["description"].Value<string>(),
@@ -266,6 +269,21 @@
                 Title = token["title"].Value<string>(),
                 Pages = token["pages"].Children().Values<string>().Select(s => new Uri(s))
             };
+        }
+
+        private MangaStatus ParseMangaStatus(int id)
+        {
+            switch (id)
+            {
+                case 0:
+                    return MangaStatus.Cancelled;
+                case 1:
+                    return MangaStatus.Ongoing;
+                case 2:
+                    return MangaStatus.Completed;
+            }
+
+            return MangaStatus.Ongoing;
         }
     }
 }

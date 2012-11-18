@@ -70,7 +70,7 @@
             return new BitmapImage(new Uri(Path.Combine(AppRootPath, "defaultMangaBackground.png")));
         }
 
-        public BitmapImage GetBackgroundImage(int mangaId)
+        public BitmapImage GetBackgroundImage(string mangaId)
         {
             DbBackgroundImage dbImage;
             using (SQLiteConnection db = new SQLiteConnection(Path.Combine(AppRootPath, "mangapp.sqlite")))
@@ -90,7 +90,7 @@
             }
         }
 
-        public async Task<BitmapImage> UpdateBackgroundImage(int mangaId)
+        public async Task<BitmapImage> UpdateBackgroundImage(string mangaId)
         {
             byte[] imageData = await new Requests().GetBackgroundImageAsync(mangaId);
 
@@ -165,7 +165,7 @@
         private class DbMangaSummary
         {
             [PrimaryKey]
-            public int Id { get; set; }
+            public string Id { get; set; }
 
             public string Name { get; set; }
 
@@ -195,10 +195,10 @@
                 return new DbMangaSummary()
                 {
                     Id = summary.Id,
-                    Name = summary.Name,
-                    Author = string.Join(Database.Separators[0], summary.Author),
-                    Artist = string.Join(Database.Separators[0], summary.Artist),
-                    Genre = string.Join(Database.Separators[0], summary.Genre),
+                    Name = summary.Title,
+                    Author = string.Join(Database.Separators[0], summary.Authors),
+                    Artist = string.Join(Database.Separators[0], summary.Artists),
+                    Genre = string.Join(Database.Separators[0], summary.Categories),
                     Status = summary.Status,
                     LastChapter = summary.LastChapter
                 };
@@ -208,10 +208,10 @@
             {
                 return new MangaSummary(dbManga.Id)
                         {
-                            Name = dbManga.Name,
-                            Author = dbManga.Author.Split(Database.Separators, StringSplitOptions.RemoveEmptyEntries),
-                            Artist = dbManga.Artist.Split(Database.Separators, StringSplitOptions.RemoveEmptyEntries),
-                            Genre = dbManga.Genre.Split(Database.Separators, StringSplitOptions.RemoveEmptyEntries),
+                            Title = dbManga.Name,
+                            Authors = dbManga.Author.Split(Database.Separators, StringSplitOptions.RemoveEmptyEntries),
+                            Artists = dbManga.Artist.Split(Database.Separators, StringSplitOptions.RemoveEmptyEntries),
+                            Categories = dbManga.Genre.Split(Database.Separators, StringSplitOptions.RemoveEmptyEntries),
                             Status = dbManga.Status,
                             LastChapter = dbManga.LastChapter
                         };
@@ -221,7 +221,7 @@
         private class DbBackgroundImage
         {
             [PrimaryKey]
-            public int Id { get; set; }
+            public string Id { get; set; }
 
             public string Path { get; set; }
         }
