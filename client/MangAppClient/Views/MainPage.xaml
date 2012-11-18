@@ -93,7 +93,7 @@
                        Style="{StaticResource PageHeaderTextStyle}" />
         </Grid>
 
-        <SemanticZoom Grid.Row="1">
+        <SemanticZoom Grid.Row="1" x:Name="semanticZoom">
             <SemanticZoom.ZoomedInView>
                 <GridView x:Name="zoomedInGridView"
                           AutomationProperties.AutomationId="Grouped Items"
@@ -140,21 +140,14 @@
                 </GridView>
             </SemanticZoom.ZoomedInView>
             <SemanticZoom.ZoomedOutView>
-                <GridView ScrollViewer.IsHorizontalScrollChainingEnabled="False">
+                <GridView x:Name="groupGridView"
+                          Margin="0,-3,0,0"
+                          Padding="116,0,40,46">
                     <GridView.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock
-                                Text="{Binding Key}"
-                                FontFamily="Segoe UI Light"
-                                FontSize="24"/>
+                            <TextBlock Text="{Binding Group.Key}" Foreground="{StaticResource ListViewItemOverlayForegroundThemeBrush}" Style="{StaticResource SubheaderTextStyle}" VerticalAlignment="Center"/>
                         </DataTemplate>
-
                     </GridView.ItemTemplate>
-                    <GridView.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <WrapGrid ItemWidth="75" ItemHeight="75" MaximumRowsOrColumns="1" VerticalChildrenAlignment="Center" />
-                        </ItemsPanelTemplate>
-                    </GridView.ItemsPanel>
                     <GridView.ItemContainerStyle>
                         <Style TargetType="GridViewItem">
                             <Setter Property="Margin" Value="4" />
@@ -165,6 +158,11 @@
                             <Setter Property="VerticalContentAlignment" Value="Center" />
                         </Style>
                     </GridView.ItemContainerStyle>
+                    <GridView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VariableSizedWrapGrid Orientation="Vertical" ItemWidth="300" />
+                        </ItemsPanelTemplate>
+                    </GridView.ItemsPanel>
                 </GridView>
             </SemanticZoom.ZoomedOutView>
         </SemanticZoom>
