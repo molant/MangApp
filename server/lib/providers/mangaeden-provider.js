@@ -114,6 +114,7 @@ function normalizeManga(manga) {
     delete manga.artist;
     manga.image = 'http://cdn.mangaeden.com/mangasimg/' + manga.image;
     manga.alias = [manga.alias];
+    manga.providers = [providerId];
     delete manga.chapters;
 
     //return deferred.promise;
