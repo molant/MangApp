@@ -100,8 +100,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Model\Chapter.cs" />
-    <Compile Include="Model\ChapterSummary.cs" />
-    <Compile Include="Model\Favorite.cs" />
     <Compile Include="Model\ReadingDirection.cs" />
     <Compile Include="Model\MangaStatus.cs" />
     <Compile Include="Model\Manga.cs" />
@@ -117,6 +115,7 @@
     <Compile Include="Services\Urls.cs" />
     <Compile Include="SQLite\SQLite.cs" />
     <Compile Include="SQLite\SQLiteAsync.cs" />
+    <Compile Include="Utilities\JsonHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">

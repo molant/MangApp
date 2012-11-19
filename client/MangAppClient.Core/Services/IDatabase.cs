@@ -14,9 +14,15 @@
 
         void UpdateMangaList();
 
-        Uri GetDefaultBackgroundImage();
+        void AddFavoriteManga(string mangaId);
+
+        void RemoveFavoriteManga(string mangaId);
+
+        void UpdateFavoriteManga(string mangaId, int lastChapterRead);
 
         string GetBackgroundImage(string mangaId);
+
+        string GetDefaultBackgroundImage();
 
         string UpdateBackgroundImage(string mangaId);
     }

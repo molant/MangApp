@@ -80,7 +80,6 @@
             {
                 db.CreateTable<DbMangaListVersion>();
                 db.CreateTable<DbMangaSummary>();
-                db.CreateTable<DbFavorite>();
 
                 db.Insert(new DbMangaListVersion(requests.MangaListVersion));
                 db.InsertAll(mangas.Select(m => DbMangaSummary.FromMangaSummary(m)));
@@ -136,13 +135,17 @@
 
         public void AddFavoriteManga(string mangaId)
         {
-            Favorite favorite = new Favorite();
-            favorite.MangaId = mangaId;
-            favorite.LastChapterRead = 0;
-
             using (SQLiteConnection db = new SQLiteConnection(Path.Combine(ApplicationData.Current.LocalFolder.Path, "mangapp.db")))
             {
-                db.Insert(favorite);
+                var manga = db.Table<DbMangaSummary>()
+                        .Where(m => m.Key == mangaId)
+                        .FirstOrDefault();
+
+                if (manga != null)
+                {
+                    manga.LastChapterRead = 0;
+                    db.Update(manga);
+                }
             }
         }
 
@@ -150,57 +153,32 @@
         {
             using (SQLiteConnection db = new SQLiteConnection(Path.Combine(ApplicationData.Current.LocalFolder.Path, "mangapp.db")))
             {
-                db.Delete<Favorite>(mangaId);
+                var manga = db.Table<DbMangaSummary>()
+                        .Where(m => m.Key == mangaId)
+                        .FirstOrDefault();
+
+                if (manga != null)
+                {
+                    manga.LastChapterRead = null;
+                    db.Update(manga);
+                }
             }
         }
 
         public void UpdateFavoriteManga(string mangaId, int lastChapterRead)
         {
-            Favorite favorite = new Favorite();
-            favorite.MangaId = mangaId;
-            favorite.LastChapterRead = lastChapterRead;
-
             using (SQLiteConnection db = new SQLiteConnection(Path.Combine(ApplicationData.Current.LocalFolder.Path, "mangapp.db")))
             {
-                db.Update(favorite);
+                var manga = db.Table<DbMangaSummary>()
+                        .Where(m => m.Key == mangaId)
+                        .FirstOrDefault();
+
+                if (manga != null)
+                {
+                    manga.LastChapterRead = lastChapterRead;
+                    db.Update(manga);
+                }
             }
-        }
-
-        public IEnumerable<MangaSummary> GetFavorites(IEnumerable<MangaSummary> mangas)
-        {
-            IEnumerable<DbFavorite> dbfavorites;
-            using (SQLiteConnection db = new SQLiteConnection(Path.Combine(ApplicationData.Current.LocalFolder.Path, "mangapp.db")))
-            {
-                dbfavorites = db.Table<DbFavorite>().ToList();
-            }
-
-            return mangas
-                .Where(s => dbfavorites.Any((f => f.MangaId == s.Id)))
-                .Join(
-                    dbfavorites,
-                    m => m.Id,
-                    fav => fav.MangaId,
-                    (m, fav) =>
-                    {
-                        m.LastChapterRead = fav.LastChapterRead;
-                        return m;
-                    })
-                .ToList();
-        }
-
-        public Uri GetDefaultBackgroundImage()
-        {
-            var folder = this.FolderExists(ApplicationData.Current.LocalFolder, BackgroundImagesFolder);
-            if (folder != null)
-            {
-                var defaultFiles = folder.GetFilesAsync().AsTask().Result
-                    .Where(f => f.Name.Contains("default"))
-                    .ToList();
-
-                return new Uri(defaultFiles[random.Next(0, defaultFiles.Count)].Path);
-            }
-
-            return new Uri(Path.Combine(BackgroundImagesFolder, "default.jpg"));
         }
 
         public string GetBackgroundImage(string mangaId)
@@ -239,6 +217,21 @@
             }
 
             return null;
+        }
+
+        public string GetDefaultBackgroundImage()
+        {
+            var folder = this.FolderExists(ApplicationData.Current.LocalFolder, BackgroundImagesFolder);
+            if (folder != null)
+            {
+                var defaultFiles = folder.GetFilesAsync().AsTask().Result
+                    .Where(f => f.Name.Contains("default"))
+                    .ToList();
+
+                return defaultFiles[random.Next(0, defaultFiles.Count)].Path;
+            }
+
+            return Path.Combine(BackgroundImagesFolder, "default.jpg");
         }
 
         public string UpdateBackgroundImage(string mangaId)
@@ -343,12 +336,13 @@
 
         private class DbMangaSummary
         {
+            [PrimaryKey]
             public string Key { get; set; }
             public string Title { get; set; }
             public string Description { get; set; }
             public string AlternativeNames { get; set; }
             public int Popularity { get; set; }
-
+            
             public string Authors { get; set; }
             public string Artists { get; set; }
             public string Categories { get; set; }
@@ -361,6 +355,7 @@
 
             public int LastChapter { get; set; }
             public DateTime? LastChapterDate { get; set; }
+            public int? LastChapterRead { get; set; }
 
             public DbMangaSummary Update(UpdateDiffResult update)
             {
@@ -394,7 +389,8 @@
                             SummaryImagePath = summary.SummaryImagePath,
 
                             LastChapter = summary.LastChapter,
-                            LastChapterDate = summary.LastChapterDate
+                            LastChapterDate = summary.LastChapterDate,
+                            LastChapterRead = summary.LastChapterRead
                         };
             }
 
@@ -418,24 +414,10 @@
                             SummaryImagePath = dbManga.SummaryImagePath,
 
                             LastChapter = dbManga.LastChapter,
-                            LastChapterDate = dbManga.LastChapterDate
+                            LastChapterDate = dbManga.LastChapterDate,
+                            LastChapterRead = dbManga.LastChapterRead
                         };
             }
-
-            public static MangaSummary ToMangaSummary(DbMangaSummary dbManga, DbFavorite favorite)
-            {
-                MangaSummary summary = DbMangaSummary.ToMangaSummary(dbManga);
-                summary.LastChapterRead = favorite.LastChapterRead;
-                return summary;
-            }
-        }
-
-        private class DbFavorite
-        {
-            [PrimaryKey]
-            public string MangaId { get; set; }
-
-            public int LastChapterRead { get; set; }
         }
     }
 }

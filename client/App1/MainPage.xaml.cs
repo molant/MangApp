@@ -66,7 +66,7 @@ namespace App1
             {
                 Requests request = new Requests();
                 var mangaDetails = request.GetMangaDetail(mangas.Skip(10).First().Id);
-                var chapter = request.GetChapter(mangaDetails.Id, mangaDetails.Chapters.First().Id);
+                var chapter = request.GetChapter(mangaDetails.Key, mangaDetails.Chapters.First().Key);
 
                 this.TitleTB.Text = chapter.Number.ToString();
                 this.DescriptionTB.Text = chapter.Title;

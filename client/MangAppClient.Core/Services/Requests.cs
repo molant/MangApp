@@ -1,6 +1,7 @@
 ﻿namespace MangAppClient.Core.Services
 {
     using MangAppClient.Core.Model;
+    using MangAppClient.Core.Utilities;
     using Newtonsoft.Json.Linq;
     using System;
     using System.Collections.Generic;
@@ -44,7 +45,7 @@
                 var response = client.GetStringAsync(string.Format(Urls.GetMangaChapter, mangaId, chapterId)).Result;
 
                 // Transform JSON into chapter
-                return this.ParseChapter(JObject.Parse(response));
+                return this.ParseChapter(mangaId, JObject.Parse(response));
             }
             catch (HttpRequestException)
             {
@@ -63,7 +64,7 @@
 
                 // Transform JSON into manga
                 JObject json = JObject.Parse(response);
-                return this.ParseChapter(json["chapter"]);
+                return this.ParseChapter(mangaId, json["chapter"]);
             }
             catch (HttpRequestException)
             {
@@ -217,6 +218,7 @@
 
             manga.LastChapter = token["chapters_len"].Value<int>();
             manga.LastChapterDate = this.ParseDateTime(token["last_chapter_date"]);
+            manga.LastChapterRead = null;
 
             return manga;
         }
@@ -226,53 +228,43 @@
         {
             Manga manga = new Manga();
 
-            manga.Id = token["_id"].Value<string>();
+            manga.Key = token["_id"].Value<string>();
             manga.Title = token["title"].Value<string>();
             manga.Description = token["description"].Value<string>();
-            manga.AlternativeNames = token["alias"].Children().Values<string>();
+            manga.AlternativeNamesDb = string.Join("#", token["alias"].Children().Values<string>());
 
             //manga.Providers = token["providers"].Children().Values<string>();
 
-            manga.Authors = token["authors"].Children().Values<string>();
-            manga.Artists = token["artists"].Children().Values<string>();
-            manga.Categories = token["categories"].Children().Values<string>();
+            manga.AuthorsDb = string.Join("#", token["authors"].Children().Values<string>());
+            manga.ArtistsDb = string.Join("#", token["artists"].Children().Values<string>());
+            manga.CategoriesDb = string.Join("#", token["categories"].Children().Values<string>());
 
             manga.YearOfRelease = this.ParseYear(token["released"]);
             manga.Status = this.ParseMangaStatus(token["status"].Value<int>());
             manga.ReadingDirection = this.ParseReadingDirection(token["direction"]);
-            manga.SummaryImageUrl = new Uri(token["image"].Value<string>());
+            manga.RemoteSummaryImageDb = token["image"].Value<string>();
 
             manga.LastChapter = token["chapters_len"].Value<int>();
             manga.LastChapterDate = this.ParseDateTime(token["last_chapter_date"]);
+            manga.LastChapterRead = null;
 
-            manga.Chapters = token["chapters"].Children().Select(c => this.ParseChapterSummary(c)).OrderBy(c => c.Number);
+            manga.Chapters = token["chapters"].Children().Select(c => this.ParseChapter(manga.Key, c)).OrderBy(c => c.Number);
             return manga;
         }
 
         // Working
-        private ChapterSummary ParseChapterSummary(JToken token)
-        {
-            ChapterSummary chapterSummary = new ChapterSummary();
-
-            chapterSummary.Id = token["_id"].Value<string>();
-            chapterSummary.Number = token["number"].Value<int>();
-            chapterSummary.Title = token["title"].Value<string>();
-            chapterSummary.UploadedDate = this.ParseDateTime(token["uploadedDate"]);
-
-            return chapterSummary;
-        }
-
-        // Working
-        private Chapter ParseChapter(JToken token)
+        private Chapter ParseChapter(string mangaKey, JToken chapterJson)
         {
             Chapter chapter = new Chapter();
 
-            chapter.Id = token["_id"].Value<string>();
-            chapter.PreviousChapterId = this.ParseString(token["previous"]);
-            chapter.NextChapterId = this.ParseString(token["next"]);
-            chapter.Number = token["number"].Value<int>();
-            chapter.Title = this.ParseString(token["title"]);
-            chapter.Pages = this.ParsePages(token["pages"].Children());
+            chapter.Key = chapterJson["_id"].Value<string>();
+            chapter.MangaKey = mangaKey;
+            chapter.ProviderKey = JsonHelper.ParseString(chapterJson["provider"]);
+            chapter.PreviousChapterId = JsonHelper.ParseString(chapterJson["previous"]);
+            chapter.NextChapterId = JsonHelper.ParseString(chapterJson["next"]);
+            chapter.Number = JsonHelper.ParseInt(chapterJson["number"]);
+            chapter.Title = JsonHelper.ParseString(chapterJson["title"]);
+            chapter.Pages = this.ParsePages(chapterJson["pages"].Children());
 
             return chapter;
         }
@@ -284,17 +276,6 @@
                 .Select(t => new { Number = t["number"].Value<int>(), Url = t["url"].Value<string>() })
                 .OrderBy(p => p.Number)
                 .Select(p => p.Url).ToList();
-        }
-
-        // Working
-        private string ParseString(JToken stringToken)
-        {
-            if (stringToken == null)
-            {
-                return null;
-            }
-
-            return stringToken.Value<string>();
         }
 
         // Working

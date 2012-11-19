@@ -28,6 +28,6 @@
 
         public int LastChapter { get; set; }
         public DateTime? LastChapterDate { get; set; }
-        public int LastChapterRead { get; set; }
+        public int? LastChapterRead { get; set; }
     }
 }
