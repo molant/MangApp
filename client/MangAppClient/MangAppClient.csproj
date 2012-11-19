@@ -114,6 +114,7 @@
     <Compile Include="Common\LayoutAwarePage.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="Common\UriToImageConverter.cs" />
+    <Compile Include="Controls\Parallax.cs" />
     <Compile Include="Design\MockService.cs" />
     <Compile Include="ViewModel\MangaDetailViewModel.cs" />
     <Compile Include="Design\MockDatabase.cs" />

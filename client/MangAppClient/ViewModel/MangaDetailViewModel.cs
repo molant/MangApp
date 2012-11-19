@@ -15,7 +15,9 @@ namespace MangAppClient.ViewModel
     {
         private Manga manga;
         private IRequests service;
+        private IDatabase dataBase;
         private ObservableCollection<ChapterSummary> chapters;
+        private BitmapImage background;
 
         public string Title
         {
@@ -64,6 +66,20 @@ namespace MangAppClient.ViewModel
             }
         }
 
+        public BitmapImage Background
+        {
+            get
+            {
+                return background;
+            }
+
+            set
+            {
+                background = value;
+                RaisePropertyChanged();
+            }
+        }
+
         public string Description 
         {
             get
@@ -77,24 +93,31 @@ namespace MangAppClient.ViewModel
             }
         }
 
-        public MangaDetailViewModel(IRequests service)
+        public MangaDetailViewModel(IRequests service, IDatabase dataBase)
         {
             this.service = service;
+            this.dataBase = dataBase;
             LoadData();
         }
 
-        private async void LoadData()
+        private void LoadData()
         {
             if (ViewModelBase.IsInDesignModeStatic)
             {
-                manga = service.GetMangaDetail("1");
+                MockData();
             }
             else
             {
-                manga = service.GetMangaDetail("1");
+                MockData();
             }
         }
 
-        
+        private void MockData()
+        {
+            manga = service.GetMangaDetail("1");
+            Background = dataBase.GetBackgroundImage("1");
+            if (Background == null)
+                Background = dataBase.GetDefaultBackgroundImage();
+        }
     }
 }

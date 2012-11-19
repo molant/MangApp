@@ -1,5 +1,6 @@
 ﻿using MangAppClient.Core.Model;
 using MangAppClient.Core.Services;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
@@ -36,12 +37,12 @@ namespace MangAppClient.Design
 
         public Windows.UI.Xaml.Media.Imaging.BitmapImage GetDefaultBackgroundImage()
         {
-            throw new System.NotImplementedException();
+            return new Windows.UI.Xaml.Media.Imaging.BitmapImage(new Uri("ms-appx:/Assets/souleater_bg.jpg"));
         }
 
         public Windows.UI.Xaml.Media.Imaging.BitmapImage GetBackgroundImage(string mangaId)
         {
-            throw new System.NotImplementedException();
+            return null;
         }
 
         public Windows.UI.Xaml.Media.Imaging.BitmapImage UpdateBackgroundImage(string mangaId)

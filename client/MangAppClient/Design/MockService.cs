@@ -25,7 +25,7 @@ namespace MangAppClient.Design
             };
 
             var chapters = new List<ChapterSummary>();
-            for (int i = 1; i <= 12; i++)
+            for (int i = 1; i <= 50; i++)
                 chapters.Add(new ChapterSummary() { Title = "Chapter" + i });
 
             manga.Chapters = chapters;
