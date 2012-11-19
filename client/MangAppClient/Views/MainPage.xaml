@@ -84,19 +84,13 @@
 
         <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="120" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <Button x:Name="backButton"
-                    Click="GoBack"
-                    IsEnabled="{Binding Frame.CanGoBack, ElementName=pageRoot}"
-                    Style="{StaticResource BackButtonStyle}" />
-
-            <TextBlock x:Name="pageTitle"
-                       Grid.Column="1"
-                       Text="MangApp"
-                       Style="{StaticResource PageHeaderTextStyle}" />
+            
+            
+            <Image Source="/Assets/Logo.png" Grid.Column="1" HorizontalAlignment="Left" Height="76"/>
         </Grid>
 
         <SemanticZoom Grid.Row="1" x:Name="semanticZoom">
