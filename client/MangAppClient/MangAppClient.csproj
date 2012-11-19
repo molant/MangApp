@@ -144,13 +144,13 @@
     <None Include="MvvmLight.Win8_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\Logo.png" />
     <Content Include="BackgroundImages\berserk_2.jpg" />
     <Content Include="BackgroundImages\bleach_2.jpg" />
     <Content Include="BackgroundImages\bleach_3.jpg" />
     <Content Include="BackgroundImages\default.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Logo.png" />
     <Content Include="Assets\SmallLogo.png" />
     <Content Include="Assets\souleater_bg.jpg" />
     <Content Include="Assets\SOUL_EATER-Portada.jpg" />

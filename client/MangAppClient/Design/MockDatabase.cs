@@ -1,4 +1,4 @@
-﻿using MangAppClient.Core.Model;
+using MangAppClient.Core.Model;
 using MangAppClient.Core.Services;
 using System;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MangAppClient.Design
 {
-    public class MockDatabase : IDatabase
+    public class MockDatabase : ILocalRequests
     {
         private IEnumerable<Manga> mangaList;
 

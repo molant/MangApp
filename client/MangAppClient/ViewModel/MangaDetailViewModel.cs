@@ -14,7 +14,7 @@ namespace MangAppClient.ViewModel
     public class MangaDetailViewModel : MangAppViewModelBase
     {
         private Manga manga;
-        private IRequests service;
+        private IWebRequests service;
         private IDatabase dataBase;
         private ObservableCollection<Chapter> chapters;
         private BitmapImage background;
@@ -104,7 +104,7 @@ namespace MangAppClient.ViewModel
             }
         }
 
-        public MangaDetailViewModel(IRequests service, IDatabase dataBase)
+        public MangaDetailViewModel(IWebRequests service)
         {
             this.service = service;
             this.dataBase = dataBase;

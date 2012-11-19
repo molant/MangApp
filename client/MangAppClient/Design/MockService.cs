@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MangAppClient.Design
 {
-    public class MockService : IRequests
+    public class MockService : IWebRequests
     {
         private Manga manga;
 
@@ -31,17 +31,18 @@ namespace MangAppClient.Design
             manga.Chapters = chapters;
         }
 
-        public Manga GetMangaDetail(Manga manga)
+        public void GetMangaChapters(Manga manga)
         {
-            return this.manga;
+            manga = this.manga;
         }
 
-        public Chapter GetChapter(Manga manga, Chapter chapter)
+
+        public void GetChapterPages(Chapter chapter)
         {
             throw new NotImplementedException();
         }
 
-        public Chapter GetChapterFromProvider(Manga manga, Chapter chapter, int providerId)
+        public void GetChapterPages(Chapter chapter, int providerKey)
         {
             throw new NotImplementedException();
         }
@@ -51,7 +52,17 @@ namespace MangAppClient.Design
             throw new NotImplementedException();
         }
 
-        public IEnumerable<int> GetFavoriteMangas(int userId)
+        public IEnumerable<int> GetFavoriteMangas(Guid userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DownloadMangaChapter(Chapter chapter)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DownloadMangaChapters(Chapter start, Chapter end)
         {
             throw new NotImplementedException();
         }
