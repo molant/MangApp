@@ -4,6 +4,8 @@ using System.Collections.ObjectModel;
 using MangAppClient.Core.Services;
 using System.Collections.Generic;
 using System.Linq;
+using Windows.UI.Xaml.Media.Imaging;
+using System;
 
 namespace MangAppClient.ViewModel
 {
@@ -39,6 +41,14 @@ namespace MangAppClient.ViewModel
 
                 mangaGroups = value;
                 RaisePropertyChanged();
+            }
+        }
+
+        public Uri BackgroundImage
+        {
+            get
+            {
+                return new Uri(this.dataBase.GetDefaultBackgroundImage());
             }
         }
 

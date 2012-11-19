@@ -1,4 +1,4 @@
-﻿using MangAppClient.Core.Model;
+using MangAppClient.Core.Model;
 using MangAppClient.Core.Services;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

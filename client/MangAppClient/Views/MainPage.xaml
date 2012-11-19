@@ -24,10 +24,15 @@
                                   ItemsPath="GroupItems" />
             <common:LastChapterConverter x:Name="lastChapterConverter"/>
             <common:LatestChapterDateConverter x:Name="latestChapterDateConverter"/>
+            <common:ToUpperConverter x:Name="toUpperConverter"/>
         </ResourceDictionary>
     </common:LayoutAwarePage.Resources>
 
-    <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
+    <Grid>
+        <Grid.Background>
+            <ImageBrush ImageSource="{Binding BackgroundImage}" Opacity="0.8" />
+            <!--<SolidColorBrush Color="#CCFFFFFF"/>-->
+        </Grid.Background>
         <Grid.RowDefinitions>
             <RowDefinition Height="140" />
             <RowDefinition Height="*" />
@@ -79,19 +84,13 @@
 
         <Grid Grid.Row="0">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="120" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <Button x:Name="backButton"
-                    Click="GoBack"
-                    IsEnabled="{Binding Frame.CanGoBack, ElementName=pageRoot}"
-                    Style="{StaticResource BackButtonStyle}" />
-
-            <TextBlock x:Name="pageTitle"
-                       Grid.Column="1"
-                       Text="MangApp"
-                       Style="{StaticResource PageHeaderTextStyle}" />
+            
+            
+            <Image Source="/Assets/Logo.png" Grid.Column="1" HorizontalAlignment="Left" Height="76"/>
         </Grid>
 
         <SemanticZoom Grid.Row="1" x:Name="semanticZoom">
@@ -106,34 +105,37 @@
                           IsItemClickEnabled="True">
                     <GridView.ItemTemplate>
                         <DataTemplate>
-                            <Grid Width="130" Height="200">
+                            <Grid Style="{StaticResource MangAppItemGridStyle}">
                                 <Border Background="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}">
-                                    <Image Stretch="UniformToFill">
+                                    <Image Stretch="UniformToFill" VerticalAlignment="Center">
                                         <Image.Source>
                                             <BitmapImage UriSource="{Binding SummaryImagePath}" />
                                         </Image.Source>
                                     </Image>
                                 </Border>
                                 <StackPanel VerticalAlignment="Bottom" Background="{StaticResource ListViewItemOverlayBackgroundThemeBrush}">
-                                    <TextBlock Text="{Binding Title}" Foreground="{StaticResource ListViewItemOverlayForegroundThemeBrush}" Style="{StaticResource TitleTextStyle}" Height="50" Margin="15,0,15,0"/>
-                                    <TextBlock Text="{Binding LastChapter, Converter={StaticResource lastChapterConverter }}" Foreground="{StaticResource ListViewItemOverlayForegroundThemeBrush}" Style="{StaticResource CaptionTextStyle}" TextWrapping="NoWrap" Margin="15,0,15,0"/>
-                                    <TextBlock Text="{Binding LastChapterDate, Converter={StaticResource latestChapterDateConverter }}" Foreground="{StaticResource ListViewItemOverlayForegroundThemeBrush}" Style="{StaticResource CaptionTextStyle}" TextWrapping="NoWrap" Margin="15,0,15,10"/>
+                                    <Grid Background="{StaticResource MangAppAccentColor}">
+                                        <TextBlock Text="{Binding Title}" Style="{StaticResource MangaBlockHighlightTextStyle}" Height="50" Margin="5,0,5,0"/>
+                                    </Grid>
+                                    <Grid Background="{StaticResource MangAppSecondaryColor}" VerticalAlignment="Center" Margin="0" Height="20">
+                                        <TextBlock Text="{Binding LastChapterInfo}" Style="{StaticResource MangaBlockSubTextStyle}" Margin="5,-8,5,0" />
+                                    </Grid>
                                 </StackPanel>
                             </Grid>
                         </DataTemplate>
                     </GridView.ItemTemplate>
                     <GridView.GroupStyle>
-                        <GroupStyle HidesIfEmpty="True">
-                            <GroupStyle.HeaderTemplate>
+                        <GroupStyle HidesIfEmpty="True" ContainerStyle="{StaticResource MangAppGroupItemStyle}">
+                                <GroupStyle.HeaderTemplate>
                                 <DataTemplate>
-                                    <Grid Margin="1,0,0,6">
-                                        <Button AutomationProperties.Name="Group Title" Content="{Binding Key}" Style="{StaticResource TextButtonStyle}"/>
+                                    <Grid Margin="15,5,15,0" Width="{Binding RelativeSource={RelativeSource Self}, Path=Parent.Width}">
+                                        <Button AutomationProperties.Name="Group Title" Content="{Binding Key, Converter={StaticResource toUpperConverter}}" Style="{StaticResource TextButtonStyle}"/>
                                     </Grid>
                                 </DataTemplate>
                             </GroupStyle.HeaderTemplate>
                             <GroupStyle.Panel>
                                 <ItemsPanelTemplate>
-                                    <VariableSizedWrapGrid Orientation="Vertical" Margin="0,0,80,0"/>
+                                    <VariableSizedWrapGrid Orientation="Vertical" Margin="15,0,15,15" />
                                 </ItemsPanelTemplate>
                             </GroupStyle.Panel>
                         </GroupStyle>
@@ -162,6 +164,7 @@
                             <Setter Property="BorderThickness" Value="1" />
                             <Setter Property="HorizontalContentAlignment" Value="Center" />
                             <Setter Property="VerticalContentAlignment" Value="Center" />
+                            <Setter Property="Background" Value="{StaticResource MangAppAccentColor}" />
                         </Style>
                     </GridView.ItemContainerStyle>
                     <GridView.ItemsPanel>
