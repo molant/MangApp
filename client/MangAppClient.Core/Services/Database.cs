@@ -77,10 +77,10 @@
             // Add mangas to the database
             using (SQLiteConnection db = new SQLiteConnection(Path.Combine(ApplicationData.Current.LocalFolder.Path, "mangapp.db")))
             {
-                db.CreateTable<DbMangaListVersion>();
+                db.CreateTable<LocalDataVersion>();
                 db.CreateTable<Manga>();
 
-                db.Insert(new DbMangaListVersion(requests.MangaListVersion));
+                db.Insert(new LocalDataVersion(requests.MangaListVersion));
                 db.InsertAll(mangas);
             }
         }
@@ -284,21 +284,6 @@
             {
                 return null;
             }
-        }
-
-        private class DbMangaListVersion
-        {
-            public DbMangaListVersion() { }
-
-            public DbMangaListVersion(int version)
-            {
-                this.Version = version;
-            }
-
-            [PrimaryKey, AutoIncrement]
-            public int Id { get; set; }
-
-            public int Version { get; set; }
         }
     }
 }
