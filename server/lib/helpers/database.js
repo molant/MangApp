@@ -24,6 +24,7 @@ function clean() {
         db.mangas.remove({});
         db.chapters.remove({});
         db.mangaMap.remove({});
+        db.updates.remove({});
         return true;
     } catch (exc) {
         return false;
