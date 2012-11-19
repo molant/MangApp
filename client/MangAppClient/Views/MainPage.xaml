@@ -102,7 +102,8 @@
                           Margin="0,-3,0,0"
                           Padding="116,0,40,46"
                           SelectionMode="None"
-                          IsItemClickEnabled="True">
+                          IsItemClickEnabled="True"
+                          ItemClick="zoomedInGridView_ItemClick">
                     <GridView.ItemTemplate>
                         <DataTemplate>
                             <Grid Style="{StaticResource MangAppItemGridStyle}">

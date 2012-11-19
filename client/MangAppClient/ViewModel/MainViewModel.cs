@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Windows.UI.Xaml.Media.Imaging;
 using System;
+using GalaSoft.MvvmLight.Command;
+using MangAppClient.Views;
 
 namespace MangAppClient.ViewModel
 {
@@ -18,7 +20,7 @@ namespace MangAppClient.ViewModel
     public class MainViewModel : MangAppViewModelBase
     {
         private readonly IDatabase dataBase;
-
+        private object gridViewSelectedItem = null;
         private ObservableCollection<MangaGroupViewModel> mangaGroups;
 
         /// <summary>
@@ -59,7 +61,7 @@ namespace MangAppClient.ViewModel
         {
             this.dataBase = dataBase;
             this.mangaGroups = new ObservableCollection<MangaGroupViewModel>();
-            this.dataBase.CreateInitialDb();
+            //this.dataBase.CreateInitialDb();
             LoadMangaList();
         }
 
