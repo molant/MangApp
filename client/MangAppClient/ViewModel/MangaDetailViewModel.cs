@@ -14,7 +14,7 @@ namespace MangAppClient.ViewModel
     public class MangaDetailViewModel : MangAppViewModelBase
     {
         private Manga manga;
-        private IRequests service;
+        private IWebRequests service;
         private ObservableCollection<Chapter> chapters;
 
         public string Title
@@ -71,7 +71,7 @@ namespace MangAppClient.ViewModel
             }
         }
 
-        public MangaDetailViewModel(IRequests service)
+        public MangaDetailViewModel(IWebRequests service)
         {
             this.service = service;
             LoadData();
@@ -81,11 +81,11 @@ namespace MangAppClient.ViewModel
         {
             if (ViewModelBase.IsInDesignModeStatic)
             {
-                manga = service.GetMangaDetail(null);
+                service.GetMangaChapters(manga);
             }
             else
             {
-                manga = service.GetMangaDetail(null);
+                service.GetMangaChapters(manga);
             }
         }
     }

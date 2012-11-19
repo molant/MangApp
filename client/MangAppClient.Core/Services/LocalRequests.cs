@@ -13,13 +13,15 @@
     using Windows.Storage.Search;
     using Windows.UI.Xaml.Media.Imaging;
 
-    public class Database : IDatabase
+    public class LocalRequests : ILocalRequests
     {
         private static readonly string[] Separators = { "#" };
 
-        private static readonly string SummaryImagesFolder = "SummaryImages";
+        private static readonly string SummaryImagesFolderPath = "SummaryImages";
 
-        private static readonly string BackgroundImagesFolder = "BackgroundImages";
+        private static readonly string BackgroundImagesFolderPath = "BackgroundImages";
+
+        private static readonly string DownloadsFolderPath = "Downloads";
 
         private static Random random = new Random();
 
@@ -33,37 +35,44 @@
                 dbFile.DeleteAsync().AsTask().Wait();
             }
 
-            var summaryFolder = this.FolderExists(ApplicationData.Current.LocalFolder, SummaryImagesFolder);
+            var summaryFolder = this.FolderExists(ApplicationData.Current.LocalFolder, SummaryImagesFolderPath);
             if (summaryFolder != null)
             {
                 summaryFolder.DeleteAsync().AsTask().Wait();
             }
 
-            var backgroundFolder = this.FolderExists(ApplicationData.Current.LocalFolder, BackgroundImagesFolder);
+            var backgroundFolder = this.FolderExists(ApplicationData.Current.LocalFolder, BackgroundImagesFolderPath);
             if (backgroundFolder != null)
             {
                 backgroundFolder.DeleteAsync().AsTask().Wait();
             }
 
-            summaryFolder = ApplicationData.Current.LocalFolder.CreateFolderAsync(SummaryImagesFolder, CreationCollisionOption.ReplaceExisting).AsTask().Result;
-            backgroundFolder = ApplicationData.Current.LocalFolder.CreateFolderAsync(BackgroundImagesFolder, CreationCollisionOption.ReplaceExisting).AsTask().Result;
+            var downloadsFolder = this.FolderExists(ApplicationData.Current.LocalFolder, DownloadsFolderPath);
+            if (downloadsFolder != null)
+            {
+                downloadsFolder.DeleteAsync().AsTask().Wait();
+            }
+
+            summaryFolder = ApplicationData.Current.LocalFolder.CreateFolderAsync(SummaryImagesFolderPath, CreationCollisionOption.ReplaceExisting).AsTask().Result;
+            backgroundFolder = ApplicationData.Current.LocalFolder.CreateFolderAsync(BackgroundImagesFolderPath, CreationCollisionOption.ReplaceExisting).AsTask().Result;
+            downloadsFolder = ApplicationData.Current.LocalFolder.CreateFolderAsync(DownloadsFolderPath, CreationCollisionOption.ReplaceExisting).AsTask().Result;
 
             // Copy the background images from the installed folder to the app folder
-            var backgroundInstallFolder = Package.Current.InstalledLocation.GetFolderAsync(BackgroundImagesFolder).AsTask().Result;
+            var backgroundInstallFolder = Package.Current.InstalledLocation.GetFolderAsync(BackgroundImagesFolderPath).AsTask().Result;
             foreach (var file in backgroundInstallFolder.GetFilesAsync().AsTask().Result)
             {
                 var copiedFile = file.CopyAsync(backgroundFolder, file.Name, NameCollisionOption.ReplaceExisting).AsTask().Result;
             }
 
             // Copy the summary images from the installed folder to the app folder
-            var summaryInstallFolder = Package.Current.InstalledLocation.GetFolderAsync(SummaryImagesFolder).AsTask().Result;
+            var summaryInstallFolder = Package.Current.InstalledLocation.GetFolderAsync(SummaryImagesFolderPath).AsTask().Result;
             foreach (var file in summaryInstallFolder.GetFilesAsync().AsTask().Result)
             {
                 var copiedFile = file.CopyAsync(summaryFolder, file.Name, NameCollisionOption.ReplaceExisting).AsTask().Result;
             }
 
             // Populate the manga list from the server information
-            Requests requests = new Requests();
+            WebRequests requests = new WebRequests();
             IEnumerable<Manga> mangas = requests.GetMangaList();
 
             // Get additional summary and background images from the server
@@ -160,7 +169,7 @@
 
         public string GetBackgroundImage(Manga manga)
         {
-            var folder = this.FolderExists(ApplicationData.Current.LocalFolder, BackgroundImagesFolder);
+            var folder = this.FolderExists(ApplicationData.Current.LocalFolder, BackgroundImagesFolderPath);
             if (folder != null)
             {
                 // Let's search first by manga key
@@ -189,7 +198,7 @@
 
         public string GetDefaultBackgroundImage()
         {
-            var folder = this.FolderExists(ApplicationData.Current.LocalFolder, BackgroundImagesFolder);
+            var folder = this.FolderExists(ApplicationData.Current.LocalFolder, BackgroundImagesFolderPath);
             if (folder != null)
             {
                 var defaultFiles = folder.GetFilesAsync().AsTask().Result
@@ -199,17 +208,17 @@
                 return defaultFiles[random.Next(0, defaultFiles.Count)].Path;
             }
 
-            return Path.Combine(BackgroundImagesFolder, "default.jpg");
+            return Path.Combine(BackgroundImagesFolderPath, "default.jpg");
         }
 
         public string UpdateBackgroundImage(Manga manga)
         {
-            byte[] imageData = new Requests().GetBackgroundImage(manga.Key);
+            byte[] imageData = new WebRequests().GetBackgroundImage(manga.Key);
 
             if (imageData != null && imageData.Length > 0)
             {
                 string fileName = manga.Key + ".jpg";
-                var file = ApplicationData.Current.LocalFolder.CreateFileAsync(Path.Combine(BackgroundImagesFolder, fileName), Windows.Storage.CreationCollisionOption.ReplaceExisting).AsTask().Result;
+                var file = ApplicationData.Current.LocalFolder.CreateFileAsync(Path.Combine(BackgroundImagesFolderPath, fileName), Windows.Storage.CreationCollisionOption.ReplaceExisting).AsTask().Result;
 
                 using (var stream = file.OpenStreamForWriteAsync().Result)
                 {
@@ -231,20 +240,20 @@
                 if (imageData != null && imageData.Length > 0)
                 {
                     string fileName = manga.Key + Path.GetExtension(manga.RemoteSummaryImageDb);
-                    var file = ApplicationData.Current.LocalFolder.CreateFileAsync(Path.Combine(SummaryImagesFolder, fileName), CreationCollisionOption.ReplaceExisting).AsTask().Result;
+                    var file = ApplicationData.Current.LocalFolder.CreateFileAsync(Path.Combine(SummaryImagesFolderPath, fileName), CreationCollisionOption.ReplaceExisting).AsTask().Result;
 
                     using (var stream = file.OpenStreamForWriteAsync().Result)
                     {
                         stream.Write(imageData, 0, imageData.Length);
                     }
 
-                    manga.LocalSummaryImage = Path.Combine(SummaryImagesFolder, manga.Key + Path.GetExtension(manga.RemoteSummaryImageDb));
+                    manga.LocalSummaryImage = Path.Combine(SummaryImagesFolderPath, manga.Key + Path.GetExtension(manga.RemoteSummaryImageDb));
                 }
             }
             catch (Exception)
             {
                 // No image in the server, let's use a random default one
-                var folder = this.FolderExists(ApplicationData.Current.LocalFolder, SummaryImagesFolder);
+                var folder = this.FolderExists(ApplicationData.Current.LocalFolder, SummaryImagesFolderPath);
                 if (folder != null)
                 {
                     var defaultFiles = folder.GetFilesAsync().AsTask().Result
