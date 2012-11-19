@@ -20,7 +20,7 @@
                 return this.AlternativeNamesDb.Split(Separators, StringSplitOptions.RemoveEmptyEntries);
             }
         }
-        public int Popularity { get; set; }
+        public int? Popularity { get; set; }
 
         [Ignore]
         public IEnumerable<string> Providers
@@ -57,7 +57,7 @@
         }
 
         public int? YearOfRelease { get; set; }
-        public MangaStatus Status { get; set; }
+        public MangaStatus? Status { get; set; }
         public ReadingDirection? ReadingDirection { get; set; }
 
         [Ignore]
@@ -70,7 +70,7 @@
         }
         public string LocalSummaryImage { get; set; }
 
-        public int LastChapter { get; set; }
+        public int? LastChapter { get; set; }
         public DateTime? LastChapterDate { get; set; }
         public int? LastChapterRead { get; set; }
 

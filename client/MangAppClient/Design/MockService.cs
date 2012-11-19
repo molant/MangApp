@@ -31,22 +31,22 @@ namespace MangAppClient.Design
             manga.Chapters = chapters;
         }
 
-        public Manga GetMangaDetail(string mangaId)
+        public Manga GetMangaDetail(Manga manga)
         {
-            return manga;
+            return this.manga;
         }
 
-        public Chapter GetChapter(string mangaId, string chapterId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Chapter GetChapterFromProvider(string mangaId, string chapterId, int providerId)
+        public Chapter GetChapter(Manga manga, Chapter chapter)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<MangaSummary> GetRelatedMangas(string mangaId)
+        public Chapter GetChapterFromProvider(Manga manga, Chapter chapter, int providerId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<Manga> GetRelatedMangas(Manga manga)
         {
             throw new NotImplementedException();
         }

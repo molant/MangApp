@@ -15,18 +15,15 @@
         internal int MangaListVersion { get; private set; }
 
         // Working
-        public Manga GetMangaDetail(string mangaId)
+        public Manga GetMangaDetail(Manga manga)
         {
             try
             {
-                List<MangaSummary> results = new List<MangaSummary>();
-
                 HttpClient client = new HttpClient();
-                var response = client.GetStringAsync(string.Format(Urls.GetMangaDetail, mangaId)).Result;
+                var response = client.GetStringAsync(string.Format(Urls.GetMangaDetail, manga.Key)).Result;
 
                 // Transform JSON into manga
-                JObject json = JObject.Parse(response);
-                return this.ParseManga(json);
+                return this.ParseManga(JObject.Parse(response));
             }
             catch (Exception)
             {
@@ -35,17 +32,15 @@
         }
 
         // Working
-        public Chapter GetChapter(string mangaId, string chapterId)
+        public Chapter GetChapter(Manga manga, Chapter chapter)
         {
             try
             {
-                List<MangaSummary> results = new List<MangaSummary>();
-
                 HttpClient client = new HttpClient();
-                var response = client.GetStringAsync(string.Format(Urls.GetMangaChapter, mangaId, chapterId)).Result;
+                var response = client.GetStringAsync(string.Format(Urls.GetMangaChapter, manga.Key, chapter.Key)).Result;
 
                 // Transform JSON into chapter
-                return this.ParseChapter(mangaId, JObject.Parse(response));
+                return this.ParseChapter(manga.Key, JObject.Parse(response));
             }
             catch (HttpRequestException)
             {
@@ -53,18 +48,16 @@
             }
         }
 
-        public Chapter GetChapterFromProvider(string mangaId, string chapterId, int providerId)
+        public Chapter GetChapterFromProvider(Manga manga, Chapter chapter, int providerKey)
         {
             try
             {
-                List<MangaSummary> results = new List<MangaSummary>();
-
                 HttpClient client = new HttpClient();
-                var response = client.GetStringAsync(string.Format(Urls.GetMangaChapterFromProvider, mangaId, chapterId, providerId)).Result;
+                var response = client.GetStringAsync(string.Format(Urls.GetMangaChapterFromProvider, manga.Key, chapter.Key, providerKey)).Result;
 
                 // Transform JSON into manga
                 JObject json = JObject.Parse(response);
-                return this.ParseChapter(mangaId, json["chapter"]);
+                return this.ParseChapter(manga.Key, json["chapter"]);
             }
             catch (HttpRequestException)
             {
@@ -72,24 +65,23 @@
             }
         }
 
-        public IEnumerable<MangaSummary> GetRelatedMangas(string mangaId)
+        public IEnumerable<Manga> GetRelatedMangas(Manga manga)
         {
             try
             {
-                List<MangaSummary> results = new List<MangaSummary>();
+                List<Manga> results = new List<Manga>();
 
                 HttpClient client = new HttpClient();
-                var response = client.GetStringAsync(string.Format(Urls.GetRelatedMangas, mangaId)).Result;
+                var response = client.GetStringAsync(string.Format(Urls.GetRelatedMangas, manga.Key)).Result;
 
                 // Transform JSON into objects
-                JObject json = JObject.Parse(response);
-                results.AddRange(json["manga"].Children().Select(t => this.ParseMangaSummary(t)));
+                results.AddRange(JObject.Parse(response).Children().Select(t => this.ParseManga(t)));
 
                 return results;
             }
             catch (HttpRequestException)
             {
-                return Enumerable.Empty<MangaSummary>();
+                return Enumerable.Empty<Manga>();
             }
         }
 
@@ -115,11 +107,11 @@
         }
 
         // Working
-        internal IEnumerable<MangaSummary> GetMangaList()
+        internal IEnumerable<Manga> GetMangaList()
         {
             try
             {
-                List<MangaSummary> results = new List<MangaSummary>();
+                List<Manga> results = new List<Manga>();
 
                 HttpClient client = new HttpClient();
                 var response = client.GetStringAsync(Urls.GetMangaList).Result;
@@ -128,13 +120,13 @@
                 JArray json = JArray.Parse(response);
 
                 this.MangaListVersion = 1; // json["version"].Value<int>();
-                results.AddRange(json.Children().Select(t => this.ParseMangaSummary(t)));
+                results.AddRange(json.Children().Select(t => this.ParseManga(t)));
 
-                return results;
+                return results.OrderByDescending(m => m.Popularity);
             }
             catch (HttpRequestException)
             {
-                return Enumerable.Empty<MangaSummary>();
+                return Enumerable.Empty<Manga>();
             }
         }
 
@@ -144,35 +136,35 @@
             {
                 List<DiffResult> results = new List<DiffResult>();
 
-                HttpClient client = new HttpClient();
-                var response = client.GetStringAsync(string.Format(Urls.GetMangaDiff, localListVersion)).Result;
+                //HttpClient client = new HttpClient();
+                //var response = client.GetStringAsync(string.Format(Urls.GetMangaDiff, localListVersion)).Result;
 
-                // Transform JSON into object
-                JObject json = JObject.Parse(response);
+                //// Transform JSON into object
+                //JObject json = JObject.Parse(response);
 
-                this.MangaListVersion = json["version"].Value<int>();
-                var groups = json["manga"].Children().GroupBy(t => t["operation"].Value<string>());
+                //this.MangaListVersion = json["version"].Value<int>();
+                //var groups = json["manga"].Children().GroupBy(t => t["operation"].Value<string>());
 
-                // Get the mangas that were deleted
-                results.AddRange(groups
-                    .Where(group => group.Key.Equals("delete", StringComparison.CurrentCultureIgnoreCase))
-                    .SelectMany(group => group)
-                    .Select(item => new RemoveDiffResult(item["id"].Value<string>())));
+                //// Get the mangas that were deleted
+                //results.AddRange(groups
+                //    .Where(group => group.Key.Equals("delete", StringComparison.CurrentCultureIgnoreCase))
+                //    .SelectMany(group => group)
+                //    .Select(item => new RemoveDiffResult(item["id"].Value<string>())));
 
-                // Get the mangas that were updated
-                results.AddRange(groups
-                    .Where(group => group.Key.Equals("update", StringComparison.CurrentCultureIgnoreCase))
-                    .SelectMany(group => group)
-                    .Select(item => new UpdateDiffResult(
-                        item["id"].Value<string>(),
-                        item["chapter"].Value<int>(),
-                        string.IsNullOrEmpty(item["status"].Value<string>()) ? null : (MangaStatus?)Enum.Parse(typeof(MangaStatus), item["status"].Value<string>()))));
+                //// Get the mangas that were updated
+                //results.AddRange(groups
+                //    .Where(group => group.Key.Equals("update", StringComparison.CurrentCultureIgnoreCase))
+                //    .SelectMany(group => group)
+                //    .Select(item => new UpdateDiffResult(
+                //        item["id"].Value<string>(),
+                //        item["chapter"].Value<int>(),
+                //        string.IsNullOrEmpty(item["status"].Value<string>()) ? null : (MangaStatus?)Enum.Parse(typeof(MangaStatus), item["status"].Value<string>()))));
 
-                // Get the mangas that were added
-                results.AddRange(groups
-                    .Where(group => group.Key.Equals("add", StringComparison.CurrentCultureIgnoreCase))
-                    .SelectMany(group => group)
-                    .Select(item => this.ParseMangaSummary(item)));
+                //// Get the mangas that were added
+                //results.AddRange(groups
+                //    .Where(group => group.Key.Equals("add", StringComparison.CurrentCultureIgnoreCase))
+                //    .SelectMany(group => group)
+                //    .Select(item => this.ParseManga(item)));
 
                 return results;
             }
@@ -198,32 +190,6 @@
         }
 
         // Working
-        private MangaSummary ParseMangaSummary(JToken token)
-        {
-            MangaSummary manga = new MangaSummary(token["_id"].Value<string>());
-
-            manga.Title = token["title"].Value<string>();
-            manga.Description = token["description"].Value<string>();
-            manga.AlternativeNames = token["alias"].Children().Values<string>();
-            manga.Popularity = token["hits"].Value<int>();
-
-            manga.Authors = token["authors"].Children().Values<string>();
-            manga.Artists = token["artists"].Children().Values<string>();
-            manga.Categories = token["categories"].Children().Values<string>();
-
-            manga.YearOfRelease = this.ParseYear(token["released"]);
-            manga.Status = this.ParseMangaStatus(token["status"].Value<int>());
-            manga.ReadingDirection = this.ParseReadingDirection(token["direction"]);
-            manga.SummaryImageUrl = token["image"].Value<string>();
-
-            manga.LastChapter = token["chapters_len"].Value<int>();
-            manga.LastChapterDate = this.ParseDateTime(token["last_chapter_date"]);
-            manga.LastChapterRead = null;
-
-            return manga;
-        }
-
-        // Working
         private Manga ParseManga(JToken token)
         {
             Manga manga = new Manga();
@@ -232,20 +198,23 @@
             manga.Title = token["title"].Value<string>();
             manga.Description = token["description"].Value<string>();
             manga.AlternativeNamesDb = string.Join("#", token["alias"].Children().Values<string>());
+            manga.Popularity = JsonHelper.ParseInt(token["hits"]);
 
-            //manga.Providers = token["providers"].Children().Values<string>();
+            manga.ProvidersDb = string.Join("#", token["providers"].Children().Values<string>());
 
             manga.AuthorsDb = string.Join("#", token["authors"].Children().Values<string>());
             manga.ArtistsDb = string.Join("#", token["artists"].Children().Values<string>());
             manga.CategoriesDb = string.Join("#", token["categories"].Children().Values<string>());
 
-            manga.YearOfRelease = this.ParseYear(token["released"]);
-            manga.Status = this.ParseMangaStatus(token["status"].Value<int>());
-            manga.ReadingDirection = this.ParseReadingDirection(token["direction"]);
-            manga.RemoteSummaryImageDb = token["image"].Value<string>();
+            manga.YearOfRelease = this.ParseYear(JsonHelper.ParseInt(token["released"]));
+            manga.Status = this.ParseMangaStatus(JsonHelper.ParseInt(token["status"]));
+            manga.ReadingDirection = this.ParseReadingDirection(JsonHelper.ParseInt(token["direction"]));
 
-            manga.LastChapter = token["chapters_len"].Value<int>();
-            manga.LastChapterDate = this.ParseDateTime(token["last_chapter_date"]);
+            manga.RemoteSummaryImageDb = token["image"].Value<string>();
+            manga.LocalSummaryImage = null;
+
+            manga.LastChapter = JsonHelper.ParseInt(token["chapters_len"]);
+            manga.LastChapterDate = this.ParseDateTime(JsonHelper.ParseInt(token["last_chapter_date"]));
             manga.LastChapterRead = null;
 
             manga.Chapters = token["chapters"].Children().Select(c => this.ParseChapter(manga.Key, c)).OrderBy(c => c.Number);
@@ -279,37 +248,18 @@
         }
 
         // Working
-        private MangaStatus ParseMangaStatus(int id)
+        private MangaStatus? ParseMangaStatus(int? id)
         {
-            switch (id)
+            if (id.HasValue)
             {
-                case 0:
-                    return MangaStatus.Cancelled;
-                case 1:
-                    return MangaStatus.Ongoing;
-                case 2:
-                    return MangaStatus.Completed;
-            }
-
-            return MangaStatus.Ongoing;
-        }
-
-        // Working
-        private ReadingDirection? ParseReadingDirection(JToken id)
-        {
-            if (id != null)
-            {
-                int? d = id.Value<int?>();
-                if (d.HasValue)
+                switch (id)
                 {
-                    switch (d.Value)
-                    {
-                        case 0:
-                            return ReadingDirection.LTR;
-
-                        case 1:
-                            return ReadingDirection.RTL;
-                    }
+                    case 0:
+                        return MangaStatus.Cancelled;
+                    case 1:
+                        return MangaStatus.Ongoing;
+                    case 2:
+                        return MangaStatus.Completed;
                 }
             }
 
@@ -317,15 +267,16 @@
         }
 
         // Working
-        private DateTime? ParseDateTime(JToken days)
+        private ReadingDirection? ParseReadingDirection(int? id)
         {
-            if (days != null)
+            if (id.HasValue)
             {
-                int? d = days.Value<int?>();
-                if (d.HasValue)
+                switch (id.Value)
                 {
-                    DateTime dateTime = new DateTime();
-                    return dateTime.AddDays(d.Value);
+                    case 0:
+                        return ReadingDirection.LTR;
+                    case 1:
+                        return ReadingDirection.RTL;
                 }
             }
 
@@ -333,16 +284,24 @@
         }
 
         // Working
-        private int? ParseYear(JToken days)
+        private DateTime? ParseDateTime(int? days)
         {
-            if (days != null)
+            if (days.HasValue)
             {
-                int? d = days.Value<int?>();
-                if (d.HasValue)
-                {
-                    DateTime dateTime = new DateTime();
-                    return dateTime.AddDays(d.Value).Year;
-                }
+                DateTime dateTime = new DateTime();
+                return dateTime.AddDays(days.Value);
+            }
+
+            return null;
+        }
+
+        // Working
+        private int? ParseYear(int? days)
+        {
+            if (days.HasValue)
+            {
+                DateTime dateTime = new DateTime();
+                return dateTime.AddDays(days.Value).Year;
             }
 
             return null;
