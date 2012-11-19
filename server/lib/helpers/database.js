@@ -147,7 +147,6 @@ function updateManga(manga) {
         };
 
         if (result.status || result.chapters) {
-            //TODO: version should have a new value and not be incremented
             db.mangas.update({_id:manga._id}, {$set:{
                 status:manga.status,
                 chapters_len:manga.chapters_len,
@@ -169,10 +168,35 @@ function updateManga(manga) {
 }
 
 function getList(diff) {
-    var deferred = new Deferred();
-    db.mangas.find(function (err, docs) {
+    var deferred = new Deferred(),
+        search = {},
+        fields = {
+            status:1,
+            description:1,
+            image:1,
+            released:1,
+            categories:1,
+            hits:1,
+            last_chapter_date:1,
+            chapters_len:1,
+            created:1,
+            alias:1,
+            title:1,
+            authors:1,
+            artists:1,
+            providers:1
+        };
+
+    if (diff) {
+        search = {'version':{$gt:diff}};
+    }
+
+    db.mangas.find(search, fields, function (err, docs) {
         if (!err) {
-            deferred.resolve(docs);
+            deferred.resolve({
+                mangas:docs,
+                version:latestVersion
+            });
         } else {
             deferred.reject();
         }
@@ -219,31 +243,24 @@ function getChapter(chapterId) {
     return deferred.promise;
 }
 
-function addChapters(chapters) {
+function startUpdate() {
     var deferred = new Deferred();
-    //TODO: insert the chapters!!
-    deferred.resolve();
-    return deferred.promise;
-}
-
-function startUpdate(){
-    var deferred = new Deferred();
-    db.updates.find({}).sort({version:1}).limit(1,function(err,docs){
-        if(!err){
-           if(docs.length > 0){
-               latestVersion = docs[0].version++;
-           }
+    db.updates.find({}).sort({version:1}).limit(1, function (err, docs) {
+        if (!err) {
+            if (docs.length > 0) {
+                latestVersion = docs[0].version++;
+            }
             //UTC timestamp calculated using this link:
             //http://stackoverflow.com/questions/9756120/utc-timestamp-in-javascript
 
-           db.updates.save({version:latestVersion, timestamp: Math.floor((new Date()).getTime() / 1000)},function(err){
-              if(!err){
-                  deferred.resolve();
-              }else{
-                  deferred.reject();
-              }
-           });
-       }else{
+            db.updates.save({version:latestVersion, timestamp:Math.floor((new Date()).getTime() / 1000)}, function (err) {
+                if (!err) {
+                    deferred.resolve();
+                } else {
+                    deferred.reject();
+                }
+            });
+        } else {
             deferred.reject();
         }
     });
@@ -259,5 +276,6 @@ module.exports.getChapters = getChapters;
 module.exports.getChapter = getChapter;
 module.exports.addChapters = insertChapters;
 module.exports.startUpdate = startUpdate;
+module.exports.latestVersion = latestVersion;
 //TODO: add methods to update individual items and to check if they already exist?
 
