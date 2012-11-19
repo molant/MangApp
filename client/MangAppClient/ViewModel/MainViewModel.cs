@@ -49,6 +49,7 @@ namespace MangAppClient.ViewModel
         {
             this.dataBase = dataBase;
             this.mangaGroups = new ObservableCollection<MangaGroupViewModel>();
+            //this.dataBase.CreateInitialDb();
             LoadMangaList();
         }
 
@@ -62,10 +63,11 @@ namespace MangAppClient.ViewModel
             }
             else
             {
-                summaries = this.dataBase.GetMangaList();
+                summaries = this.dataBase.GetMangaList().OrderBy(s => s.Popularity);
             }
 
             var genreList = summaries.SelectMany(s => s.Categories).Distinct();
+            var mangaGroupList = new List<MangaGroupViewModel>();
 
             foreach (var genre in genreList)
             {
@@ -75,13 +77,30 @@ namespace MangAppClient.ViewModel
                 };
 
                 group.GroupItems = new ObservableCollection<MangaSummaryViewModel>();
-                foreach(var manga in summaries.Where(s => s.Categories.Contains(genre)).Take(20))
+                foreach(var manga in summaries.Where(s => s.Categories.Contains(genre)).Take(6))
                 {
                     group.GroupItems.Add(new MangaSummaryViewModel(manga));
                 }
 
-                mangaGroups.Add(group);
-            }           
+                mangaGroupList.Add(group);
+            }
+
+            var latestGroup = new MangaGroupViewModel
+            {
+                Key = "Latest",
+                GroupItems = summaries.OrderByDescending(s => s.LastChapterDate).Take(10).Select(s => { return new MangaSummaryViewModel(s); }).ToObservableCollection()
+            };
+            MangaGroups.Add(latestGroup);
+
+            var popularGroup = new MangaGroupViewModel
+            {
+                Key = "Popular",
+                GroupItems = summaries.Take(6).Select(s => { return new MangaSummaryViewModel(s); }).ToObservableCollection()
+            };
+            MangaGroups.Add(popularGroup);
+
+            mangaGroupList.Sort();
+            MangaGroups = MangaGroups.Concat(mangaGroupList).ToObservableCollection();
         }
 
         ////public override void Cleanup()

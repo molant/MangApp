@@ -1,15 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace MangAppClient.Core.Model
+﻿namespace MangAppClient.Core.Model
 {
+    using SQLite;
+    using System;
+    using System.Collections.Generic;
+
     public class Chapter
     {
-        public string Id { get; set; }
+        [PrimaryKey]
+        public string Key { get; set; }
+        public string MangaKey { get; set; }
+        public string ProviderKey { get; set; }
         public string PreviousChapterId { get; set; }
         public string NextChapterId { get; set; }
-        public int Number { get; set; }
+        public int? Number { get; set; }
         public string Title { get; set; }
-        public IEnumerable<Uri> Pages { get; set; }
+        [Ignore]
+        public List<string> Pages { get; set; }
     }
 }

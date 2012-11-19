@@ -46,6 +46,7 @@ namespace App1
         {
             Database database = new Database();
             var mangas = database.GetMangaList();
+            
             if (mangas.Count() > 0)
             {
                 Requests request = new Requests();
@@ -53,6 +54,22 @@ namespace App1
 
                 this.TitleTB.Text = mangaDetails.Title;
                 this.DescriptionTB.Text = mangaDetails.Description;
+            }
+        }
+
+        private void GetChapter(object sender, RoutedEventArgs e)
+        {
+            Database database = new Database();
+            var mangas = database.GetMangaList();
+
+            if (mangas.Count() > 0)
+            {
+                Requests request = new Requests();
+                var mangaDetails = request.GetMangaDetail(mangas.Skip(10).First().Id);
+                var chapter = request.GetChapter(mangaDetails.Key, mangaDetails.Chapters.First().Key);
+
+                this.TitleTB.Text = chapter.Number.ToString();
+                this.DescriptionTB.Text = chapter.Title;
             }
         }
     }

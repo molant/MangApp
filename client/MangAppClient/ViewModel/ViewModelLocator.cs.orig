@@ -36,12 +36,8 @@ namespace MangAppClient.ViewModel
             }
             else
             {
-<<<<<<< HEAD
-                SimpleIoc.Default.Register<IDatabase, Design.MockDatabase>();
-                SimpleIoc.Default.Register<IRequests, Design.MockService>();
-=======
                 SimpleIoc.Default.Register<IDatabase, Database>();
->>>>>>> ee34d8c97f2bb6b5311f4294c6874e9712f9d083
+                SimpleIoc.Default.Register<IRequests, Design.MockService>();
             }
 
             RegisterViewModels();
@@ -50,7 +46,11 @@ namespace MangAppClient.ViewModel
         private static void RegisterViewModels()
         {
             SimpleIoc.Default.Register<MainViewModel>();
+<<<<<<< HEAD
+            SimpleIoc.Default.Register<MangaReaderViewModel>();
+=======
             SimpleIoc.Default.Register<MangaDetailViewModel>();
+>>>>>>> e6c12bc8c672cca7c5412ec7d6493906989a51a9
         }
 
         /// <summary>

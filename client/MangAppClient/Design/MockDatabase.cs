@@ -35,17 +35,29 @@ namespace MangAppClient.Design
             };
         }
 
-        public Windows.UI.Xaml.Media.Imaging.BitmapImage GetDefaultBackgroundImage()
+        public void AddFavoriteManga(string mangaId)
+        {
+        }
+
+        public void RemoveFavoriteManga(string mangaId)
+        {
+        }
+
+        public void UpdateFavoriteManga(string mangaId, int lastChapterRead)
+        {
+        }
+
+        public string GetDefaultBackgroundImage()
         {
             return new Windows.UI.Xaml.Media.Imaging.BitmapImage(new Uri("ms-appx:/Assets/souleater_bg.jpg"));
         }
 
-        public Windows.UI.Xaml.Media.Imaging.BitmapImage GetBackgroundImage(string mangaId)
+        public string GetBackgroundImage(string mangaId)
         {
             return null;
         }
 
-        public Windows.UI.Xaml.Media.Imaging.BitmapImage UpdateBackgroundImage(string mangaId)
+        public string UpdateBackgroundImage(string mangaId)
         {
             throw new System.NotImplementedException();
         }

@@ -2,8 +2,8 @@
 {
     internal class Urls
     {
-        //internal static readonly string BaseUrl = "http://www.mangapp.net:32810";
-        internal static readonly string BaseUrl = "http://localhost:32810";
+        internal static readonly string BaseUrl = "http://www.mangapp.net:32810";
+        //internal static readonly string BaseUrl = "http://localhost:32810";
 
         internal static string GetMangaList { get { return BaseUrl + "/list"; } }
 

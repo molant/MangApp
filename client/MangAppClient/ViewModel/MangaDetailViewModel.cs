@@ -33,12 +33,14 @@ namespace MangAppClient.ViewModel
             }
         }
 
+        public ObservableCollection<Chapter> Chapters
         public ObservableCollection<ChapterSummary> Chapters
         {
             get
             {
                 if (chapters == null)
                 {
+                    chapters = new ObservableCollection<Chapter>(manga.Chapters);
                     chapters = new ObservableCollection<ChapterSummary>(manga.Chapters);
                 }
 
@@ -57,12 +59,6 @@ namespace MangAppClient.ViewModel
             get
             {
                 return manga.SummaryImageUrl;
-            }
-
-            set
-            {
-                manga.SummaryImageUrl = value;
-                RaisePropertyChanged();
             }
         }
 

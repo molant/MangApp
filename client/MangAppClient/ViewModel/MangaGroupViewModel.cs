@@ -8,7 +8,7 @@ using System.Collections.ObjectModel;
 
 namespace MangAppClient.ViewModel
 {
-    public class MangaGroupViewModel : MangAppViewModelBase
+    public class MangaGroupViewModel : MangAppViewModelBase, IComparable<MangaGroupViewModel>
     {
         public string Key
         { get; set; }
@@ -17,6 +17,11 @@ namespace MangAppClient.ViewModel
         {
             get;
             set;
+        }
+
+        public int CompareTo(MangaGroupViewModel other)
+        {
+            return this.Key.CompareTo(other.Key);
         }
     }
 }

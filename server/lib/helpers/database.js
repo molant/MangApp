@@ -5,14 +5,15 @@
  */
 "use strict";
 var mongojs = require('mongojs'),
-    db = mongojs('mangapp', ['mangas', 'chapters', 'mangaMap']),
+    db = mongojs('mangapp', ['mangas', 'chapters', 'mangaMap', 'updates']),
     ObjectId = mongojs.ObjectId,
     promised = require("promised-io/promise"),
     logger = require('tracer').console({
         format:"{{timestamp}} <{{title}}> {{message}} (in {{file}}:{{line}})",
         dateformat:"HH:MM:ss.L"
     }),
-    Deferred = require('promised-io').Deferred;
+    Deferred = require('promised-io').Deferred,
+    latestVersion = 1;
 
 process.setMaxListeners(0);
 
@@ -29,24 +30,28 @@ function clean() {
     }
 }
 
-function getMangaIndex(manga, externalId, providerId) {
+function getMangaIndex(externalId, providerId) {
     var deferred = new Deferred();
     db.mangaMap.find({externalId:externalId, providerId:providerId}, function (err, docs) {
         if (!err) {
             if (docs.length > 0) {
-                deferred.resolve(docs[0]._id);
+                deferred.resolve({
+                    id:objectId,
+                    new:false});
             } else {
                 //TODO: check for the name of the manga here in case it is another provider
                 //we create a new identifier
                 var objectId = db.bson.ObjectID.createPk();
 
                 db.mangaMap.save({_id:objectId, externalId:externalId, providerId:providerId}, function (err) {
-                    if (err) {
+                    if (!err) {
+                        deferred.resolve({
+                            id:objectId,
+                            new:true
+                        });
+                    } else {
                         logger.log('Error updating mangaMap for %s', manga.title);
                         deferred.reject();
-                    } else {
-                        manga._id = objectId;
-                        deferred.resolve(manga);
                     }
                 });
             }
@@ -61,14 +66,11 @@ function getMangaIndex(manga, externalId, providerId) {
 function insertManga(manga) {
     var deferred = new Deferred();
 
-    //if we are going to do an update we cannot update the ._id
-    //delete manga._id;
-
     db.mangas.save(manga, function (err) {
         if (!err) {
-            deferred.resolve(true);
+            deferred.resolve();
         } else {
-            deferred.resolve(false);
+            deferred.reject();
         }
     });
 
@@ -77,6 +79,7 @@ function insertManga(manga) {
 
 function insertChapter(chapter) {
     var deferred = new Deferred();
+    chapter.version = latestVersion;
     db.chapters.save(chapter, function (err) {
         if (!err) {
             deferred.resolve(true);
@@ -114,14 +117,53 @@ function addManga(manga, externalId, providerId) {
         chapters = manga.chapters;
     delete manga.chapters;
 
-//we clean up all the information we don't need
     getMangaIndex(manga, externalId, providerId)
-        .then(insertManga).then(function (result) {
-            insertChapters(chapters, manga._id, providerId).then(function () {
-                logger.log('Manga %s %s', manga.title, result ? 'updated' : 'not updated');
-                deferred.resolve(result);
-            });
+        .then(function (index) {
+            manga._id = index.id;
+            manga.version = latestVersion;
+
+            if (index.new) {
+                insertManga(manga).then(function () {
+                    deferred.resolve({status:true, chapters:true});
+                });
+            } else {
+                updateManga(manga).then(function (updates) {
+                    deferred.resolve(updates);
+                });
+            }
         });
+
+    return deferred.promise;
+}
+
+//Manga already exists
+function updateManga(manga) {
+    var deferred = new Deferred();
+    //update version
+    getManga(manga._id).then(function (oldManga) {
+        var result = {
+            status:oldManga.status === manga.status,
+            chapters:oldManga.chapter_len === manga.chapter_len
+        };
+
+        if (result.status || result.chapters) {
+            //TODO: version should have a new value and not be incremented
+            db.mangas.update({_id:manga._id}, {$set:{
+                status:manga.status,
+                chapters_len:manga.chapters_len,
+                version:'new value here'
+            }}, function (err) {
+                if (!err) {
+                    deferred.resolve(result);
+                } else {
+                    deferred.reject();
+                }
+            });
+            //update
+        } else {
+            deferred.resolve(result);
+        }
+    });
 
     return deferred.promise;
 }
@@ -167,7 +209,7 @@ function getChapters(id, limit) {
 function getChapter(chapterId) {
     var deferred = new Deferred();
     db.chapters.find({_id:ObjectId(chapterId)}, {number:1, pages:1, title:1}, function (err, docs) {
-        if (err) {
+        if (!err) {
             deferred.resolve(docs);
         } else {
             deferred.reject();
@@ -177,12 +219,45 @@ function getChapter(chapterId) {
     return deferred.promise;
 }
 
+function addChapters(chapters) {
+    var deferred = new Deferred();
+    //TODO: insert the chapters!!
+    deferred.resolve();
+    return deferred.promise;
+}
+
+function startUpdate(){
+    var deferred = new Deferred();
+    db.updates.find({}).sort({version:1}).limit(1,function(err,docs){
+        if(!err){
+           if(docs.length > 0){
+               latestVersion = docs[0].version++;
+           }
+            //UTC timestamp calculated using this link:
+            //http://stackoverflow.com/questions/9756120/utc-timestamp-in-javascript
+
+           db.updates.save({version:latestVersion, timestamp: Math.floor((new Date()).getTime() / 1000)},function(err){
+              if(!err){
+                  deferred.resolve();
+              }else{
+                  deferred.reject();
+              }
+           });
+       }else{
+            deferred.reject();
+        }
+    });
+
+    return deferred.promise;
+}
 
 module.exports.clean = clean;
-module.exports.addManga = addManga;
+module.exports.addOrUpdateManga = addManga;
 module.exports.getList = getList;
 module.exports.getManga = getManga;
 module.exports.getChapters = getChapters;
 module.exports.getChapter = getChapter;
+module.exports.addChapters = insertChapters;
+module.exports.startUpdate = startUpdate;
 //TODO: add methods to update individual items and to check if they already exist?
 
