@@ -117,10 +117,10 @@
                 var response = client.GetStringAsync(Urls.GetMangaList).Result;
 
                 // Transform JSON into objects
-                JArray json = JArray.Parse(response);
+                JObject json = JObject.Parse(response);
 
-                this.MangaListVersion = 1; // json["version"].Value<int>();
-                results.AddRange(json.Children().Select(t => this.ParseManga(t)));
+                this.MangaListVersion = json["version"].Value<int>();
+                results.AddRange(json["mangas"].Children().Select(t => this.ParseManga(t)));
 
                 return results.OrderByDescending(m => m.Popularity);
             }
@@ -207,8 +207,8 @@
             manga.CategoriesDb = string.Join("#", token["categories"].Children().Values<string>());
 
             manga.YearOfRelease = this.ParseYear(JsonHelper.ParseInt(token["released"]));
-            manga.Status = this.ParseMangaStatus(JsonHelper.ParseInt(token["status"]));
-            manga.ReadingDirection = this.ParseReadingDirection(JsonHelper.ParseInt(token["direction"]));
+            manga.StatusDb = JsonHelper.ParseInt(token["status"]);
+            manga.ReadingDirectionDb = JsonHelper.ParseInt(token["direction"]);
 
             manga.RemoteSummaryImageDb = token["image"].Value<string>();
             manga.LocalSummaryImage = null;
@@ -217,7 +217,11 @@
             manga.LastChapterDate = this.ParseDateTime(JsonHelper.ParseInt(token["last_chapter_date"]));
             manga.LastChapterRead = null;
 
-            manga.Chapters = token["chapters"].Children().Select(c => this.ParseChapter(manga.Key, c)).OrderBy(c => c.Number);
+            JToken chapters = token["chapters"];
+            if (chapters != null)
+            {
+                manga.Chapters = chapters.Children().Select(c => this.ParseChapter(manga.Key, c)).OrderBy(c => c.Number);
+            }
             return manga;
         }
 
@@ -245,42 +249,6 @@
                 .Select(t => new { Number = t["number"].Value<int>(), Url = t["url"].Value<string>() })
                 .OrderBy(p => p.Number)
                 .Select(p => p.Url).ToList();
-        }
-
-        // Working
-        private MangaStatus? ParseMangaStatus(int? id)
-        {
-            if (id.HasValue)
-            {
-                switch (id)
-                {
-                    case 0:
-                        return MangaStatus.Cancelled;
-                    case 1:
-                        return MangaStatus.Ongoing;
-                    case 2:
-                        return MangaStatus.Completed;
-                }
-            }
-
-            return null;
-        }
-
-        // Working
-        private ReadingDirection? ParseReadingDirection(int? id)
-        {
-            if (id.HasValue)
-            {
-                switch (id.Value)
-                {
-                    case 0:
-                        return ReadingDirection.LTR;
-                    case 1:
-                        return ReadingDirection.RTL;
-                }
-            }
-
-            return null;
         }
 
         // Working

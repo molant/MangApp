@@ -178,11 +178,7 @@
     <Content Include="BackgroundImages\ravemaster.jpg" />
     <Content Include="BackgroundImages\rosario vampire.jpg" />
     <Content Include="BackgroundImages\soul eater.jpg" />
-    <Content Include="SummaryImages\default1.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="SummaryImages\default2.jpg" />
-    <Content Include="SummaryImages\default3.jpg" />
+    <Content Include="SummaryImages\defaultimg.png" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
