@@ -1,6 +1,5 @@
-﻿using MangAppClient.Core.Model;
+using MangAppClient.Core.Model;
 using MangAppClient.Core.Services;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
@@ -9,7 +8,7 @@ namespace MangAppClient.Design
 {
     public class MockDatabase : IDatabase
     {
-        private IEnumerable<MangaSummary> mangaList;
+        private IEnumerable<Manga> mangaList;
 
         public MockDatabase()
         {
@@ -18,51 +17,48 @@ namespace MangAppClient.Design
 
         public void CreateInitialDb()
         {
-            mangaList = new ObservableCollection<MangaSummary>
+            mangaList = new ObservableCollection<Manga>
             {
-                new MangaSummary("0") { Title = "Manga Title 1", Authors = new string[] { "Author 1"}, Categories = new string[] { "Action"} },
-                new MangaSummary("1") { Title = "Manga Title 2", Authors = new string[] { "Author 2"}, Categories = new string[] { "Comedy"} },
-                new MangaSummary("2") { Title = "Manga Title 3", Authors = new string[] { "Author 3"}, Categories = new string[] { "Horror"} },
-                new MangaSummary("3") { Title = "Manga Title 4", Authors = new string[] { "Author 4"}, Categories = new string[] { "Mystery"} },
-                new MangaSummary("4") { Title = "Manga Title 5", Authors = new string[] { "Author 5"}, Categories = new string[] { "One Shot"} },
-                new MangaSummary("5") { Title = "Manga Title 6", Authors = new string[] { "Author 6"}, Categories = new string[] { "Action"} },
-                new MangaSummary("6") { Title = "Manga Title 7", Authors = new string[] { "Author 7"}, Categories = new string[] { "Comedy"} },
-                new MangaSummary("7") { Title = "Manga Title 8", Authors = new string[] { "Author 8"}, Categories = new string[] { "Action"} },
-                new MangaSummary("8") { Title = "Manga Title 9", Authors = new string[] { "Author 9"}, Categories = new string[] { "Action"} },
-                new MangaSummary("9") { Title = "Manga Title 10", Authors = new string[] { "Author 10"}, Categories = new string[] { "Horror"} },
-                new MangaSummary("10") { Title = "Manga Title 11", Authors = new string[] { "Author 11"}, Categories = new string[] { "Comedy"} },
-                new MangaSummary("11") { Title = "Manga Title 12", Authors = new string[] { "Author 12"}, Categories = new string[] { "Comedy"} }
+                new Manga { Key = "1", Title = "Manga Title 1", AuthorsDb = "Author 1", CategoriesDb = "Action" },
+                new Manga { Key = "2", Title = "Manga Title 2", AuthorsDb = "Author 2", CategoriesDb = "Comedy" },
+                new Manga { Key = "3", Title = "Manga Title 3", AuthorsDb = "Author 3", CategoriesDb = "Horror" },
+                new Manga { Key = "4", Title = "Manga Title 4", AuthorsDb = "Author 4", CategoriesDb = "Mystery" },
             };
         }
 
-        public void AddFavoriteManga(string mangaId)
+        public void AddFavoriteManga(Manga manga)
         {
         }
 
-        public void RemoveFavoriteManga(string mangaId)
+        public void RemoveFavoriteManga(Manga manga)
         {
         }
 
-        public void UpdateFavoriteManga(string mangaId, int lastChapterRead)
+        public void UpdateFavoriteManga(Manga manga, int lastChapterRead)
         {
         }
 
-        public string GetBackgroundImage(string mangaId)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public string UpdateBackgroundImage(string mangaId)
+        public string GetDefaultBackgroundImage()
         {
             throw new System.NotImplementedException();
         }
 
-        public System.Collections.Generic.IEnumerable<Core.Model.MangaSummary> GetMangaList()
+        public string GetBackgroundImage(Manga manga)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public string UpdateBackgroundImage(Manga manga)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IEnumerable<Manga> GetMangaList()
         {
             return this.mangaList;
         }
 
-        public System.Collections.Generic.IEnumerable<Core.Model.MangaSummary> GetMangaListDesign()
+        public IEnumerable<Manga> GetMangaListDesign()
         {
             return this.mangaList;
         }
@@ -70,12 +66,6 @@ namespace MangAppClient.Design
         public void UpdateMangaList()
         {
             throw new System.NotImplementedException();
-        }
-
-
-        public string GetDefaultBackgroundImage()
-        {
-            throw new NotImplementedException();
         }
     }
 }

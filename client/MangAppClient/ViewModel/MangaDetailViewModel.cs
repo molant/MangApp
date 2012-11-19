@@ -81,14 +81,12 @@ namespace MangAppClient.ViewModel
         {
             if (ViewModelBase.IsInDesignModeStatic)
             {
-                manga = service.GetMangaDetail("1");
+                manga = service.GetMangaDetail(null);
             }
             else
             {
-                manga = service.GetMangaDetail("1");
+                manga = service.GetMangaDetail(null);
             }
         }
-
-        
     }
 }

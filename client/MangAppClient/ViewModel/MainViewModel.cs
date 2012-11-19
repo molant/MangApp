@@ -65,7 +65,7 @@ namespace MangAppClient.ViewModel
 
         private async void LoadMangaList()
         {
-            IEnumerable<MangaSummary> summaries;
+            IEnumerable<Manga> summaries;
 
             if (ViewModelBase.IsInDesignModeStatic)
             {

@@ -6,13 +6,13 @@
 
     public interface IRequests
     {
-        Manga GetMangaDetail(string mangaId);
+        Manga GetMangaDetail(Manga manga);
 
-        Chapter GetChapter(string mangaId, string chapterId);
+        Chapter GetChapter(Manga manga, Chapter chapter);
 
-        Chapter GetChapterFromProvider(string mangaId, string chapterId, int providerId);
+        Chapter GetChapterFromProvider(Manga manga, Chapter chapter, int providerKey);
 
-        IEnumerable<MangaSummary> GetRelatedMangas(string mangaId);
+        IEnumerable<Manga> GetRelatedMangas(Manga manga);
 
         IEnumerable<int> GetFavoriteMangas(int userId);
     }
