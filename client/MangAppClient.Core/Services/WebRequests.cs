@@ -5,10 +5,13 @@
     using Newtonsoft.Json.Linq;
     using System;
     using System.Collections.Generic;
+    using System.IO;
+    using System.IO.Compression;
     using System.Linq;
     using System.Net.Http;
     using System.Threading.Tasks;
     using Windows.Data.Json;
+    using Windows.Storage;
 
     public class WebRequests : IWebRequests
     {
@@ -99,14 +102,35 @@
             }
         }
 
-        public void DownloadMangaChapter(Chapter chapter)
+        public async void DownloadMangaChapter(Chapter chapter)
         {
-            throw new NotImplementedException();
-        }
+            if (chapter.Pages == null)
+            {
+                this.GetChapterPages(chapter);
+                if (chapter.Pages == null)
+                {
+                    return;
+                }
+            }
 
-        public void DownloadMangaChapters(Chapter chapterStart, Chapter chapterEnd)
-        {
-            throw new NotImplementedException();
+            var file = await ApplicationData.Current.LocalFolder.CreateFileAsync(Path.Combine("Downloads", chapter.Key), CreationCollisionOption.ReplaceExisting);
+
+            using (var archiveStream = await file.OpenStreamForWriteAsync())
+            {
+                ZipArchive archive = new ZipArchive(archiveStream);
+
+                HttpClient client = new HttpClient();
+                for (int i = 0; i < chapter.Pages.Count; i++)
+                {
+                    var data = await client.GetByteArrayAsync(chapter.Pages[i]);
+
+                    var entry = archive.CreateEntry(Path.Combine("i + 1", Path.GetExtension(chapter.Pages[i])));
+                    using (var stream = entry.Open())
+                    {
+                        stream.Write(data, 0, data.Length);
+                    }
+                }
+            }
         }
 
         // Working

@@ -18,7 +18,5 @@
         IEnumerable<int> GetFavoriteMangas(Guid userId);
 
         void DownloadMangaChapter(Chapter chapter);
-
-        void DownloadMangaChapters(Chapter start, Chapter end);
     }
 }
