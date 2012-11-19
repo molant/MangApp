@@ -24,53 +24,6 @@
         private static Random random = new Random();
 
         // Working
-        public IEnumerable<MangaSummary> GetMangaList()
-        {
-            using (SQLiteConnection db = new SQLiteConnection(Path.Combine(ApplicationData.Current.LocalFolder.Path, "mangapp.db")))
-            {
-                var mangas = db.Table<DbMangaSummary>().ToList();
-                return mangas.Select(m => DbMangaSummary.ToMangaSummary(m));
-            }
-        }
-
-        public async void UpdateMangaList()
-        {
-            SQLiteAsyncConnection db = new SQLiteAsyncConnection("mangapp.db");
-            DbMangaListVersion listVersion = await db.Table<DbMangaListVersion>().FirstOrDefaultAsync();
-
-            Requests requests = new Requests();
-            var diffs = requests.GetMangaListDiff(listVersion.Version);
-
-            // Update our local manga list version
-            listVersion.Version = requests.MangaListVersion;
-            await db.UpdateAsync(listVersion);
-
-            // Update our local manga list with the diffs from the server
-            // Remove old mangas
-            foreach (var deletion in diffs.OfType<RemoveDiffResult>())
-            {
-                await db.DeleteAsync<DbMangaSummary>(deletion.Id);
-            }
-
-            // Update mangas
-            var updates = diffs.OfType<UpdateDiffResult>();
-            var dbMangas = await db.Table<DbMangaSummary>()
-                        .Where(m => updates.Any(u => u.Id == m.Key))
-                        .ToListAsync();
-
-            var updatedDbMangas = updates.Join(
-                dbMangas,
-                update => update.Id,
-                dbManga => dbManga.Key,
-                (update, dbManga) => dbManga.Update(update));
-
-            await db.UpdateAsync(updatedDbMangas);
-
-            // Insert new mangas
-            await db.InsertAllAsync(diffs.OfType<MangaSummary>().Select(m => DbMangaSummary.FromMangaSummary(m)));
-        }
-
-        // Working
         public void CreateInitialDb()
         {
             // Recreate the local files and folders
@@ -133,7 +86,109 @@
             }
         }
 
-        public string GetDefaultBackgroundImage()
+        // Working
+        public IEnumerable<MangaSummary> GetMangaList()
+        {
+            using (SQLiteConnection db = new SQLiteConnection(Path.Combine(ApplicationData.Current.LocalFolder.Path, "mangapp.db")))
+            {
+                var mangas = db.Table<DbMangaSummary>().ToList();
+                return mangas.Select(m => DbMangaSummary.ToMangaSummary(m));
+            }
+        }
+
+        public async void UpdateMangaList()
+        {
+            SQLiteAsyncConnection db = new SQLiteAsyncConnection("mangapp.db");
+            DbMangaListVersion listVersion = await db.Table<DbMangaListVersion>().FirstOrDefaultAsync();
+
+            Requests requests = new Requests();
+            var diffs = requests.GetMangaListDiff(listVersion.Version);
+
+            // Update our local manga list version
+            listVersion.Version = requests.MangaListVersion;
+            await db.UpdateAsync(listVersion);
+
+            // Update our local manga list with the diffs from the server
+            // Remove old mangas
+            foreach (var deletion in diffs.OfType<RemoveDiffResult>())
+            {
+                await db.DeleteAsync<DbMangaSummary>(deletion.Id);
+            }
+
+            // Update mangas
+            var updates = diffs.OfType<UpdateDiffResult>();
+            var dbMangas = await db.Table<DbMangaSummary>()
+                        .Where(m => updates.Any(u => u.Id == m.Key))
+                        .ToListAsync();
+
+            var updatedDbMangas = updates.Join(
+                dbMangas,
+                update => update.Id,
+                dbManga => dbManga.Key,
+                (update, dbManga) => dbManga.Update(update));
+
+            await db.UpdateAsync(updatedDbMangas);
+
+            // Insert new mangas
+            await db.InsertAllAsync(diffs.OfType<MangaSummary>().Select(m => DbMangaSummary.FromMangaSummary(m)));
+        }
+
+        public void AddFavoriteManga(string mangaId)
+        {
+            using (SQLiteConnection db = new SQLiteConnection(Path.Combine(ApplicationData.Current.LocalFolder.Path, "mangapp.db")))
+            {
+                var manga = db.Table<DbMangaSummary>()
+                        .Where(m => m.Key == mangaId)
+                        .FirstOrDefault();
+
+                if (manga != null)
+                {
+                    manga.LastChapterRead = 0;
+                    db.Update(manga);
+                }
+            }
+        }
+
+        public void RemoveFavoriteManga(string mangaId)
+        {
+            using (SQLiteConnection db = new SQLiteConnection(Path.Combine(ApplicationData.Current.LocalFolder.Path, "mangapp.db")))
+            {
+                var manga = db.Table<DbMangaSummary>()
+                        .Where(m => m.Key == mangaId)
+                        .FirstOrDefault();
+
+                if (manga != null)
+                {
+                    manga.LastChapterRead = null;
+                    db.Update(manga);
+                }
+            }
+        }
+
+        public void UpdateFavoriteManga(string mangaId, int lastChapterRead)
+        {
+            using (SQLiteConnection db = new SQLiteConnection(Path.Combine(ApplicationData.Current.LocalFolder.Path, "mangapp.db")))
+            {
+                var manga = db.Table<DbMangaSummary>()
+                        .Where(m => m.Key == mangaId)
+                        .FirstOrDefault();
+
+<<<<<<< HEAD
+            return mangas
+                .Where(s => dbfavorites.Any((f => f.MangaId == s.Id)))
+                .Join(
+                    dbfavorites,
+                    m => m.Id,
+                    fav => fav.MangaId,
+                    (m, fav) =>
+                    {
+                        m.LastChapterRead = fav.LastChapterRead;
+                        return m;
+                    })
+                .ToList();
+        }
+
+        public Uri GetDefaultBackgroundImage()
         {
             var folder = this.FolderExists(ApplicationData.Current.LocalFolder, BackgroundImagesFolder);
             if (folder != null)
@@ -142,10 +197,18 @@
                     .Where(f => f.Name.Contains("default"))
                     .ToList();
 
-                return defaultFiles[random.Next(0, defaultFiles.Count)].Path;
+                return new Uri(defaultFiles[random.Next(0, defaultFiles.Count)].Path);
             }
 
-            return Path.Combine(BackgroundImagesFolder, "default.jpg");
+            return new Uri(Path.Combine(BackgroundImagesFolder, "default.jpg"));
+=======
+                if (manga != null)
+                {
+                    manga.LastChapterRead = lastChapterRead;
+                    db.Update(manga);
+                }
+            }
+>>>>>>> c0b446b9dd549093c4c5b2917c058b2adab1ca30
         }
 
         public string GetBackgroundImage(string mangaId)
@@ -184,6 +247,21 @@
             }
 
             return null;
+        }
+
+        public string GetDefaultBackgroundImage()
+        {
+            var folder = this.FolderExists(ApplicationData.Current.LocalFolder, BackgroundImagesFolder);
+            if (folder != null)
+            {
+                var defaultFiles = folder.GetFilesAsync().AsTask().Result
+                    .Where(f => f.Name.Contains("default"))
+                    .ToList();
+
+                return defaultFiles[random.Next(0, defaultFiles.Count)].Path;
+            }
+
+            return Path.Combine(BackgroundImagesFolder, "default.jpg");
         }
 
         public string UpdateBackgroundImage(string mangaId)
@@ -288,12 +366,13 @@
 
         private class DbMangaSummary
         {
+            [PrimaryKey]
             public string Key { get; set; }
             public string Title { get; set; }
             public string Description { get; set; }
             public string AlternativeNames { get; set; }
             public int Popularity { get; set; }
-
+            
             public string Authors { get; set; }
             public string Artists { get; set; }
             public string Categories { get; set; }
@@ -306,6 +385,7 @@
 
             public int LastChapter { get; set; }
             public DateTime? LastChapterDate { get; set; }
+            public int? LastChapterRead { get; set; }
 
             public DbMangaSummary Update(UpdateDiffResult update)
             {
@@ -339,7 +419,8 @@
                             SummaryImagePath = summary.SummaryImagePath,
 
                             LastChapter = summary.LastChapter,
-                            LastChapterDate = summary.LastChapterDate
+                            LastChapterDate = summary.LastChapterDate,
+                            LastChapterRead = summary.LastChapterRead
                         };
             }
 
@@ -363,7 +444,8 @@
                             SummaryImagePath = dbManga.SummaryImagePath,
 
                             LastChapter = dbManga.LastChapter,
-                            LastChapterDate = dbManga.LastChapterDate
+                            LastChapterDate = dbManga.LastChapterDate,
+                            LastChapterRead = dbManga.LastChapterRead
                         };
             }
         }

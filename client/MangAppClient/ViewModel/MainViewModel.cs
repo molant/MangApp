@@ -48,7 +48,7 @@ namespace MangAppClient.ViewModel
         {
             get
             {
-                return this.dataBase.GetDefaultBackgroundImage();
+                return new Uri(this.dataBase.GetDefaultBackgroundImage());
             }
         }
 
@@ -59,7 +59,7 @@ namespace MangAppClient.ViewModel
         {
             this.dataBase = dataBase;
             this.mangaGroups = new ObservableCollection<MangaGroupViewModel>();
-            //this.dataBase.CreateInitialDb();
+            this.dataBase.CreateInitialDb();
             LoadMangaList();
         }
 

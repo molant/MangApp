@@ -35,6 +35,9 @@ namespace MangAppClient.Design
             };
         }
 
+<<<<<<< HEAD
+        public Uri GetDefaultBackgroundImage()
+=======
         public void AddFavoriteManga(string mangaId)
         {
         }
@@ -45,6 +48,12 @@ namespace MangAppClient.Design
 
         public void UpdateFavoriteManga(string mangaId, int lastChapterRead)
         {
+        }
+
+        public string GetDefaultBackgroundImage()
+>>>>>>> c0b446b9dd549093c4c5b2917c058b2adab1ca30
+        {
+            throw new System.NotImplementedException();
         }
 
         public string GetBackgroundImage(string mangaId)
@@ -70,12 +79,6 @@ namespace MangAppClient.Design
         public void UpdateMangaList()
         {
             throw new System.NotImplementedException();
-        }
-
-
-        public string GetDefaultBackgroundImage()
-        {
-            throw new NotImplementedException();
         }
     }
 }
