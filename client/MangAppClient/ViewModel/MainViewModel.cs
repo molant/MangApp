@@ -4,6 +4,8 @@ using System.Collections.ObjectModel;
 using MangAppClient.Core.Services;
 using System.Collections.Generic;
 using System.Linq;
+using Windows.UI.Xaml.Media.Imaging;
+using System;
 
 namespace MangAppClient.ViewModel
 {
@@ -15,7 +17,7 @@ namespace MangAppClient.ViewModel
     /// </summary>
     public class MainViewModel : MangAppViewModelBase
     {
-        private readonly IDatabase dataBase;
+        private readonly ILocalRequests dataBase;
 
         private ObservableCollection<MangaGroupViewModel> mangaGroups;
 
@@ -42,14 +44,22 @@ namespace MangAppClient.ViewModel
             }
         }
 
+        public Uri BackgroundImage
+        {
+            get
+            {
+                return new Uri(this.dataBase.GetDefaultBackgroundImage());
+            }
+        }
+
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
         /// </summary>
-        public MainViewModel(IDatabase dataBase)
+        public MainViewModel(ILocalRequests dataBase)
         {
             this.dataBase = dataBase;
             this.mangaGroups = new ObservableCollection<MangaGroupViewModel>();
-            this.dataBase.CreateInitialDb();
+            //this.dataBase.CreateInitialDb();
             LoadMangaList();
         }
 

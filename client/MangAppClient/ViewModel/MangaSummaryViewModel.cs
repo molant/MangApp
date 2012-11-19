@@ -44,6 +44,20 @@ namespace MangAppClient.ViewModel
 
         public int? LastChapter { get; set; }
         public DateTime? LastChapterDate { get; set; }
+        public string LastChapterInfo
+        {
+            get
+            {
+                if (LastChapterDate.HasValue)
+                {
+                    return String.Format("Last chapter: {0} - {1}", LastChapter, LastChapterDate.Value.ToString("d"));
+                }
+                else
+                {
+                    return "Last chapter: " + LastChapter.ToString();
+                }
+            }
+        }
 
         public MangaGroupViewModel Group { get; set; }
     }
