@@ -14,6 +14,7 @@
         public string NextChapterId { get; set; }
         public int? Number { get; set; }
         public string Title { get; set; }
+        public DateTime? UploadedDate { get; set; }
         [Ignore]
         public List<string> Pages { get; set; }
     }

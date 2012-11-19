@@ -13,6 +13,7 @@ using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.Ioc;
 using MangAppClient.Core.Services;
 using Microsoft.Practices.ServiceLocation;
+using Windows.UI.Xaml.Controls;
 
 namespace MangAppClient.ViewModel
 {
@@ -44,7 +45,7 @@ namespace MangAppClient.ViewModel
         }
 
         private static void RegisterViewModels()
-        {
+        {   
             SimpleIoc.Default.Register<MainViewModel>();
             SimpleIoc.Default.Register<MangaDetailViewModel>();
         }
@@ -75,7 +76,17 @@ namespace MangAppClient.ViewModel
             {
                 return ServiceLocator.Current.GetInstance<MangaDetailViewModel>();
             }
-        }       
+        }
+
+        public static void RegisterRootFrame(Frame frame)
+        {
+            SimpleIoc.Default.Register<Frame>(() => frame);
+        }
+
+        public static Frame GetRootFrame()
+        {
+            return SimpleIoc.Default.GetInstance<Frame>();
+        }
 
         /// <summary>
         /// Cleans up all the resources.

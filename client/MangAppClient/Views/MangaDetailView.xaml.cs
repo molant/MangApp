@@ -20,6 +20,7 @@ namespace MangAppClient.Views
         public MangaDetailView()
         {
             this.InitializeComponent();
+            this.NavigationCacheMode = Windows.UI.Xaml.Navigation.NavigationCacheMode.Enabled;
         }
 
         /// <summary>
@@ -29,6 +30,12 @@ namespace MangAppClient.Views
         /// property is typically used to configure the page.</param>
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
+
+        }
+
+        private void backButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Frame.GoBack();
         }
     }
 }

@@ -262,25 +262,31 @@
         }
 
         // Working
-        private Chapter ParseChapter(string mangaKey, JToken chapterJson)
+        private Chapter ParseChapter(string mangaKey, JToken token)
         {
             Chapter chapter = new Chapter();
 
-            chapter.Key = chapterJson["_id"].Value<string>();
+            chapter.Key = token["_id"].Value<string>();
             chapter.MangaKey = mangaKey;
-            chapter.ProviderKey = JsonHelper.ParseString(chapterJson["provider"]);
-            chapter.PreviousChapterId = JsonHelper.ParseString(chapterJson["previous"]);
-            chapter.NextChapterId = JsonHelper.ParseString(chapterJson["next"]);
-            chapter.Number = JsonHelper.ParseInt(chapterJson["number"]);
-            chapter.Title = JsonHelper.ParseString(chapterJson["title"]);
-            chapter.Pages = this.ParsePages(chapterJson["pages"].Children());
+            chapter.ProviderKey = JsonHelper.ParseString(token["provider"]);
+            chapter.PreviousChapterId = JsonHelper.ParseString(token["previous"]);
+            chapter.NextChapterId = JsonHelper.ParseString(token["next"]);
+            chapter.Number = JsonHelper.ParseInt(token["number"]);
+            chapter.Title = JsonHelper.ParseString(token["title"]);
+            chapter.Pages = this.ParsePages(token["pages"].Children());
+            chapter.UploadedDate = this.ParseDateTime(JsonHelper.ParseInt(token["uploadedDate"]));
 
             return chapter;
         }
 
-        private void ParseChapterPages(Chapter chapter, JToken chapterJson)
+        // Working
+        private void ParseChapterPages(Chapter chapter, JToken token)
         {
-            chapter.Pages = this.ParsePages(chapterJson["pages"].Children());
+            JToken pages = token["pages"];
+            if (pages != null)
+            {
+                chapter.Pages = this.ParsePages(pages.Children());
+            }
         }
 
         // Working
