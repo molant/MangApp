@@ -18,17 +18,34 @@ namespace MangAppClient.ViewModel
         private IDatabase dataBase;
         private ObservableCollection<Chapter> chapters;
         private BitmapImage background;
+        private string mangaId;
+
+        public Manga Manga
+        {
+            get
+            {
+                return manga;
+            }
+
+            set
+            {
+                manga = value;
+
+                LoadData();
+                RaisePropertyChanged();
+            }
+        }
 
         public string Title
         {
             get
             {
-                return manga.Title;
+                return Manga.Title;
             }
 
             set
             {
-                manga.Title= value;
+                Manga.Title= value;
                 RaisePropertyChanged();
             }
         }
@@ -39,7 +56,7 @@ namespace MangAppClient.ViewModel
             {
                 if (chapters == null)
                 {
-                    chapters = new ObservableCollection<Chapter>(manga.Chapters);
+                    chapters = new ObservableCollection<Chapter>(Manga.Chapters);
                 }
 
                 return chapters;
@@ -56,7 +73,7 @@ namespace MangAppClient.ViewModel
         {
             get
             {
-                return new Uri(manga.LocalSummaryImage);
+                return new Uri(Manga.LocalSummaryImage);
             }
         }
 
@@ -78,11 +95,11 @@ namespace MangAppClient.ViewModel
         {
             get
             {
-                return manga.Description;
+                return Manga.Description;
             }
             set
             {
-                manga.Description = value;
+                Manga.Description = value;
                 RaisePropertyChanged();
             }
         }
@@ -96,21 +113,13 @@ namespace MangAppClient.ViewModel
 
         private void LoadData()
         {
-            if (ViewModelBase.IsInDesignModeStatic)
-            {
-                manga = service.GetMangaDetail(null);
-            }
-            else
-            {
-                manga = service.GetMangaDetail(null);
-            }
-        }
-        private void MockData()
-        {
-            manga = service.GetMangaDetail("1");
-            Background = new BitmapImage(new Uri(dataBase.GetBackgroundImage("1")));
-            if (Background == null)
-                Background = new BitmapImage(new Uri(dataBase.GetBackgroundImage("1")));
+            Manga = service.GetMangaDetail(Manga);
+
+            var imageUri = dataBase.GetBackgroundImage(Manga);            
+            if(imageUri == null)
+                imageUri = dataBase.GetDefaultBackgroundImage();
+
+            Background = new BitmapImage(new Uri(imageUri));
         }
     }
 }

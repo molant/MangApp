@@ -15,13 +15,9 @@ namespace MangAppClient.ViewModel
     {
         private Manga manga;
         private IRequests service;
-<<<<<<< HEAD
         private IDatabase dataBase;
-        private ObservableCollection<ChapterSummary> chapters;
-        private BitmapImage background;
-=======
         private ObservableCollection<Chapter> chapters;
->>>>>>> e2f016cf885dd439c4420f09dc0bee31d9fedef5
+        private BitmapImage background;
 
         public string Title
         {
@@ -60,7 +56,7 @@ namespace MangAppClient.ViewModel
         {
             get
             {
-                return manga.RemoteSummaryImage;
+                return new Uri(manga.LocalSummaryImage);
             }
         }
 
@@ -102,6 +98,7 @@ namespace MangAppClient.ViewModel
         {
             if (ViewModelBase.IsInDesignModeStatic)
             {
+<<<<<<< HEAD
                 MockData();
             }
             else
@@ -113,9 +110,18 @@ namespace MangAppClient.ViewModel
         private void MockData()
         {
             manga = service.GetMangaDetail("1");
-            Background = dataBase.GetBackgroundImage("1");
+            Background = new BitmapImage(new Uri(dataBase.GetBackgroundImage("1")));
             if (Background == null)
-                Background = dataBase.GetDefaultBackgroundImage();
+                Background = new BitmapImage(new Uri(dataBase.GetBackgroundImage("1")));
         }
+=======
+                manga = service.GetMangaDetail(null);
+            }
+            else
+            {
+                manga = service.GetMangaDetail(null);
+            }
+        }
+>>>>>>> d62d94df275dcf7921d3d3eaa7b7160cb42c731c
     }
 }

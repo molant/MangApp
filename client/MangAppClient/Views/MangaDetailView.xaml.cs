@@ -1,4 +1,6 @@
 ﻿using MangAppClient.Common;
+using MangAppClient.Core.Model;
+using MangAppClient.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,6 +19,18 @@ namespace MangAppClient.Views
 {
     public sealed partial class MangaDetailView : LayoutAwarePage
     {
+
+
+        public string MangaId
+        {
+            get { return (string)GetValue(MangaIdProperty); }
+            set { SetValue(MangaIdProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for MangaId.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty MangaIdProperty =
+            DependencyProperty.Register("MangaId", typeof(string), typeof(MangaDetailView), new PropertyMetadata(String.Empty));
+
         public MangaDetailView()
         {
             this.InitializeComponent();
@@ -29,6 +43,9 @@ namespace MangAppClient.Views
         /// property is typically used to configure the page.</param>
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
+            var manga = e.Parameter as Manga;
+            var viewModel = DataContext as MangaDetailViewModel;
+            viewModel.Manga = manga;
         }
     }
 }

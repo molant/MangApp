@@ -14,7 +14,6 @@ namespace MangAppClient.Controls
     {
         private Image background;
         private CompositeTransform backgroundTransform;
-        private ScrollViewer scrollViewer;
 
         private const int BackGroundOffset = 100;
 
@@ -24,7 +23,6 @@ namespace MangAppClient.Controls
             set { SetValue(ScrollWidthProperty, value); }
         }
 
-        // Using a DependencyProperty as the backing store for ScrollWidth.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ScrollWidthProperty =
             DependencyProperty.Register("ScrollWidth", typeof(int), typeof(Parallax), new PropertyMetadata(0));
 
@@ -53,9 +51,9 @@ namespace MangAppClient.Controls
             backgroundTransform = new CompositeTransform();
             background.RenderTransform = backgroundTransform;
             background.Stretch = Stretch.None;
+
             Children.Add(background);
             Loaded += OnLoaded;
-            Background = new SolidColorBrush(Color.FromArgb(100,100,0,0));
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
@@ -68,7 +66,7 @@ namespace MangAppClient.Controls
         {
             var parallax = dependencyObject as Parallax;
             var scrollHorizontalOffset = (double)eventArgs.NewValue;
-            var translate = (scrollHorizontalOffset * 100) / parallax.ScrollWidth;
+            var translate = (scrollHorizontalOffset * BackGroundOffset) / parallax.ScrollWidth;
             parallax.backgroundTransform.TranslateX = -translate;
         }
 
