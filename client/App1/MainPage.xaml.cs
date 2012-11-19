@@ -50,7 +50,7 @@ namespace App1
             if (mangas.Count() > 0)
             {
                 Requests request = new Requests();
-                var mangaDetails = request.GetMangaDetail(mangas.First().Id);
+                var mangaDetails = request.GetMangaDetail(mangas.First().Key);
 
                 this.TitleTB.Text = mangaDetails.Title;
                 this.DescriptionTB.Text = mangaDetails.Description;

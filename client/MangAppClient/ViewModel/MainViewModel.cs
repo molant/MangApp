@@ -49,13 +49,13 @@ namespace MangAppClient.ViewModel
         {
             this.dataBase = dataBase;
             this.mangaGroups = new ObservableCollection<MangaGroupViewModel>();
-            //this.dataBase.CreateInitialDb();
+            this.dataBase.CreateInitialDb();
             LoadMangaList();
         }
 
         private async void LoadMangaList()
         {
-            IEnumerable<MangaSummary> summaries;
+            IEnumerable<Manga> summaries;
 
             if (ViewModelBase.IsInDesignModeStatic)
             {
