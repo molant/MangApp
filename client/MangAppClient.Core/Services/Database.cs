@@ -10,6 +10,7 @@
     using System.Threading.Tasks;
     using Windows.ApplicationModel;
     using Windows.Storage;
+    using Windows.Storage.Search;
     using Windows.UI.Xaml.Media.Imaging;
 
     public class Database : IDatabase
@@ -19,6 +20,71 @@
         private static readonly string SummaryImagesFolder = "SummaryImages";
 
         private static readonly string BackgroundImagesFolder = "BackgroundImages";
+
+        private static Random random = new Random();
+
+        // Working
+        public void CreateInitialDb()
+        {
+            // Recreate the local files and folders
+            var dbFile = this.FileExits(ApplicationData.Current.LocalFolder, "mangapp.db");
+            if (dbFile != null)
+            {
+                dbFile.DeleteAsync().AsTask().Wait();
+            }
+
+            var summaryFolder = this.FolderExists(ApplicationData.Current.LocalFolder, SummaryImagesFolder);
+            if (summaryFolder != null)
+            {
+                summaryFolder.DeleteAsync().AsTask().Wait();
+            }
+
+            var backgroundFolder = this.FolderExists(ApplicationData.Current.LocalFolder, BackgroundImagesFolder);
+            if (backgroundFolder != null)
+            {
+                backgroundFolder.DeleteAsync().AsTask().Wait();
+            }
+
+            summaryFolder = ApplicationData.Current.LocalFolder.CreateFolderAsync(SummaryImagesFolder, CreationCollisionOption.ReplaceExisting).AsTask().Result;
+            backgroundFolder = ApplicationData.Current.LocalFolder.CreateFolderAsync(BackgroundImagesFolder, CreationCollisionOption.ReplaceExisting).AsTask().Result;
+
+            // Copy the background images from the installed folder to the app folder
+            var backgroundInstallFolder = Package.Current.InstalledLocation.GetFolderAsync(BackgroundImagesFolder).AsTask().Result;
+            foreach (var file in backgroundInstallFolder.GetFilesAsync().AsTask().Result)
+            {
+                var copiedFile = file.CopyAsync(backgroundFolder, file.Name, NameCollisionOption.ReplaceExisting).AsTask().Result;
+            }
+
+            // Copy the summary images from the installed folder to the app folder
+            var summaryInstallFolder = Package.Current.InstalledLocation.GetFolderAsync(SummaryImagesFolder).AsTask().Result;
+            foreach (var file in summaryInstallFolder.GetFilesAsync().AsTask().Result)
+            {
+                var copiedFile = file.CopyAsync(summaryFolder, file.Name, NameCollisionOption.ReplaceExisting).AsTask().Result;
+            }
+
+            // Populate the manga list from the server information
+            IEnumerable<MangaSummary> mangas;
+            Requests requests = new Requests();
+            mangas = requests.GetMangaList().OrderByDescending(m => m.Popularity);
+
+            // Get additional summary and background images from the server
+            HttpClient client = new HttpClient();
+            foreach (var manga in mangas)
+            {
+                this.CreateSummaryImage(client, manga);
+                this.UpdateBackgroundImage(manga.Id);
+            }
+
+            // Add mangas to the database
+            using (SQLiteConnection db = new SQLiteConnection(Path.Combine(ApplicationData.Current.LocalFolder.Path, "mangapp.db")))
+            {
+                db.CreateTable<DbMangaListVersion>();
+                db.CreateTable<DbMangaSummary>();
+
+                db.Insert(new DbMangaListVersion(requests.MangaListVersion));
+                db.InsertAll(mangas.Select(m => DbMangaSummary.FromMangaSummary(m)));
+            }
+        }
 
         // Working
         public IEnumerable<MangaSummary> GetMangaList()
@@ -67,70 +133,55 @@
             await db.InsertAllAsync(diffs.OfType<MangaSummary>().Select(m => DbMangaSummary.FromMangaSummary(m)));
         }
 
-        // Working
-        public async void CreateInitialDb()
+        public void AddFavoriteManga(string mangaId)
         {
-            // Recreate the local files and folders
-            var dbFile = this.FileExits(ApplicationData.Current.LocalFolder, "mangapp.db");
-            if (dbFile != null)
-            {
-                dbFile.DeleteAsync().AsTask().Wait();
-            }
-
-            var summaryFolder = this.FolderExists(ApplicationData.Current.LocalFolder, SummaryImagesFolder);
-            if (summaryFolder != null)
-            {
-                summaryFolder.DeleteAsync().AsTask().Wait();
-            }
-
-            var backgroundFolder = this.FolderExists(ApplicationData.Current.LocalFolder, BackgroundImagesFolder);
-            if (backgroundFolder != null)
-            {
-                backgroundFolder.DeleteAsync().AsTask().Wait();
-            }
-
-            summaryFolder = ApplicationData.Current.LocalFolder.CreateFolderAsync(SummaryImagesFolder, CreationCollisionOption.ReplaceExisting).AsTask().Result;
-            backgroundFolder = ApplicationData.Current.LocalFolder.CreateFolderAsync(BackgroundImagesFolder, CreationCollisionOption.ReplaceExisting).AsTask().Result;
-
-            // Copy the background images from the installed folder to the app folder
-            var installFolder = Package.Current.InstalledLocation.GetFolderAsync(BackgroundImagesFolder).AsTask().Result;
-            foreach (var file in installFolder.GetFilesAsync().AsTask().Result)
-            {
-                var copiedFile = file.CopyAsync(backgroundFolder, file.Name, NameCollisionOption.ReplaceExisting).AsTask().Result;
-            }
-
-            // Populate the manga list from the server information
-            IEnumerable<MangaSummary> mangas;
-            Requests requests = new Requests();
-            mangas = requests.GetMangaList().OrderByDescending(m => m.Popularity);
-
-            // Get additional summary and background images from the server
-            HttpClient client = new HttpClient();
-            foreach (var manga in mangas)
-            {
-                this.CreateSummaryImage(client, manga);
-                this.UpdateBackgroundImage(manga.Id);
-            }
-
-            // Add mangas to the database
             using (SQLiteConnection db = new SQLiteConnection(Path.Combine(ApplicationData.Current.LocalFolder.Path, "mangapp.db")))
             {
-                db.CreateTable<DbMangaListVersion>();
-                db.CreateTable<DbMangaSummary>();
+                var manga = db.Table<DbMangaSummary>()
+                        .Where(m => m.Key == mangaId)
+                        .FirstOrDefault();
 
-                db.Insert(new DbMangaListVersion(requests.MangaListVersion));
-                db.InsertAll(mangas.Select(m => DbMangaSummary.FromMangaSummary(m)));
+                if (manga != null)
+                {
+                    manga.LastChapterRead = 0;
+                    db.Update(manga);
+                }
             }
         }
 
-        // TODO: add selection of a random default image
-        public BitmapImage GetDefaultBackgroundImage()
+        public void RemoveFavoriteManga(string mangaId)
         {
-            return new BitmapImage(new Uri(Path.Combine(BackgroundImagesFolder, "default.jpg")));
+            using (SQLiteConnection db = new SQLiteConnection(Path.Combine(ApplicationData.Current.LocalFolder.Path, "mangapp.db")))
+            {
+                var manga = db.Table<DbMangaSummary>()
+                        .Where(m => m.Key == mangaId)
+                        .FirstOrDefault();
+
+                if (manga != null)
+                {
+                    manga.LastChapterRead = null;
+                    db.Update(manga);
+                }
+            }
         }
 
-        // TODO: add check by name and by id to search for a background image
-        public BitmapImage GetBackgroundImage(string mangaId)
+        public void UpdateFavoriteManga(string mangaId, int lastChapterRead)
+        {
+            using (SQLiteConnection db = new SQLiteConnection(Path.Combine(ApplicationData.Current.LocalFolder.Path, "mangapp.db")))
+            {
+                var manga = db.Table<DbMangaSummary>()
+                        .Where(m => m.Key == mangaId)
+                        .FirstOrDefault();
+
+                if (manga != null)
+                {
+                    manga.LastChapterRead = lastChapterRead;
+                    db.Update(manga);
+                }
+            }
+        }
+
+        public string GetBackgroundImage(string mangaId)
         {
             DbMangaSummary summary;
             using (SQLiteConnection db = new SQLiteConnection(Path.Combine(ApplicationData.Current.LocalFolder.Path, "mangapp.db")))
@@ -140,19 +191,50 @@
 
             if (summary != null)
             {
-                string imagePath = Path.Combine(BackgroundImagesFolder, summary.Title + ".jpg");
-
-                var file = this.FileExits(ApplicationData.Current.LocalFolder, imagePath);
-                if (file != null)
+                var folder = this.FolderExists(ApplicationData.Current.LocalFolder, BackgroundImagesFolder);
+                if (folder != null)
                 {
-                    return new BitmapImage(new Uri(file.Path));
+                    // Let's search first by manga key
+                    var defaultFiles = folder.GetFilesAsync().AsTask().Result
+                        .Where(f => f.Name.Contains(summary.Key))
+                        .ToList();
+
+                    if (defaultFiles.Count > 1)
+                    {
+                        return defaultFiles[random.Next(0, defaultFiles.Count)].Path;
+                    }
+
+                    // Let's search first by manga name
+                    defaultFiles = folder.GetFilesAsync().AsTask().Result
+                        .Where(f => f.Name.Contains(summary.Title))
+                        .ToList();
+
+                    if (defaultFiles.Count > 1)
+                    {
+                        return defaultFiles[random.Next(0, defaultFiles.Count)].Path;
+                    }
                 }
             }
 
             return null;
         }
 
-        public BitmapImage UpdateBackgroundImage(string mangaId)
+        public string GetDefaultBackgroundImage()
+        {
+            var folder = this.FolderExists(ApplicationData.Current.LocalFolder, BackgroundImagesFolder);
+            if (folder != null)
+            {
+                var defaultFiles = folder.GetFilesAsync().AsTask().Result
+                    .Where(f => f.Name.Contains("default"))
+                    .ToList();
+
+                return defaultFiles[random.Next(0, defaultFiles.Count)].Path;
+            }
+
+            return Path.Combine(BackgroundImagesFolder, "default.jpg");
+        }
+
+        public string UpdateBackgroundImage(string mangaId)
         {
             byte[] imageData = new Requests().GetBackgroundImage(mangaId);
 
@@ -166,12 +248,13 @@
                     stream.Write(imageData, 0, imageData.Length);
                 }
 
-                return new BitmapImage(new Uri(fileName));
+                return fileName;
             }
 
             return null;
         }
 
+        // Working
         private void CreateSummaryImage(HttpClient client, MangaSummary manga)
         {
             try
@@ -187,13 +270,30 @@
                     {
                         stream.Write(imageData, 0, imageData.Length);
                     }
+
+                    manga.SummaryImagePath = Path.Combine(SummaryImagesFolder, manga.Id + Path.GetExtension(manga.SummaryImageUrl.ToString()));
                 }
             }
             catch (Exception)
             {
+                // No image in the server, let's use a random default one
+                var folder = this.FolderExists(ApplicationData.Current.LocalFolder, SummaryImagesFolder);
+                if (folder != null)
+                {
+                    var defaultFiles = folder.GetFilesAsync().AsTask().Result
+                        .Where(f => f.Name.Contains("default"))
+                        .ToList();
+
+                    manga.SummaryImagePath = defaultFiles[random.Next(0, defaultFiles.Count)].Path;
+                }
+                else
+                {
+                    manga.SummaryImagePath = null;
+                }
             }
         }
 
+        // Working
         private StorageFile FileExits(StorageFolder folder, string fileName)
         {
             try
@@ -206,6 +306,7 @@
             }
         }
 
+        // Working
         private StorageFolder FolderExists(StorageFolder folder, string fileName)
         {
             try
@@ -235,12 +336,13 @@
 
         private class DbMangaSummary
         {
+            [PrimaryKey]
             public string Key { get; set; }
             public string Title { get; set; }
             public string Description { get; set; }
             public string AlternativeNames { get; set; }
             public int Popularity { get; set; }
-
+            
             public string Authors { get; set; }
             public string Artists { get; set; }
             public string Categories { get; set; }
@@ -249,9 +351,11 @@
             public int Status { get; set; }
             public int? ReadingDirection { get; set; }
             public string SummaryImageUrl { get; set; }
+            public string SummaryImagePath { get; set; }
 
             public int LastChapter { get; set; }
             public DateTime? LastChapterDate { get; set; }
+            public int? LastChapterRead { get; set; }
 
             public DbMangaSummary Update(UpdateDiffResult update)
             {
@@ -282,9 +386,11 @@
                             Status = (int)summary.Status,
                             ReadingDirection = (int?)summary.ReadingDirection,
                             SummaryImageUrl = summary.SummaryImageUrl,
+                            SummaryImagePath = summary.SummaryImagePath,
 
                             LastChapter = summary.LastChapter,
-                            LastChapterDate = summary.LastChapterDate
+                            LastChapterDate = summary.LastChapterDate,
+                            LastChapterRead = summary.LastChapterRead
                         };
             }
 
@@ -305,9 +411,11 @@
                             Status = (MangaStatus)dbManga.Status,
                             ReadingDirection = (ReadingDirection?)dbManga.ReadingDirection,
                             SummaryImageUrl = dbManga.SummaryImageUrl,
+                            SummaryImagePath = dbManga.SummaryImagePath,
 
                             LastChapter = dbManga.LastChapter,
-                            LastChapterDate = dbManga.LastChapterDate
+                            LastChapterDate = dbManga.LastChapterDate,
+                            LastChapterRead = dbManga.LastChapterRead
                         };
             }
         }

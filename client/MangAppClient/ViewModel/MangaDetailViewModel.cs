@@ -15,7 +15,7 @@ namespace MangAppClient.ViewModel
     {
         private Manga manga;
         private IRequests service;
-        private ObservableCollection<ChapterSummary> chapters;
+        private ObservableCollection<Chapter> chapters;
 
         public string Title
         {
@@ -31,13 +31,13 @@ namespace MangAppClient.ViewModel
             }
         }
 
-        public ObservableCollection<ChapterSummary> Chapters
+        public ObservableCollection<Chapter> Chapters
         {
             get
             {
                 if (chapters == null)
                 {
-                    chapters = new ObservableCollection<ChapterSummary>(manga.Chapters);
+                    chapters = new ObservableCollection<Chapter>(manga.Chapters);
                 }
 
                 return chapters;
@@ -54,13 +54,7 @@ namespace MangAppClient.ViewModel
         {
             get
             {
-                return manga.SummaryImageUrl;
-            }
-
-            set
-            {
-                manga.SummaryImageUrl = value;
-                RaisePropertyChanged();
+                return manga.RemoteSummaryImage;
             }
         }
 

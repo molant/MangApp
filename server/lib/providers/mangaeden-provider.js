@@ -46,12 +46,12 @@ function updateList() {
 
 function updateAllMangas(mangas) {
     //setting more workers caused warnings about possible memory leaks
-    // in emitter (probably related to mongojs
+    // in emitter (probably related to mongojs)
     var workers = 5,
         i = 0,
+        stopped = 0,
         deferred = new Deferred();
     logger.log('MangaEden - Updating Mangas');
-
 
     function error(data) {
         logger.error('MangaEden - ' + data);
@@ -62,7 +62,10 @@ function updateAllMangas(mangas) {
         if (i < mangas.length) {
             updateManga(mangas[i].i, i).then(next, error);
         } else {
-            deferred.resolve(true);
+            stopped++;
+            if (stopped === 5) {
+                deferred.resolve(true);
+            }
         }
     }
 
@@ -98,7 +101,7 @@ function downloadChapter(info) {
 }
 
 function normalizeManga(manga) {
-    var deferred = new Deferred();
+    //var deferred = new Deferred();
     delete manga['baka'];
     delete manga['language'];
     delete manga['aka-alias'];
@@ -111,6 +114,14 @@ function normalizeManga(manga) {
     delete manga.artist;
     manga.image = 'http://cdn.mangaeden.com/mangasimg/' + manga.image;
     manga.alias = [manga.alias];
+    manga.providers = [providerId];
+    delete manga.chapters;
+
+    //return deferred.promise;
+}
+
+function downloadChapters(mangaChapters) {
+    var deferred = new Deferred();
 
     //MangaEden chapter structure is something like:
     //[8, 734074, "8", "4e738898c09225616d2e5b65"]
@@ -118,26 +129,23 @@ function normalizeManga(manga) {
     //in string format and finally the last is the id
     var chapters = [], i = -1;
 
+    //TODO: remove the chapters that are already in the db
+
     function next() {
         i++;
-        if (i < manga.chapters.length) {
-            downloadChapter(manga.chapters[i]).then(function (chapter) {
+        if (i < mangaChapters.length) {
+            downloadChapter(mangaChapters[i]).then(function (chapter) {
                 chapters.push(chapter);
                 next();
             });
         } else {
-            manga.chapters = chapters;
-            deferred.resolve(manga);
+            deferred.resolve(chapters);
         }
     }
 
     next();
 
     return deferred.promise;
-}
-
-function getChapterPages(chapterId) {
-
 }
 
 function updateManga(externalId, index) {
@@ -147,24 +155,36 @@ function updateManga(externalId, index) {
         var manga = JSON.parse(content),
             chapters = manga.chapters;
 
-        //we clean up all the information we don't need
-        normalizeManga(manga).then(function(manga){
-            mangaDb.addManga(manga, externalId, providerId).then(function (result) {
-                //updateChapters with images here
-                promise.resolve(result);
+        //we clean up all the information we don't need and format some other
+        normalizeManga(manga);
+
+        mangaDb.addOrUpdateManga(manga, externalId, providerId)
+            .then(function (result) {
+                if (result.chapters) {
+                    downloadChapters(chapters).then(function (chapters) {
+                        mangaDb.addChapters(chapters, manga._id, providerId).then(function () {
+                            logger.log('Inserted - %s', manga.title);
+                            promise.resolve();
+                        }, function (err) {
+                            promise.reject(err);
+                        });
+                    });
+                } else {
+                    logger.log('Inserted - %s', manga.title);
+                    promise.resolve();
+                }
+            }, function (err) {
+                promise.reject(err);
             });
-        })
     });
-}
-
-function updateChapter(id) {
-
 }
 
 function update() {
     var actions = [updateList, updateAllMangas];
-
-    return promised.seq(actions);
+    mangaDb.startUpdate().then(function(){
+        //update version somewhere?
+        return promised.seq(actions);
+    });
 }
 
 module.exports.update = update;

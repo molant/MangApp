@@ -24,12 +24,10 @@
         public MangaStatus Status { get; set; }
         public ReadingDirection? ReadingDirection { get; set; }
         internal string SummaryImageUrl { get; set; }
-        public string SummaryImagePath
-        {
-            get { return Path.Combine("SummaryImages", this.Id + Path.GetExtension(this.SummaryImageUrl.ToString())); }
-        }
+        public string SummaryImagePath { get; set; }
 
         public int LastChapter { get; set; }
         public DateTime? LastChapterDate { get; set; }
+        public int? LastChapterRead { get; set; }
     }
 }

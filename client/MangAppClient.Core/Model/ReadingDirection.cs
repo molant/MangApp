@@ -2,7 +2,7 @@
 {
     public enum ReadingDirection
     {
-        RTL,
-        LTR
+        RTL = 1,
+        LTR = 2
     }
 }
