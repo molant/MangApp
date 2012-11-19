@@ -34,6 +34,7 @@ namespace MangAppClient.Views
         public MangaDetailView()
         {
             this.InitializeComponent();
+            this.NavigationCacheMode = Windows.UI.Xaml.Navigation.NavigationCacheMode.Enabled;
         }
 
         /// <summary>
@@ -49,6 +50,12 @@ namespace MangAppClient.Views
                 var viewModel = DataContext as MangaDetailViewModel;
                 viewModel.Manga = manga;
             }
+
+        }
+        
+        private void backButton_Click(object sender, RoutedEventArgs e)
+        {
+            this.Frame.GoBack();
         }
     }
 }

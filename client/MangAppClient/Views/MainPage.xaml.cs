@@ -1,4 +1,5 @@
-﻿using MangAppClient.ViewModel;
+﻿using MangAppClient.Common;
+using MangAppClient.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,22 +16,18 @@ using Windows.UI.Xaml.Navigation;
 
 namespace MangAppClient.Views
 {
-    public sealed partial class MainPage
+    public sealed partial class MainPage : LayoutAwarePage
     {
         public MainPage()
         {
             this.InitializeComponent();
             this.groupGridView.ItemsSource = groupedItemsViewSource.View.CollectionGroups;
+            this.NavigationCacheMode = Windows.UI.Xaml.Navigation.NavigationCacheMode.Enabled;
         }
 
-        /// <summary>
-        /// Invoked when this page is about to be displayed in a Frame.
-        /// </summary>
-        /// <param name="e">Event data that describes how this page was reached.  The Parameter
-        /// property is typically used to configure the page.</param>
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        private void zoomedInGridView_ItemClick(object sender, ItemClickEventArgs e)
         {
-            //(semanticZoom.ZoomedOutView as ListViewBase).ItemsSource = groupedItemsViewSource.View.CollectionGroups;
+            this.Frame.Navigate(typeof(MangaDetailView), e.ClickedItem);
         }
     }
 }

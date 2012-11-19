@@ -16,6 +16,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using MangAppClient.Views;
 using Windows.UI.Popups;
+using MangAppClient.ViewModel;
 
 namespace MangAppClient
 {
@@ -49,7 +50,7 @@ namespace MangAppClient
         protected override void OnLaunched(LaunchActivatedEventArgs args)
         {
             Frame rootFrame = Window.Current.Content as Frame;
-
+            
             // Do not repeat app initialization when the Window already has content,
             // just ensure that the window is active
             if (rootFrame == null)
@@ -80,6 +81,7 @@ namespace MangAppClient
             Window.Current.Activate();
 
             DispatcherHelper.Initialize();
+            ViewModelLocator.RegisterRootFrame(rootFrame);
         }
 
         /// <summary>
