@@ -31,13 +31,13 @@ namespace MangAppClient.ViewModel
 
             if (ViewModelBase.IsInDesignModeStatic)
             {
-                SimpleIoc.Default.Register<IDatabase, Design.MockDatabase>();
-                SimpleIoc.Default.Register<IRequests, Design.MockService>();
+                SimpleIoc.Default.Register<ILocalRequests, Design.MockDatabase>();
+                SimpleIoc.Default.Register<IWebRequests, Design.MockService>();
             }
             else
             {
-                SimpleIoc.Default.Register<IDatabase, Database>();
-                SimpleIoc.Default.Register<IRequests, Design.MockService>();
+                SimpleIoc.Default.Register<ILocalRequests, LocalRequests>();
+                SimpleIoc.Default.Register<IWebRequests, Design.MockService>();
             }
 
             RegisterViewModels();

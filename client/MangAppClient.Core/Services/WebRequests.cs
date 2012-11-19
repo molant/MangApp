@@ -10,12 +10,12 @@
     using System.Threading.Tasks;
     using Windows.Data.Json;
 
-    public class Requests : IRequests
+    public class WebRequests : IWebRequests
     {
         internal int MangaListVersion { get; private set; }
 
         // Working
-        public Manga GetMangaDetail(Manga manga)
+        public void GetMangaChapters(Manga manga)
         {
             try
             {
@@ -23,45 +23,41 @@
                 var response = client.GetStringAsync(string.Format(Urls.GetMangaDetail, manga.Key)).Result;
 
                 // Transform JSON into manga
-                return this.ParseManga(JObject.Parse(response));
+                this.ParseMangaChapters(manga, JObject.Parse(response));
             }
             catch (Exception)
             {
-                return null;
             }
         }
 
         // Working
-        public Chapter GetChapter(Manga manga, Chapter chapter)
+        public void GetChapterPages(Chapter chapter)
         {
             try
             {
                 HttpClient client = new HttpClient();
-                var response = client.GetStringAsync(string.Format(Urls.GetMangaChapter, manga.Key, chapter.Key)).Result;
+                var response = client.GetStringAsync(string.Format(Urls.GetMangaChapter, chapter.MangaKey, chapter.Key)).Result;
 
                 // Transform JSON into chapter
-                return this.ParseChapter(manga.Key, JObject.Parse(response));
+                this.ParseChapterPages(chapter, JObject.Parse(response));
             }
             catch (HttpRequestException)
             {
-                return null;
             }
         }
 
-        public Chapter GetChapterFromProvider(Manga manga, Chapter chapter, int providerKey)
+        public void GetChapterPages(Chapter chapter, int providerKey)
         {
             try
             {
                 HttpClient client = new HttpClient();
-                var response = client.GetStringAsync(string.Format(Urls.GetMangaChapterFromProvider, manga.Key, chapter.Key, providerKey)).Result;
+                var response = client.GetStringAsync(string.Format(Urls.GetMangaChapterFromProvider, chapter.MangaKey, chapter.Key, providerKey)).Result;
 
                 // Transform JSON into manga
-                JObject json = JObject.Parse(response);
-                return this.ParseChapter(manga.Key, json["chapter"]);
+                this.ParseChapterPages(chapter, JObject.Parse(response));
             }
             catch (HttpRequestException)
             {
-                return null;
             }
         }
 
@@ -69,12 +65,11 @@
         {
             try
             {
-                List<Manga> results = new List<Manga>();
-
                 HttpClient client = new HttpClient();
                 var response = client.GetStringAsync(string.Format(Urls.GetRelatedMangas, manga.Key)).Result;
 
                 // Transform JSON into objects
+                List<Manga> results = new List<Manga>();
                 results.AddRange(JObject.Parse(response).Children().Select(t => this.ParseManga(t)));
 
                 return results;
@@ -85,18 +80,16 @@
             }
         }
 
-        public IEnumerable<int> GetFavoriteMangas(int userId)
+        public IEnumerable<int> GetFavoriteMangas(Guid userId)
         {
             try
             {
-                List<int> results = new List<int>();
-
                 HttpClient client = new HttpClient();
-                var response = client.GetStringAsync(string.Format(Urls.GetFavoriteMangas, userId)).Result;
+                var response = client.GetStringAsync(string.Format(Urls.GetFavoriteMangas, userId.ToString())).Result;
 
                 // Transform JSON into objects
-                JObject json = JObject.Parse(response);
-                results.AddRange(json["favorite"].Children().Values<int>());
+                List<int> results = new List<int>();
+                results.AddRange(JObject.Parse(response).Children().Values<int>());
 
                 return results;
             }
@@ -106,13 +99,21 @@
             }
         }
 
+        public void DownloadMangaChapter(Chapter chapter)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DownloadMangaChapters(Chapter chapterStart, Chapter chapterEnd)
+        {
+            throw new NotImplementedException();
+        }
+
         // Working
         internal IEnumerable<Manga> GetMangaList()
         {
             try
             {
-                List<Manga> results = new List<Manga>();
-
                 HttpClient client = new HttpClient();
                 var response = client.GetStringAsync(Urls.GetMangaList).Result;
 
@@ -120,6 +121,8 @@
                 JObject json = JObject.Parse(response);
 
                 this.MangaListVersion = json["version"].Value<int>();
+
+                List<Manga> results = new List<Manga>();
                 results.AddRange(json["mangas"].Children().Select(t => this.ParseManga(t)));
 
                 return results.OrderByDescending(m => m.Popularity);
@@ -225,6 +228,15 @@
             return manga;
         }
 
+        private void ParseMangaChapters(Manga manga, JToken token)
+        {
+            JToken chapters = token["chapters"];
+            if (chapters != null)
+            {
+                manga.Chapters = chapters.Children().Select(c => this.ParseChapter(manga.Key, c)).OrderBy(c => c.Number);
+            }
+        }
+
         // Working
         private Chapter ParseChapter(string mangaKey, JToken chapterJson)
         {
@@ -240,6 +252,11 @@
             chapter.Pages = this.ParsePages(chapterJson["pages"].Children());
 
             return chapter;
+        }
+
+        private void ParseChapterPages(Chapter chapter, JToken chapterJson)
+        {
+            chapter.Pages = this.ParsePages(chapterJson["pages"].Children());
         }
 
         // Working

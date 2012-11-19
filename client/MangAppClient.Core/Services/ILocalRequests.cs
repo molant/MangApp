@@ -5,7 +5,7 @@
     using System.Threading.Tasks;
     using Windows.UI.Xaml.Media.Imaging;
 
-    public interface IDatabase
+    public interface ILocalRequests
     {
         void CreateInitialDb();
 

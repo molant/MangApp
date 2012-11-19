@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace MangAppClient.Design
 {
-    public class MockDatabase : IDatabase
+    public class MockDatabase : ILocalRequests
     {
         private IEnumerable<Manga> mangaList;
 

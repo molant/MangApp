@@ -13,7 +13,7 @@
     using Windows.Storage.Search;
     using Windows.UI.Xaml.Media.Imaging;
 
-    public class Database : IDatabase
+    public class LocalRequests : ILocalRequests
     {
         private static readonly string[] Separators = { "#" };
 
@@ -63,7 +63,7 @@
             }
 
             // Populate the manga list from the server information
-            Requests requests = new Requests();
+            WebRequests requests = new WebRequests();
             IEnumerable<Manga> mangas = requests.GetMangaList();
 
             // Get additional summary and background images from the server
@@ -204,7 +204,7 @@
 
         public string UpdateBackgroundImage(Manga manga)
         {
-            byte[] imageData = new Requests().GetBackgroundImage(manga.Key);
+            byte[] imageData = new WebRequests().GetBackgroundImage(manga.Key);
 
             if (imageData != null && imageData.Length > 0)
             {
