@@ -9,20 +9,20 @@
     {
         void CreateInitialDb();
 
-        IEnumerable<MangaSummary> GetMangaList();
+        IEnumerable<Manga> GetMangaList();
 
         void UpdateMangaList();
 
-        void AddFavoriteManga(string mangaId);
+        void AddFavoriteManga(Manga manga);
 
-        void RemoveFavoriteManga(string mangaId);
+        void RemoveFavoriteManga(Manga manga);
 
-        void UpdateFavoriteManga(string mangaId, int lastChapterRead);
+        void UpdateFavoriteManga(Manga manga, int lastChapterRead);
 
-        string GetBackgroundImage(string mangaId);
+        string GetBackgroundImage(Manga manga);
 
         string GetDefaultBackgroundImage();
 
-        string UpdateBackgroundImage(string mangaId);
+        string UpdateBackgroundImage(Manga manga);
     }
 }

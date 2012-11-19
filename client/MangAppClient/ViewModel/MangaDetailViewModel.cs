@@ -98,14 +98,13 @@ namespace MangAppClient.ViewModel
         {
             if (ViewModelBase.IsInDesignModeStatic)
             {
-                MockData();
+                manga = service.GetMangaDetail(null);
             }
             else
             {
-                MockData();
+                manga = service.GetMangaDetail(null);
             }
         }
-
         private void MockData()
         {
             manga = service.GetMangaDetail("1");
