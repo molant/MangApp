@@ -10,9 +10,7 @@
                         d:DesignHeight="768"
                         d:DesignWidth="1366">
 
-    <common:LayoutAwarePage.Resources>
-        
-    </common:LayoutAwarePage.Resources>
+    <common:LayoutAwarePage.Resources/>
 
     <common:LayoutAwarePage.DataContext>
         <Binding Mode="OneWay" Path="MangaDetail" Source="{StaticResource Locator}"/>

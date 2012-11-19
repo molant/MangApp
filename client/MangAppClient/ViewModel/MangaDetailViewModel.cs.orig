@@ -15,9 +15,13 @@ namespace MangAppClient.ViewModel
     {
         private Manga manga;
         private IRequests service;
+<<<<<<< HEAD
         private IDatabase dataBase;
-        private ObservableCollection<Chapter> chapters;
+        private ObservableCollection<ChapterSummary> chapters;
         private BitmapImage background;
+=======
+        private ObservableCollection<Chapter> chapters;
+>>>>>>> e2f016cf885dd439c4420f09dc0bee31d9fedef5
 
         public string Title
         {
@@ -56,7 +60,7 @@ namespace MangAppClient.ViewModel
         {
             get
             {
-                return new Uri(manga.LocalSummaryImage);
+                return manga.RemoteSummaryImage;
             }
         }
 
@@ -109,9 +113,9 @@ namespace MangAppClient.ViewModel
         private void MockData()
         {
             manga = service.GetMangaDetail("1");
-            Background = new BitmapImage(new Uri(dataBase.GetBackgroundImage("1")));
+            Background = dataBase.GetBackgroundImage("1");
             if (Background == null)
-                Background = new BitmapImage(new Uri(dataBase.GetBackgroundImage("1")));
+                Background = dataBase.GetDefaultBackgroundImage();
         }
     }
 }

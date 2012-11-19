@@ -49,7 +49,7 @@ namespace MangAppClient.Design
 
         public string GetDefaultBackgroundImage()
         {
-            return new Windows.UI.Xaml.Media.Imaging.BitmapImage(new Uri("ms-appx:/Assets/souleater_bg.jpg"));
+            return "ms-appx:/Assets/souleater_bg.jpg";
         }
 
         public string GetBackgroundImage(string mangaId)
