@@ -18,7 +18,7 @@
     <Grid>
 
         <controls:Parallax ScrollWidth="{Binding ScrollableWidth, ElementName=PageScrollViewer}"  ImageSource="{Binding Background}" ScrollHorizontalOffset="{Binding HorizontalOffset, ElementName=PageScrollViewer}"/>
-        <Grid>
+        <Grid Margin="100,0,0,0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="140" />
                 <RowDefinition Height="*" />
@@ -59,25 +59,50 @@
                         </ScrollViewer>
                     </Grid>
 
-                    <ListView Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Stretch" ScrollViewer.HorizontalScrollMode="Disabled" ScrollViewer.VerticalScrollMode="Disabled" ItemsSource="{Binding Chapters}">
-                        <ListView.Template>
-                            <ControlTemplate>
-                                <ItemsPresenter/>
-                            </ControlTemplate>
-                        </ListView.Template>
+                    <Grid Grid.Column="1" Style="{StaticResource MangAppGridGroupItemStyle}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        
+                        <Grid Grid.Row="0" Margin="15,5,15,0" Width="{Binding RelativeSource={RelativeSource Self}, Path=Parent.Width}">
+                            <Button AutomationProperties.Name="Chapters Title" Content="Chapters" Style="{StaticResource TextButtonStyle}"/>
+                        </Grid>
+                        
+                        <ListView Grid.Row="1" Margin="60,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Stretch" ScrollViewer.HorizontalScrollMode="Disabled" ScrollViewer.VerticalScrollMode="Disabled" ItemsSource="{Binding Chapters}">
+                            <ListView.Template>
+                                <ControlTemplate>
+                                    <ItemsPresenter/>
+                                </ControlTemplate>
+                            </ListView.Template>
 
-                        <ListView.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <WrapGrid MaximumRowsOrColumns="2" ItemWidth="200" ItemHeight="200" Orientation="Vertical"/>
-                            </ItemsPanelTemplate>
-                        </ListView.ItemsPanel>
+                            <ListView.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <WrapGrid MaximumRowsOrColumns="10" ItemWidth="275" ItemHeight="55" Orientation="Vertical"/>
+                                </ItemsPanelTemplate>
+                            </ListView.ItemsPanel>
 
-                        <ListView.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Title}"></TextBlock>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Height="55" Width="275" >
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="55"></ColumnDefinition>
+                                            <ColumnDefinition Width="275"></ColumnDefinition>
+                                            <ColumnDefinition Width="70"></ColumnDefinition>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Background="{StaticResource MangAppSecondaryColor}">
+                                            <TextBlock Text="{Binding Number}"/>
+                                        </StackPanel>
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Title}"></TextBlock>
+                                            <TextBlock Text="{Binding Title}"></TextBlock>
+                                        </StackPanel>
+                                        <TextBlock Text="{Binding Pages}"></TextBlock>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </Grid>
                 </Grid>
             </ScrollViewer>
 

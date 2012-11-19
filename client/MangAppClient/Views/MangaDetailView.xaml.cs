@@ -43,9 +43,12 @@ namespace MangAppClient.Views
         /// property is typically used to configure the page.</param>
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            var manga = e.Parameter as Manga;
-            var viewModel = DataContext as MangaDetailViewModel;
-            viewModel.Manga = manga;
+            if (e.NavigationMode != NavigationMode.New)
+            {
+                var manga = e.Parameter as Manga;
+                var viewModel = DataContext as MangaDetailViewModel;
+                viewModel.Manga = manga;
+            }
         }
     }
 }

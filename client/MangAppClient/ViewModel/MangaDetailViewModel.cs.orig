@@ -14,21 +14,42 @@ namespace MangAppClient.ViewModel
     public class MangaDetailViewModel : MangAppViewModelBase
     {
         private Manga manga;
+<<<<<<< HEAD
         private IRequests service;
         private IDatabase dataBase;
+=======
+        private IWebRequests service;
+>>>>>>> cfd437d67d9c2b27e7ebd986bf53ba282c1ceb54
         private ObservableCollection<Chapter> chapters;
         private BitmapImage background;
+        private string mangaId;
+
+        public Manga Manga
+        {
+            get
+            {
+                return manga;
+            }
+
+            set
+            {
+                manga = value;
+
+                LoadData();
+                RaisePropertyChanged();
+            }
+        }
 
         public string Title
         {
             get
             {
-                return manga.Title;
+                return Manga.Title;
             }
 
             set
             {
-                manga.Title= value;
+                Manga.Title= value;
                 RaisePropertyChanged();
             }
         }
@@ -39,7 +60,7 @@ namespace MangAppClient.ViewModel
             {
                 if (chapters == null)
                 {
-                    chapters = new ObservableCollection<Chapter>(manga.Chapters);
+                    chapters = new ObservableCollection<Chapter>(Manga.Chapters);
                 }
 
                 return chapters;
@@ -56,7 +77,7 @@ namespace MangAppClient.ViewModel
         {
             get
             {
-                return new Uri(manga.LocalSummaryImage);
+                return new Uri(Manga.LocalSummaryImage);
             }
         }
 
@@ -78,16 +99,20 @@ namespace MangAppClient.ViewModel
         {
             get
             {
-                return manga.Description;
+                return Manga.Description;
             }
             set
             {
-                manga.Description = value;
+                Manga.Description = value;
                 RaisePropertyChanged();
             }
         }
 
+<<<<<<< HEAD
         public MangaDetailViewModel(IRequests service, IDatabase dataBase)
+=======
+        public MangaDetailViewModel(IWebRequests service)
+>>>>>>> cfd437d67d9c2b27e7ebd986bf53ba282c1ceb54
         {
             this.service = service;
             this.dataBase = dataBase;
@@ -96,32 +121,24 @@ namespace MangAppClient.ViewModel
 
         private void LoadData()
         {
+<<<<<<< HEAD
+            Manga = service.GetMangaDetail(Manga);
+
+            var imageUri = dataBase.GetBackgroundImage(Manga);            
+            if(imageUri == null)
+                imageUri = dataBase.GetDefaultBackgroundImage();
+
+            Background = new BitmapImage(new Uri(imageUri));
+=======
             if (ViewModelBase.IsInDesignModeStatic)
             {
-<<<<<<< HEAD
-                MockData();
+                service.GetMangaChapters(manga);
             }
             else
             {
-                MockData();
+                service.GetMangaChapters(manga);
             }
+>>>>>>> cfd437d67d9c2b27e7ebd986bf53ba282c1ceb54
         }
-
-        private void MockData()
-        {
-            manga = service.GetMangaDetail("1");
-            Background = new BitmapImage(new Uri(dataBase.GetBackgroundImage("1")));
-            if (Background == null)
-                Background = new BitmapImage(new Uri(dataBase.GetBackgroundImage("1")));
-        }
-=======
-                manga = service.GetMangaDetail(null);
-            }
-            else
-            {
-                manga = service.GetMangaDetail(null);
-            }
-        }
->>>>>>> d62d94df275dcf7921d3d3eaa7b7160cb42c731c
     }
 }

@@ -37,7 +37,7 @@ namespace MangAppClient.ViewModel
             else
             {
                 SimpleIoc.Default.Register<ILocalRequests, LocalRequests>();
-                SimpleIoc.Default.Register<IWebRequests, Design.MockService>();
+                SimpleIoc.Default.Register<IWebRequests, WebRequests>();
             }
 
             RegisterViewModels();

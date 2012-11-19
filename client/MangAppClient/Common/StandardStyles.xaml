@@ -132,6 +132,12 @@
         <Setter Property="FontSize" Value="10"/>
         <Setter Property="Foreground" Value="White"/>
     </Style>
+
+    <!-- Grid Group item styles -->
+    <Style x:Key="MangAppGridGroupItemStyle" TargetType="Grid">
+        <Setter Property="Background" Value="#33000000"/>
+        <Setter Property="Margin" Value="0,0,50,0" />
+    </Style>
     
     <!-- Group item styles -->
     <Style x:Key="MangAppGroupItemStyle" TargetType="GroupItem">
@@ -139,13 +145,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="GroupItem">
                     <Border BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}">
-                        <Grid>
-                            <Grid.Style>
-                                <Style TargetType="Grid">
-                                    <Setter Property="Background" Value="#33000000"/>
-                                    <Setter Property="Margin" Value="0,0,50,0" />
-                                </Style>
-                            </Grid.Style>
+                        <Grid Style="{StaticResource MangAppGridGroupItemStyle}">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="*"/>
