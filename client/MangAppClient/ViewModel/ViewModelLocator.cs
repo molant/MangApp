@@ -32,13 +32,13 @@ namespace MangAppClient.ViewModel
 
             if (ViewModelBase.IsInDesignModeStatic)
             {
-                SimpleIoc.Default.Register<ILocalRequests, Design.MockDatabase>();
-                SimpleIoc.Default.Register<IWebRequests, Design.MockService>();
+                SimpleIoc.Default.Register<ILocalData, Design.MockDatabase>();
+                SimpleIoc.Default.Register<IWebData, Design.MockService>();
             }
             else
             {
-                SimpleIoc.Default.Register<ILocalRequests, LocalRequests>();
-                SimpleIoc.Default.Register<IWebRequests, WebRequests>();
+                SimpleIoc.Default.Register<ILocalData, LocalData>();
+                SimpleIoc.Default.Register<IWebData, WebData>();
             }
 
             RegisterViewModels();

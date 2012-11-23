@@ -99,6 +99,7 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Constants.cs" />
     <Compile Include="Model\Chapter.cs" />
     <Compile Include="Model\LocalDataVersion.cs" />
     <Compile Include="Model\ReadingDirection.cs" />
@@ -107,14 +108,16 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Model\DiffResult.cs" />
     <Compile Include="Model\RemoveDiffResult.cs" />
-    <Compile Include="Services\LocalRequests.cs" />
-    <Compile Include="Services\ILocalRequests.cs" />
-    <Compile Include="Services\IWebRequests.cs" />
-    <Compile Include="Services\WebRequests.cs" />
+    <Compile Include="Services\LocalDataGenerator.cs" />
+    <Compile Include="Services\LocalData.cs" />
+    <Compile Include="Services\ILocalData.cs" />
+    <Compile Include="Services\IWebData.cs" />
+    <Compile Include="Services\WebData.cs" />
     <Compile Include="Model\UpdateDiffResult.cs" />
     <Compile Include="Services\Urls.cs" />
     <Compile Include="SQLite\SQLite.cs" />
     <Compile Include="SQLite\SQLiteAsync.cs" />
+    <Compile Include="Utilities\FileSystemUtilities.cs" />
     <Compile Include="Utilities\JsonHelper.cs" />
   </ItemGroup>
   <ItemGroup>

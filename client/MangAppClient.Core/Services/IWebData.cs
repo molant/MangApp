@@ -5,7 +5,7 @@
     using System.Collections.Generic;
     using System.Threading.Tasks;
 
-    public interface IWebRequests
+    public interface IWebData
     {
         void GetMangaChapters(Manga manga);
 

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace MangAppClient.Design
 {
-    public class MockService : IWebRequests
+    public class MockService : IWebData
     {
         private Manga manga;
 

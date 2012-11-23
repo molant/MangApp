@@ -6,10 +6,8 @@
     using System.Threading.Tasks;
     using Windows.UI.Xaml.Media.Imaging;
 
-    public interface ILocalRequests
+    public interface ILocalData
     {
-        void CreateInitialDb();
-
         IEnumerable<Manga> GetMangaList();
 
         void UpdateMangaList();

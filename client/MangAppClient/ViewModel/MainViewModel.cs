@@ -19,7 +19,7 @@ namespace MangAppClient.ViewModel
     /// </summary>
     public class MainViewModel : MangAppViewModelBase
     {
-        private readonly ILocalRequests dataBase;
+        private readonly ILocalData dataBase;
         private object gridViewSelectedItem = null;
         private ObservableCollection<MangaGroupViewModel> mangaGroups;
 
@@ -57,7 +57,7 @@ namespace MangAppClient.ViewModel
         /// <summary>
         /// Initializes a new instance of the MainViewModel class.
         /// </summary>
-        public MainViewModel(ILocalRequests dataBase)
+        public MainViewModel(ILocalData dataBase)
         {
             this.dataBase = dataBase;
             this.mangaGroups = new ObservableCollection<MangaGroupViewModel>();

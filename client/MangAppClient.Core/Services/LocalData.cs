@@ -1,9 +1,11 @@
 ﻿namespace MangAppClient.Core.Services
 {
     using MangAppClient.Core.Model;
+    using MangAppClient.Core.Utilities;
     using SQLite;
     using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.IO;
     using System.Linq;
     using System.Net.Http;
@@ -13,85 +15,15 @@
     using Windows.Storage.Search;
     using Windows.UI.Xaml.Media.Imaging;
 
-    public class LocalRequests : ILocalRequests
+    public class LocalData : ILocalData
     {
-        private static readonly string[] Separators = { "#" };
+        private ObservableCollection<Manga> mangaList;
 
-        private static readonly string SummaryImagesFolderPath = "SummaryImages";
+        private Random random = new Random();
 
-        private static readonly string BackgroundImagesFolderPath = "BackgroundImages";
-
-        private static readonly string DownloadsFolderPath = "Downloads";
-
-        private static Random random = new Random();
-
-        // Working
-        public void CreateInitialDb()
+        public ObservableCollection<Manga> MangaList
         {
-            // Recreate the local files and folders
-            var dbFile = this.FileExits(ApplicationData.Current.LocalFolder, "mangapp.db");
-            if (dbFile != null)
-            {
-                dbFile.DeleteAsync().AsTask().Wait();
-            }
-
-            var summaryFolder = this.FolderExists(ApplicationData.Current.LocalFolder, SummaryImagesFolderPath);
-            if (summaryFolder != null)
-            {
-                summaryFolder.DeleteAsync().AsTask().Wait();
-            }
-
-            var backgroundFolder = this.FolderExists(ApplicationData.Current.LocalFolder, BackgroundImagesFolderPath);
-            if (backgroundFolder != null)
-            {
-                backgroundFolder.DeleteAsync().AsTask().Wait();
-            }
-
-            var downloadsFolder = this.FolderExists(ApplicationData.Current.LocalFolder, DownloadsFolderPath);
-            if (downloadsFolder != null)
-            {
-                downloadsFolder.DeleteAsync().AsTask().Wait();
-            }
-
-            summaryFolder = ApplicationData.Current.LocalFolder.CreateFolderAsync(SummaryImagesFolderPath, CreationCollisionOption.ReplaceExisting).AsTask().Result;
-            backgroundFolder = ApplicationData.Current.LocalFolder.CreateFolderAsync(BackgroundImagesFolderPath, CreationCollisionOption.ReplaceExisting).AsTask().Result;
-            downloadsFolder = ApplicationData.Current.LocalFolder.CreateFolderAsync(DownloadsFolderPath, CreationCollisionOption.ReplaceExisting).AsTask().Result;
-
-            // Copy the background images from the installed folder to the app folder
-            var backgroundInstallFolder = Package.Current.InstalledLocation.GetFolderAsync(BackgroundImagesFolderPath).AsTask().Result;
-            foreach (var file in backgroundInstallFolder.GetFilesAsync().AsTask().Result)
-            {
-                var copiedFile = file.CopyAsync(backgroundFolder, file.Name, NameCollisionOption.ReplaceExisting).AsTask().Result;
-            }
-
-            // Copy the summary images from the installed folder to the app folder
-            var summaryInstallFolder = Package.Current.InstalledLocation.GetFolderAsync(SummaryImagesFolderPath).AsTask().Result;
-            foreach (var file in summaryInstallFolder.GetFilesAsync().AsTask().Result)
-            {
-                var copiedFile = file.CopyAsync(summaryFolder, file.Name, NameCollisionOption.ReplaceExisting).AsTask().Result;
-            }
-
-            // Populate the manga list from the server information
-            WebRequests requests = new WebRequests();
-            IEnumerable<Manga> mangas = requests.GetMangaList();
-
-            // Get additional summary and background images from the server
-            HttpClient client = new HttpClient();
-            foreach (var manga in mangas)
-            {
-                this.CreateSummaryImage(client, manga);
-                this.UpdateBackgroundImage(manga);
-            }
-
-            // Add mangas to the database
-            using (SQLiteConnection db = new SQLiteConnection(Path.Combine(ApplicationData.Current.LocalFolder.Path, "mangapp.db")))
-            {
-                db.CreateTable<LocalDataVersion>();
-                db.CreateTable<Manga>();
-
-                db.Insert(new LocalDataVersion(requests.MangaListVersion));
-                db.InsertAll(mangas);
-            }
+            get { return this.mangaList; }
         }
 
         // Working
@@ -169,7 +101,7 @@
 
         public string GetBackgroundImage(Manga manga)
         {
-            var folder = this.FolderExists(ApplicationData.Current.LocalFolder, BackgroundImagesFolderPath);
+            var folder = FileSystemUtilities.GetFolder(ApplicationData.Current.LocalFolder, Constants.BackgroundImagesFolderPath);
             if (folder != null)
             {
                 // Let's search first by manga key
@@ -198,7 +130,7 @@
 
         public string GetDefaultBackgroundImage()
         {
-            var folder = this.FolderExists(ApplicationData.Current.LocalFolder, BackgroundImagesFolderPath);
+            var folder = FileSystemUtilities.GetFolder(ApplicationData.Current.LocalFolder, Constants.BackgroundImagesFolderPath);
             if (folder != null)
             {
                 var defaultFiles = folder.GetFilesAsync().AsTask().Result
@@ -208,17 +140,17 @@
                 return defaultFiles[random.Next(0, defaultFiles.Count)].Path;
             }
 
-            return Path.Combine(BackgroundImagesFolderPath, "default.jpg");
+            return Path.Combine(Constants.BackgroundImagesFolderPath, "default.jpg");
         }
 
         public string UpdateBackgroundImage(Manga manga)
         {
-            byte[] imageData = new WebRequests().GetBackgroundImage(manga.Key);
+            byte[] imageData = new WebData().GetBackgroundImage(manga.Key);
 
             if (imageData != null && imageData.Length > 0)
             {
                 string fileName = manga.Key + ".jpg";
-                var file = ApplicationData.Current.LocalFolder.CreateFileAsync(Path.Combine(BackgroundImagesFolderPath, fileName), Windows.Storage.CreationCollisionOption.ReplaceExisting).AsTask().Result;
+                var file = ApplicationData.Current.LocalFolder.CreateFileAsync(Path.Combine(Constants.BackgroundImagesFolderPath, fileName), Windows.Storage.CreationCollisionOption.ReplaceExisting).AsTask().Result;
 
                 using (var stream = file.OpenStreamForWriteAsync().Result)
                 {
@@ -240,20 +172,20 @@
                 if (imageData != null && imageData.Length > 0)
                 {
                     string fileName = manga.Key + Path.GetExtension(manga.RemoteSummaryImageDb);
-                    var file = ApplicationData.Current.LocalFolder.CreateFileAsync(Path.Combine(SummaryImagesFolderPath, fileName), CreationCollisionOption.ReplaceExisting).AsTask().Result;
+                    var file = ApplicationData.Current.LocalFolder.CreateFileAsync(Path.Combine(Constants.SummaryImagesFolderPath, fileName), CreationCollisionOption.ReplaceExisting).AsTask().Result;
 
                     using (var stream = file.OpenStreamForWriteAsync().Result)
                     {
                         stream.Write(imageData, 0, imageData.Length);
                     }
 
-                    manga.LocalSummaryImage = Path.Combine(SummaryImagesFolderPath, manga.Key + Path.GetExtension(manga.RemoteSummaryImageDb));
+                    manga.LocalSummaryImage = Path.Combine(Constants.SummaryImagesFolderPath, manga.Key + Path.GetExtension(manga.RemoteSummaryImageDb));
                 }
             }
             catch (Exception)
             {
                 // No image in the server, let's use a random default one
-                var folder = this.FolderExists(ApplicationData.Current.LocalFolder, SummaryImagesFolderPath);
+                var folder = FileSystemUtilities.GetFolder(ApplicationData.Current.LocalFolder, Constants.SummaryImagesFolderPath);
                 if (folder != null)
                 {
                     var defaultFiles = folder.GetFilesAsync().AsTask().Result
@@ -266,32 +198,6 @@
                 {
                     manga.LocalSummaryImage = null;
                 }
-            }
-        }
-
-        // Working
-        private StorageFile FileExits(StorageFolder folder, string fileName)
-        {
-            try
-            {
-                return folder.GetFileAsync(fileName).AsTask().Result;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
-        }
-
-        // Working
-        private StorageFolder FolderExists(StorageFolder folder, string fileName)
-        {
-            try
-            {
-                return folder.GetFolderAsync(fileName).AsTask().Result;
-            }
-            catch (Exception)
-            {
-                return null;
             }
         }
     }

@@ -13,7 +13,7 @@
     using Windows.Data.Json;
     using Windows.Storage;
 
-    public class WebRequests : IWebRequests
+    public class WebData : IWebData
     {
         internal int MangaListVersion { get; private set; }
 
