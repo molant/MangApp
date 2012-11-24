@@ -104,5 +104,11 @@ namespace MangAppClient.Design
         {
             throw new NotImplementedException();
         }
+
+
+        public void Initialize()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

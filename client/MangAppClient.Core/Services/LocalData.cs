@@ -35,8 +35,14 @@
         public LocalData()
         {
             this.webData = new WebData();
+        }
 
-            using (SQLiteConnection db = new SQLiteConnection(Path.Combine(ApplicationData.Current.LocalFolder.Path, "mangapp.db")))
+        /// <summary>
+        /// Initializes the local data.
+        /// </summary>
+        public void Initialize()
+        {
+            using (SQLiteConnection db = new SQLiteConnection(Path.Combine(ApplicationData.Current.LocalFolder.Path, Constants.DbName)))
             {
                 this.mangaList = new ObservableCollection<Manga>(db.Table<Manga>().ToList().OrderByDescending(m => m.Popularity));
             }
@@ -85,7 +91,7 @@
         /// <param name="manga">The manga to update.</param>
         public void UpdateManga(Manga manga)
         {
-            using (SQLiteConnection db = new SQLiteConnection(Path.Combine(ApplicationData.Current.LocalFolder.Path, "mangapp.db")))
+            using (SQLiteConnection db = new SQLiteConnection(Path.Combine(ApplicationData.Current.LocalFolder.Path, Constants.DbName)))
             {
                 db.Update(manga);
             }
@@ -102,13 +108,14 @@
             var folder = FileSystemUtilities.GetFolder(ApplicationData.Current.LocalFolder, Constants.BackgroundImagesFolderPath);
             if (folder != null)
             {
-                imagePath = FileSystemUtilities.GetRandomPath(folder, "default");
+                imagePath = FileSystemUtilities.GetRandomPath(folder, Constants.DefaultImageName);
             }
 
             // We do not have the image locally, so we have to go to the server to get it
             if (string.IsNullOrEmpty(imagePath))
             {
-                imagePath = await this.GetDefaultBackgroundImageFromServer();
+                await this.UpdateImageFolderFromServer(folder, Constants.DefaultImageName, () => this.webData.GetDefaultBackgroundImages());
+                imagePath = FileSystemUtilities.GetRandomPath(folder, Constants.DefaultImageName);
             }
 
             return imagePath;
@@ -137,7 +144,8 @@
             // We do not have the image locally, so we have to go to the server to get it
             if (string.IsNullOrEmpty(imagePath))
             {
-                imagePath = await this.GetBackgroundImageFromServer(manga);
+                await this.UpdateImageFolderFromServer(folder, manga.Title, () => this.webData.GetBackgroundImages(manga));
+                imagePath = FileSystemUtilities.GetRandomPath(folder, manga.Title);
             }
 
             return imagePath;
@@ -160,7 +168,8 @@
             // We do not have the image locally, so we have to go to the server to get it
             if (string.IsNullOrEmpty(imagePath))
             {
-                imagePath = await this.GetDefaultSummaryImageFromServer();
+                await this.UpdateImageFolderFromServer(folder, Constants.DefaultImageName, () => this.webData.GetDefaultSummaryImages());
+                imagePath = FileSystemUtilities.GetRandomPath(folder, Constants.DefaultImageName);
             }
 
             return imagePath;
@@ -189,7 +198,8 @@
             // We do not have the image locally, so we have to go to the server to get it
             if (string.IsNullOrEmpty(imagePath))
             {
-                imagePath = await this.GetSummaryImageFromServer(manga);
+                await this.UpdateImageFolderFromServer(folder, manga.Title, () => this.webData.GetSummaryImages(manga));
+                imagePath = FileSystemUtilities.GetRandomPath(folder, manga.Title);
             }
 
             return imagePath;
@@ -201,92 +211,20 @@
             return null;
         }
 
-        private async Task<string> GetDefaultBackgroundImageFromServer()
+        internal async Task UpdateImageFolderFromServer(StorageFolder folder, string imagesName, Func<Task<IEnumerable<RemoteImage>>> serverCall)
         {
-            StorageFolder folder = FileSystemUtilities.GetFolder(ApplicationData.Current.LocalFolder, Constants.BackgroundImagesFolderPath);
-            if (folder != null)
+            var images = await serverCall();
+            foreach (var image in images)
             {
-                var images = await this.webData.GetDefaultBackgroundImages();
-                foreach (var image in images)
-                {
-                    byte[] imageData = image.Data;
-                    string fileName = FileSystemUtilities.GetNewFileName(folder, "default") + Path.GetExtension(image.Name);
+                byte[] imageData = image.Data;
+                string fileName = FileSystemUtilities.GetNewFileName(folder, imagesName) + Path.GetExtension(image.Name);
 
-                    var file = folder.CreateFileAsync(fileName).AsTask().Result;
-                    using (var stream = file.OpenStreamForWriteAsync().Result)
-                    {
-                        stream.Write(imageData, 0, imageData.Length);
-                    }
+                var file = folder.CreateFileAsync(fileName).AsTask().Result;
+                using (var stream = file.OpenStreamForWriteAsync().Result)
+                {
+                    stream.Write(imageData, 0, imageData.Length);
                 }
             }
-
-            return FileSystemUtilities.GetRandomPath(folder, "default");
-        }
-
-        private async Task<string> GetBackgroundImageFromServer(Manga manga)
-        {
-            StorageFolder folder = FileSystemUtilities.GetFolder(ApplicationData.Current.LocalFolder, Constants.BackgroundImagesFolderPath);
-            if (folder != null)
-            {
-                var images = await this.webData.GetBackgroundImages(manga);
-                foreach (var image in images)
-                {
-                    byte[] imageData = image.Data;
-                    string fileName = FileSystemUtilities.GetNewFileName(folder, manga.Key) + Path.GetExtension(image.Name);
-
-                    var file = folder.CreateFileAsync(fileName).AsTask().Result;
-                    using (var stream = file.OpenStreamForWriteAsync().Result)
-                    {
-                        stream.Write(imageData, 0, imageData.Length);
-                    }
-                }
-            }
-
-            return FileSystemUtilities.GetRandomPath(folder, manga.Title);
-        }
-
-        private async Task<string> GetDefaultSummaryImageFromServer()
-        {
-            StorageFolder folder = FileSystemUtilities.GetFolder(ApplicationData.Current.LocalFolder, Constants.SummaryImagesFolderPath);
-            if (folder != null)
-            {
-                var images = await this.webData.GetDefaultSummaryImages();
-                foreach (var image in images)
-                {
-                    byte[] imageData = image.Data;
-                    string fileName = FileSystemUtilities.GetNewFileName(folder, "default") + Path.GetExtension(image.Name);
-
-                    var file = folder.CreateFileAsync(fileName).AsTask().Result;
-                    using (var stream = file.OpenStreamForWriteAsync().Result)
-                    {
-                        stream.Write(imageData, 0, imageData.Length);
-                    }
-                }
-            }
-
-            return FileSystemUtilities.GetRandomPath(folder, "default");
-        }
-
-        private async Task<string> GetSummaryImageFromServer(Manga manga)
-        {
-            StorageFolder folder = FileSystemUtilities.GetFolder(ApplicationData.Current.LocalFolder, Constants.SummaryImagesFolderPath);
-            if (folder != null)
-            {
-                var images = await this.webData.GetSummaryImages(manga);
-                foreach (var image in images)
-                {
-                    byte[] imageData = image.Data;
-                    string fileName = FileSystemUtilities.GetNewFileName(folder, manga.Key) + Path.GetExtension(image.Name);
-
-                    var file = folder.CreateFileAsync(fileName).AsTask().Result;
-                    using (var stream = file.OpenStreamForWriteAsync().Result)
-                    {
-                        stream.Write(imageData, 0, imageData.Length);
-                    }
-                }
-            }
-
-            return FileSystemUtilities.GetRandomPath(folder, manga.Title);
         }
     }
 }

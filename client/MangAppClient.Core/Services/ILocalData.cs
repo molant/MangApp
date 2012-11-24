@@ -10,6 +10,8 @@
     {
         ObservableCollection<Manga> MangaList { get; }
 
+        void Initialize();
+
         void UpdateMangaList();
 
         void UpdateManga(Manga manga);

@@ -60,59 +60,29 @@
             }
 
             // Populate the manga list from the server information
-            WebData requests = new WebData();
-            IEnumerable<Manga> mangas = requests.GetMangaList();
+            WebData web = new WebData();
+            IEnumerable<Manga> mangas = web.GetMangaList();
 
+            // HACK: Disabled for testing, if hitting the real server this will produce more than 15k web calls to get images for all the mangas.
             // Get additional summary and background images from the server
-            HttpClient client = new HttpClient();
-            foreach (var manga in mangas)
-            {
-                // TODO: VICENTE
-                //this.CreateSummaryImage(client, manga);
-                //this.UpdateBackgroundImage(manga);
-            }
+            //LocalData local = new LocalData();
+            //local.UpdateImageFolderFromServer(backgroundFolder, Constants.DefaultImageName, () => web.GetDefaultBackgroundImages()).Wait();
+            //local.UpdateImageFolderFromServer(summaryFolder, Constants.DefaultImageName, () => web.GetDefaultSummaryImages()).Wait();
+
+            //foreach (var manga in mangas)
+            //{
+            //    local.UpdateImageFolderFromServer(backgroundFolder, manga.Title, () => web.GetBackgroundImages(manga)).Wait();
+            //    local.UpdateImageFolderFromServer(summaryFolder, manga.Title, () => web.GetSummaryImages(manga)).Wait();
+            //}
 
             // Add mangas to the database
-            using (SQLiteConnection db = new SQLiteConnection(Path.Combine(ApplicationData.Current.LocalFolder.Path, "mangapp.db")))
+            using (SQLiteConnection db = new SQLiteConnection(Path.Combine(ApplicationData.Current.LocalFolder.Path, Constants.DbName)))
             {
                 db.CreateTable<LocalDataVersion>();
                 db.CreateTable<Manga>();
 
-                db.Insert(new LocalDataVersion(requests.MangaListVersion));
+                db.Insert(new LocalDataVersion(web.MangaListVersion));
                 db.InsertAll(mangas);
-            }
-        }
-        
-        private void CreateSummaryImage(HttpClient client, Manga manga)
-        {
-            try
-            {
-                byte[] imageData = client.GetByteArrayAsync(manga.RemoteSummaryImagePath).Result;
-                if (imageData != null && imageData.Length > 0)
-                {
-                    string fileName = manga.Key + Path.GetExtension(manga.RemoteSummaryImagePath);
-                    var file = ApplicationData.Current.LocalFolder.CreateFileAsync(Path.Combine(Constants.SummaryImagesFolderPath, fileName), CreationCollisionOption.ReplaceExisting).AsTask().Result;
-
-                    using (var stream = file.OpenStreamForWriteAsync().Result)
-                    {
-                        stream.Write(imageData, 0, imageData.Length);
-                    }
-
-                    manga.SummaryImagePath = Path.Combine(Constants.SummaryImagesFolderPath, manga.Key + Path.GetExtension(manga.RemoteSummaryImagePath));
-                }
-            }
-            catch (Exception)
-            {
-                // No image in the server, let's use a random default one
-                var folder = FileSystemUtilities.GetFolder(ApplicationData.Current.LocalFolder, Constants.SummaryImagesFolderPath);
-                if (folder != null)
-                {
-                    manga.SummaryImagePath = FileSystemUtilities.GetRandomPath(folder, "default");
-                }
-                else
-                {
-                    manga.SummaryImagePath = null;
-                }
             }
         }
     }

@@ -6,6 +6,8 @@
 
         public static readonly string DbName = "mangapp.db";
 
+        public static readonly string DefaultImageName = "default";
+
         public static readonly string SummaryImagesFolderPath = "SummaryImages";
 
         public static readonly string BackgroundImagesFolderPath = "BackgroundImages";
