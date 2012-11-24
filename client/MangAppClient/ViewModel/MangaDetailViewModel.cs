@@ -44,12 +44,6 @@ namespace MangAppClient.ViewModel
             {
                 return Manga.Title;
             }
-
-            set
-            {
-                Manga.Title= value;
-                RaisePropertyChanged();
-            }
         }
 
         public ObservableCollection<Chapter> Chapters
@@ -75,7 +69,7 @@ namespace MangAppClient.ViewModel
         {
             get
             {
-                return new Uri(Path.Combine(ApplicationData.Current.LocalFolder.Path, Manga.LocalSummaryImage));
+                return new Uri(Path.Combine(ApplicationData.Current.LocalFolder.Path, Manga.SummaryImagePath));
             }
         }
 
@@ -98,11 +92,6 @@ namespace MangAppClient.ViewModel
             get
             {
                 return Manga.Description;
-            }
-            set
-            {
-                Manga.Description = value;
-                RaisePropertyChanged();
             }
         }
 
@@ -127,19 +116,19 @@ namespace MangAppClient.ViewModel
             //for (int i = 1; i <= 50; i++)
             //    chapters.Add(new Chapter() { Title = "Chapter" + i, Number = i });
             //this.dataBase.CreateInitialDb();
-            Manga = dataBase.GetMangaList().First();
+            Manga = dataBase.MangaList.First();
             service.GetMangaChapters(Manga);
 
             //LoadData();
         }
 
-        private void LoadData()
+        private async void LoadData()
         {
             service.GetMangaChapters(Manga);
 
-            var imageUri = dataBase.GetBackgroundImage(Manga);            
+            var imageUri = await dataBase.GetBackgroundImage(Manga);            
             if(imageUri == null)
-                imageUri = dataBase.GetDefaultBackgroundImage();
+                imageUri = dataBase.GetDefaultBackgroundImage().Result;
 
             Background = new BitmapImage(new Uri(Path.Combine(ApplicationData.Current.LocalFolder.Path, imageUri)));
         }

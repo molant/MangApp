@@ -6,6 +6,7 @@
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Net.Http;
     using Windows.ApplicationModel;
     using Windows.Storage;
@@ -79,6 +80,39 @@
 
                 db.Insert(new LocalDataVersion(requests.MangaListVersion));
                 db.InsertAll(mangas);
+            }
+        }
+        
+        private void CreateSummaryImage(HttpClient client, Manga manga)
+        {
+            try
+            {
+                byte[] imageData = client.GetByteArrayAsync(manga.RemoteSummaryImagePath).Result;
+                if (imageData != null && imageData.Length > 0)
+                {
+                    string fileName = manga.Key + Path.GetExtension(manga.RemoteSummaryImagePath);
+                    var file = ApplicationData.Current.LocalFolder.CreateFileAsync(Path.Combine(Constants.SummaryImagesFolderPath, fileName), CreationCollisionOption.ReplaceExisting).AsTask().Result;
+
+                    using (var stream = file.OpenStreamForWriteAsync().Result)
+                    {
+                        stream.Write(imageData, 0, imageData.Length);
+                    }
+
+                    manga.SummaryImagePath = Path.Combine(Constants.SummaryImagesFolderPath, manga.Key + Path.GetExtension(manga.RemoteSummaryImagePath));
+                }
+            }
+            catch (Exception)
+            {
+                // No image in the server, let's use a random default one
+                var folder = FileSystemUtilities.GetFolder(ApplicationData.Current.LocalFolder, Constants.SummaryImagesFolderPath);
+                if (folder != null)
+                {
+                    manga.SummaryImagePath = FileSystemUtilities.GetRandomPath(folder, "default");
+                }
+                else
+                {
+                    manga.SummaryImagePath = null;
+                }
             }
         }
     }

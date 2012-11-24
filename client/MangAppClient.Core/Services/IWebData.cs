@@ -13,10 +13,6 @@
 
         void GetChapterPages(Chapter chapter, int providerKey);
 
-        IEnumerable<Manga> GetRelatedMangas(Manga manga);
-
-        IEnumerable<int> GetFavoriteMangas(Guid userId);
-
         void DownloadMangaChapter(Chapter chapter);
     }
 }

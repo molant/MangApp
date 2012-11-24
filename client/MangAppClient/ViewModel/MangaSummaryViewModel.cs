@@ -23,9 +23,9 @@ namespace MangAppClient.ViewModel
             YearOfRelease = manga.YearOfRelease;
             Status = manga.Status;
             ReadingDirection = manga.ReadingDirection;
-            SummaryImagePath = new Uri(Path.Combine(ApplicationData.Current.LocalFolder.Path, manga.LocalSummaryImage));
-            LastChapter = manga.LastChapter;
-            LastChapterDate = manga.LastChapterDate;
+            SummaryImagePath = new Uri(Path.Combine(ApplicationData.Current.LocalFolder.Path, manga.SummaryImagePath));
+            LastChapter = manga.LastChapterUploaded;
+            LastChapterDate = manga.LastChapterUploadedDate;
         }
 
         public string Title { get; set; }

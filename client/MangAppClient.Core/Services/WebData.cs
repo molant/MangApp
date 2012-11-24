@@ -17,7 +17,6 @@
     {
         internal int MangaListVersion { get; private set; }
 
-        // Working
         public void GetMangaChapters(Manga manga)
         {
             try
@@ -26,14 +25,13 @@
                 var response = client.GetStringAsync(string.Format(Urls.GetMangaDetail, manga.Key)).Result;
 
                 // Transform JSON into manga
-                this.ParseMangaChapters(manga, JObject.Parse(response));
+                JsonHelper.ParseMangaChapters(manga, JObject.Parse(response));
             }
             catch (Exception)
             {
             }
         }
 
-        // Working
         public void GetChapterPages(Chapter chapter)
         {
             try
@@ -42,7 +40,7 @@
                 var response = client.GetStringAsync(string.Format(Urls.GetMangaChapter, chapter.MangaKey, chapter.Key)).Result;
 
                 // Transform JSON into chapter
-                this.ParseChapterPages(chapter, JObject.Parse(response));
+                JsonHelper.ParseChapterPages(chapter, JObject.Parse(response));
             }
             catch (HttpRequestException)
             {
@@ -57,48 +55,10 @@
                 var response = client.GetStringAsync(string.Format(Urls.GetMangaChapterFromProvider, chapter.MangaKey, chapter.Key, providerKey)).Result;
 
                 // Transform JSON into manga
-                this.ParseChapterPages(chapter, JObject.Parse(response));
+                JsonHelper.ParseChapterPages(chapter, JObject.Parse(response));
             }
             catch (HttpRequestException)
             {
-            }
-        }
-
-        public IEnumerable<Manga> GetRelatedMangas(Manga manga)
-        {
-            try
-            {
-                HttpClient client = new HttpClient();
-                var response = client.GetStringAsync(string.Format(Urls.GetRelatedMangas, manga.Key)).Result;
-
-                // Transform JSON into objects
-                List<Manga> results = new List<Manga>();
-                results.AddRange(JObject.Parse(response).Children().Select(t => this.ParseManga(t)));
-
-                return results;
-            }
-            catch (HttpRequestException)
-            {
-                return Enumerable.Empty<Manga>();
-            }
-        }
-
-        public IEnumerable<int> GetFavoriteMangas(Guid userId)
-        {
-            try
-            {
-                HttpClient client = new HttpClient();
-                var response = client.GetStringAsync(string.Format(Urls.GetFavoriteMangas, userId.ToString())).Result;
-
-                // Transform JSON into objects
-                List<int> results = new List<int>();
-                results.AddRange(JObject.Parse(response).Children().Values<int>());
-
-                return results;
-            }
-            catch (HttpRequestException)
-            {
-                return Enumerable.Empty<int>();
             }
         }
 
@@ -113,27 +73,31 @@
                 }
             }
 
-            var file = await ApplicationData.Current.LocalFolder.CreateFileAsync(Path.Combine("Downloads", chapter.Key), CreationCollisionOption.ReplaceExisting);
+            StorageFolder folder = FileSystemUtilities.GetFolder(ApplicationData.Current.LocalFolder, Constants.DownloadsFolderPath);
 
-            using (var archiveStream = await file.OpenStreamForWriteAsync())
+            if (folder != null)
             {
-                ZipArchive archive = new ZipArchive(archiveStream);
-
-                HttpClient client = new HttpClient();
-                for (int i = 0; i < chapter.Pages.Count; i++)
+                // TODO: CREATE A NAME IN A WAY THAT WE CAN GET INFORMATION FROM IT!!! (SOMETHING LIKE MANGANAME_CHAPTERNUMBER)
+                var file = await folder.CreateFileAsync(chapter.Key, CreationCollisionOption.ReplaceExisting);
+                using (var archiveStream = await file.OpenStreamForWriteAsync())
                 {
-                    var data = await client.GetByteArrayAsync(chapter.Pages[i]);
+                    ZipArchive archive = new ZipArchive(archiveStream);
 
-                    var entry = archive.CreateEntry(Path.Combine("i + 1", Path.GetExtension(chapter.Pages[i])));
-                    using (var stream = entry.Open())
+                    HttpClient client = new HttpClient();
+                    for (int i = 0; i < chapter.Pages.Count; i++)
                     {
-                        stream.Write(data, 0, data.Length);
+                        var data = await client.GetByteArrayAsync(chapter.Pages[i]);
+
+                        var entry = archive.CreateEntry(Path.Combine("i + 1", Path.GetExtension(chapter.Pages[i])));
+                        using (var stream = entry.Open())
+                        {
+                            stream.Write(data, 0, data.Length);
+                        }
                     }
                 }
             }
         }
 
-        // Working
         internal IEnumerable<Manga> GetMangaList()
         {
             try
@@ -147,7 +111,7 @@
                 this.MangaListVersion = json["version"].Value<int>();
 
                 List<Manga> results = new List<Manga>();
-                results.AddRange(json["mangas"].Children().Select(t => this.ParseManga(t)));
+                results.AddRange(json["mangas"].Children().Select(t => JsonHelper.ParseManga(t)));
 
                 return results.OrderByDescending(m => m.Popularity);
             }
@@ -201,6 +165,42 @@
             }
         }
 
+        internal async Task<IEnumerable<RemoteImage>> GetBackgroundImages(Manga manga)
+        {
+            try
+            {
+                HttpClient client = new HttpClient();
+                var response = await client.GetStringAsync(Urls.GetMangaList);
+
+                // Transform JSON into objects
+                JObject json = JObject.Parse(response);
+
+                // TODO: how are we going to send binary data?
+                return null;
+            }
+            catch (HttpRequestException)
+            {
+                return Enumerable.Empty<RemoteImage>();
+            }
+        }
+
+        internal Task<IEnumerable<RemoteImage>> GetDefaultBackgroundImages()
+        {
+            throw new NotImplementedException();
+        }
+
+        internal Task<IEnumerable<RemoteImage>> GetSummaryImages(Manga manga)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal Task<IEnumerable<RemoteImage>> GetDefaultSummaryImages()
+        {
+            throw new NotImplementedException();
+        }
+
+        
+
         internal byte[] GetBackgroundImage(string mangaId)
         {
             try
@@ -208,118 +208,12 @@
                 return null;
 
                 HttpClient client = new HttpClient();
-                return client.GetByteArrayAsync(string.Format(Urls.GetBackgroundImage, mangaId)).Result;
+                return client.GetByteArrayAsync(string.Format(Urls.GetBackgroundImages, mangaId)).Result;
             }
             catch (HttpRequestException)
             {
                 return null;
             }
-        }
-
-        // Working
-        private Manga ParseManga(JToken token)
-        {
-            Manga manga = new Manga();
-
-            manga.Key = token["_id"].Value<string>();
-            manga.Title = token["title"].Value<string>();
-            manga.Description = token["description"].Value<string>();
-            manga.AlternativeNamesDb = string.Join("#", token["alias"].Children().Values<string>());
-            manga.Popularity = JsonHelper.ParseInt(token["hits"]);
-
-            manga.ProvidersDb = string.Join("#", token["providers"].Children().Values<string>());
-
-            manga.AuthorsDb = string.Join("#", token["authors"].Children().Values<string>());
-            manga.ArtistsDb = string.Join("#", token["artists"].Children().Values<string>());
-            manga.CategoriesDb = string.Join("#", token["categories"].Children().Values<string>());
-
-            manga.YearOfRelease = this.ParseYear(JsonHelper.ParseInt(token["released"]));
-            manga.StatusDb = JsonHelper.ParseInt(token["status"]);
-            manga.ReadingDirectionDb = JsonHelper.ParseInt(token["direction"]);
-
-            manga.RemoteSummaryImageDb = token["image"].Value<string>();
-            manga.LocalSummaryImage = null;
-
-            manga.LastChapter = JsonHelper.ParseInt(token["chapters_len"]);
-            manga.LastChapterDate = this.ParseDateTime(JsonHelper.ParseInt(token["last_chapter_date"]));
-            manga.LastChapterRead = null;
-
-            JToken chapters = token["chapters"];
-            if (chapters != null)
-            {
-                manga.Chapters = chapters.Children().Select(c => this.ParseChapter(manga.Key, c)).OrderBy(c => c.Number);
-            }
-            return manga;
-        }
-
-        private void ParseMangaChapters(Manga manga, JToken token)
-        {
-            JToken chapters = token["chapters"];
-            if (chapters != null)
-            {
-                manga.Chapters = chapters.Children().Select(c => this.ParseChapter(manga.Key, c)).OrderBy(c => c.Number);
-            }
-        }
-
-        // Working
-        private Chapter ParseChapter(string mangaKey, JToken token)
-        {
-            Chapter chapter = new Chapter();
-
-            chapter.Key = token["_id"].Value<string>();
-            chapter.MangaKey = mangaKey;
-            chapter.ProviderKey = JsonHelper.ParseString(token["provider"]);
-            chapter.PreviousChapterId = JsonHelper.ParseString(token["previous"]);
-            chapter.NextChapterId = JsonHelper.ParseString(token["next"]);
-            chapter.Number = JsonHelper.ParseInt(token["number"]);
-            chapter.Title = JsonHelper.ParseString(token["title"]);
-            chapter.Pages = this.ParsePages(token["pages"].Children());
-            chapter.UploadedDate = this.ParseDateTime(JsonHelper.ParseInt(token["uploadedDate"]));
-
-            return chapter;
-        }
-
-        // Working
-        private void ParseChapterPages(Chapter chapter, JToken token)
-        {
-            JToken pages = token["pages"];
-            if (pages != null)
-            {
-                chapter.Pages = this.ParsePages(pages.Children());
-            }
-        }
-
-        // Working
-        private List<string> ParsePages(IEnumerable<JToken> pages)
-        {
-            return pages
-                .Select(t => new { Number = t["number"].Value<int>(), Url = t["url"].Value<string>() })
-                .OrderBy(p => p.Number)
-                .Select(p => p.Url).ToList();
-        }
-
-        // Working
-        private DateTime? ParseDateTime(int? days)
-        {
-            if (days.HasValue)
-            {
-                DateTime dateTime = new DateTime();
-                return dateTime.AddDays(days.Value);
-            }
-
-            return null;
-        }
-
-        // Working
-        private int? ParseYear(int? days)
-        {
-            if (days.HasValue)
-            {
-                DateTime dateTime = new DateTime();
-                return dateTime.AddDays(days.Value).Year;
-            }
-
-            return null;
         }
     }
 }

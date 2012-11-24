@@ -14,12 +14,12 @@
 
         internal static string GetMangaChapterFromProvider { get { return BaseUrl + "/manga/{0}/{1}/{2}"; } }
 
-        internal static string GetAuthorMangas { get { return BaseUrl + "/author/{0}"; } }
+        internal static string GetBackgroundImages { get { return BaseUrl + "/manga/{0}/backgrounds"; } }
 
-        internal static string GetRelatedMangas { get { return BaseUrl + "/manga/{0}/related"; } }
+        internal static string GetDefaultBackgroundImages { get { return BaseUrl + "/backgrounds"; } }
 
-        internal static string GetBackgroundImage { get { return BaseUrl + "/manga/{0}/background"; } }
+        internal static string GetSummaryImages { get { return BaseUrl + "/manga/{0}/summaries"; } }
 
-        internal static string GetFavoriteMangas { get { return BaseUrl + "/favorite/{0}"; } }
+        internal static string GetDefaultSummaryImages { get { return BaseUrl + "/summaries"; } }
     }
 }

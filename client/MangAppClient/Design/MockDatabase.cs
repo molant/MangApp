@@ -18,13 +18,13 @@ namespace MangAppClient.Design
 
         public void CreateInitialDb()
         {
-            mangaList = new ObservableCollection<Manga>
-            {
-                new Manga { Key = "1", Title = "Manga Title 1", AuthorsDb = "Author 1", CategoriesDb = "Action" },
-                new Manga { Key = "2", Title = "Manga Title 2", AuthorsDb = "Author 2", CategoriesDb = "Comedy" },
-                new Manga { Key = "3", Title = "Manga Title 3", AuthorsDb = "Author 3", CategoriesDb = "Horror" },
-                new Manga { Key = "4", Title = "Manga Title 4", AuthorsDb = "Author 4", CategoriesDb = "Mystery" },
-            };
+            //mangaList = new ObservableCollection<Manga>
+            //{
+            //    new Manga { Key = "1", Title = "Manga Title 1", AuthorsDb = "Author 1", CategoriesDb = "Action" },
+            //    new Manga { Key = "2", Title = "Manga Title 2", AuthorsDb = "Author 2", CategoriesDb = "Comedy" },
+            //    new Manga { Key = "3", Title = "Manga Title 3", AuthorsDb = "Author 3", CategoriesDb = "Horror" },
+            //    new Manga { Key = "4", Title = "Manga Title 4", AuthorsDb = "Author 4", CategoriesDb = "Mystery" },
+            //};
         }
 
         public void AddFavoriteManga(Manga manga)
@@ -67,6 +67,42 @@ namespace MangAppClient.Design
         public void UpdateMangaList()
         {
             throw new System.NotImplementedException();
+        }
+
+        public ObservableCollection<Manga> MangaList
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public void UpdateManga(Manga manga)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<Manga> GetMangaRecomendations()
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<string> ILocalData.GetBackgroundImage(Manga manga)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        Task<string> ILocalData.GetDefaultBackgroundImage()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<string> GetDefaultSummaryImage()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<string> GetSummaryImage(Manga manga)
+        {
+            throw new NotImplementedException();
         }
     }
 }

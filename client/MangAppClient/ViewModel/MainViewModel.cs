@@ -50,7 +50,7 @@ namespace MangAppClient.ViewModel
         {
             get
             {
-                return new Uri(this.dataBase.GetDefaultBackgroundImage());
+                return new Uri(this.dataBase.GetDefaultBackgroundImage().Result);
             }
         }
 
@@ -75,7 +75,7 @@ namespace MangAppClient.ViewModel
             }
             else
             {
-                summaries = this.dataBase.GetMangaList().OrderBy(s => s.Popularity);
+                summaries = this.dataBase.MangaList.OrderBy(s => s.Popularity);
             }
 
             var genreList = summaries.SelectMany(s => s.Categories).Distinct();
@@ -100,7 +100,7 @@ namespace MangAppClient.ViewModel
             var latestGroup = new MangaGroupViewModel
             {
                 Key = "Latest",
-                GroupItems = summaries.OrderByDescending(s => s.LastChapterDate).Take(10).Select(s => { return new MangaSummaryViewModel(s); }).ToObservableCollection()
+                GroupItems = summaries.OrderByDescending(s => s.LastChapterUploadedDate).Take(10).Select(s => { return new MangaSummaryViewModel(s); }).ToObservableCollection()
             };
             MangaGroups.Add(latestGroup);
 

@@ -102,9 +102,11 @@
     <Compile Include="Constants.cs" />
     <Compile Include="Model\Chapter.cs" />
     <Compile Include="Model\LocalDataVersion.cs" />
+    <Compile Include="Model\NotificationObject.cs" />
     <Compile Include="Model\ReadingDirection.cs" />
     <Compile Include="Model\MangaStatus.cs" />
     <Compile Include="Model\Manga.cs" />
+    <Compile Include="Model\RemoteImage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Model\DiffResult.cs" />
     <Compile Include="Model\RemoveDiffResult.cs" />

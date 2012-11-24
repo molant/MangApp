@@ -1,27 +1,27 @@
 ﻿namespace MangAppClient.Core.Services
 {
     using MangAppClient.Core.Model;
-    using System;
     using System.Collections.Generic;
+    using System.Collections.ObjectModel;
     using System.Threading.Tasks;
-    using Windows.UI.Xaml.Media.Imaging;
 
+    // TODO: kill this sooner or later
     public interface ILocalData
     {
-        IEnumerable<Manga> GetMangaList();
+        ObservableCollection<Manga> MangaList { get; }
 
         void UpdateMangaList();
 
-        void AddFavoriteManga(Manga manga);
+        void UpdateManga(Manga manga);
 
-        void RemoveFavoriteManga(Manga manga);
+        Task<string> GetDefaultBackgroundImage();
 
-        void UpdateFavoriteManga(Manga manga, int lastChapterRead);
+        Task<string> GetBackgroundImage(Manga manga);
 
-        string GetBackgroundImage(Manga manga);
+        Task<string> GetDefaultSummaryImage();
 
-        string GetDefaultBackgroundImage();
+        Task<string> GetSummaryImage(Manga manga);
 
-        string UpdateBackgroundImage(Manga manga);
+        IEnumerable<Manga> GetMangaRecomendations();
     }
 }
