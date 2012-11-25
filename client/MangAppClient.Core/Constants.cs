@@ -8,6 +8,8 @@
 
         public static readonly string DefaultImageName = "default";
 
+        public static readonly string BinDataFolder = "Data";
+
         public static readonly string SummaryImagesFolderPath = "SummaryImages";
 
         public static readonly string BackgroundImagesFolderPath = "BackgroundImages";

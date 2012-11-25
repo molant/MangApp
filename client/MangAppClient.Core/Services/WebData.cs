@@ -21,6 +21,12 @@
         {
             try
             {
+                // Check if we already have the chapter in memory
+                if (manga.Chapters != null && manga.Chapters.Count() > 0)
+                {
+                    return;
+                }
+
                 HttpClient client = new HttpClient();
                 var response = client.GetStringAsync(string.Format(Urls.GetMangaDetail, manga.Key)).Result;
 
@@ -36,6 +42,12 @@
         {
             try
             {
+                // Check if we already have the pages in memory
+                if (chapter.Pages != null && chapter.Pages.Count() > 0)
+                {
+                    return;
+                }
+
                 HttpClient client = new HttpClient();
                 var response = client.GetStringAsync(string.Format(Urls.GetMangaChapter, chapter.MangaKey, chapter.Key)).Result;
 
@@ -98,7 +110,7 @@
             }
         }
 
-        internal IEnumerable<Manga> GetMangaList()
+        internal IEnumerable<Manga> GetMangas()
         {
             try
             {
@@ -118,6 +130,29 @@
             catch (HttpRequestException)
             {
                 return Enumerable.Empty<Manga>();
+            }
+        }
+
+        internal IEnumerable<Provider> GetProviders()
+        {
+            try
+            {
+                HttpClient client = new HttpClient();
+                var response = client.GetStringAsync(Urls.GetMangaList).Result;
+
+                // Transform JSON into objects
+                JArray json = JArray.Parse(response);
+
+                this.MangaListVersion = json["version"].Value<int>();
+
+                List<Provider> results = new List<Provider>();
+                results.AddRange(json.Children().Select(j => JsonHelper.ParseProvider(j)));
+
+                return results;
+            }
+            catch (HttpRequestException)
+            {
+                return Enumerable.Empty<Provider>();
             }
         }
 
@@ -170,13 +205,13 @@
             try
             {
                 HttpClient client = new HttpClient();
-                var response = await client.GetStringAsync(Urls.GetMangaList);
+                //var response = await client.GetStringAsync(Urls.GetMangaList).ConfigureAwait(false);
 
                 // Transform JSON into objects
-                JObject json = JObject.Parse(response);
+                //JObject json = JObject.Parse(response);
 
                 // TODO: how are we going to send binary data?
-                return null;
+                return Enumerable.Empty<RemoteImage>();
             }
             catch (HttpRequestException)
             {
@@ -184,21 +219,64 @@
             }
         }
 
-        internal Task<IEnumerable<RemoteImage>> GetDefaultBackgroundImages()
+        internal async Task<IEnumerable<RemoteImage>> GetDefaultBackgroundImages()
         {
-            throw new NotImplementedException();
+            try
+            {
+                HttpClient client = new HttpClient();
+                //var response = await client.GetStringAsync(Urls.GetMangaList).ConfigureAwait(false);
+
+                // Transform JSON into objects
+                //JObject json = JObject.Parse(response);
+
+                // TODO: how are we going to send binary data?
+                return Enumerable.Empty<RemoteImage>();
+            }
+            catch (HttpRequestException)
+            {
+                return Enumerable.Empty<RemoteImage>();
+            }
         }
 
-        internal Task<IEnumerable<RemoteImage>> GetSummaryImages(Manga manga)
+        internal async Task<IEnumerable<RemoteImage>> GetSummaryImages(Manga manga)
         {
-            throw new NotImplementedException();
+            try
+            {
+                HttpClient client = new HttpClient();
+                //var response = await client.GetStringAsync(Urls.GetMangaList).ConfigureAwait(false);
+
+                // Transform JSON into objects
+                //JObject json = JObject.Parse(response);
+
+                // TODO: how are we going to send binary data?
+                return Enumerable.Empty<RemoteImage>();
+            }
+            catch (HttpRequestException)
+            {
+                return Enumerable.Empty<RemoteImage>();
+            }
         }
 
-        internal Task<IEnumerable<RemoteImage>> GetDefaultSummaryImages()
+        internal async Task<IEnumerable<RemoteImage>> GetDefaultSummaryImages()
         {
-            throw new NotImplementedException();
+            try
+            {
+                HttpClient client = new HttpClient();
+                //var response = await client.GetStringAsync(Urls.GetMangaList).ConfigureAwait(false);
+
+                // Transform JSON into objects
+                //JObject json = JObject.Parse(response);
+
+                // TODO: how are we going to send binary data?
+                return Enumerable.Empty<RemoteImage>();
+            }
+            catch (HttpRequestException)
+            {
+                return Enumerable.Empty<RemoteImage>();
+            }
         }
 
+        // TODO: method to get the provider logos
         
 
         internal byte[] GetBackgroundImage(string mangaId)

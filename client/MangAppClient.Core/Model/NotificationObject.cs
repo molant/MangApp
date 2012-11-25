@@ -10,7 +10,7 @@
 
         protected bool SetValue<T>(ref T field, T newValue, [CallerMemberName] string propertyName = "")
         {
-            if (!field.Equals(newValue))
+            if (!object.Equals(field, newValue))
             {
                 field = newValue;
                 this.RaisePropertyChanged(propertyName);

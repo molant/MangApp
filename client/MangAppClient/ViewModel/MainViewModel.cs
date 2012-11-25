@@ -59,9 +59,12 @@ namespace MangAppClient.ViewModel
         /// </summary>
         public MainViewModel(ILocalData dataBase)
         {
+            LocalDataGenerator.CreateInitialDb(true);
+
             this.dataBase = dataBase;
+            this.dataBase.Initialize();
+
             this.mangaGroups = new ObservableCollection<MangaGroupViewModel>();
-            //this.dataBase.CreateInitialDb();
             LoadMangaList();
         }
 
@@ -89,7 +92,7 @@ namespace MangAppClient.ViewModel
                 };
 
                 group.GroupItems = new ObservableCollection<MangaSummaryViewModel>();
-                foreach(var manga in summaries.Where(s => s.Categories.Contains(genre)).Take(6))
+                foreach (var manga in summaries.Where(s => s.Categories.Contains(genre)).Take(6))
                 {
                     group.GroupItems.Add(new MangaSummaryViewModel(manga));
                 }

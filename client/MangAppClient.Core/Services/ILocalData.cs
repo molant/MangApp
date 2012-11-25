@@ -20,8 +20,6 @@
 
         Task<string> GetBackgroundImage(Manga manga);
 
-        Task<string> GetDefaultSummaryImage();
-
         Task<string> GetSummaryImage(Manga manga);
 
         IEnumerable<Manga> GetMangaRecomendations();

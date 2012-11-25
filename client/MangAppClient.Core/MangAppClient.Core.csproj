@@ -103,6 +103,7 @@
     <Compile Include="Model\Chapter.cs" />
     <Compile Include="Model\LocalDataVersion.cs" />
     <Compile Include="Model\NotificationObject.cs" />
+    <Compile Include="Model\Provider.cs" />
     <Compile Include="Model\ReadingDirection.cs" />
     <Compile Include="Model\MangaStatus.cs" />
     <Compile Include="Model\Manga.cs" />

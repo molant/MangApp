@@ -3,6 +3,7 @@
     using SQLite;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     public class Manga : NotificationObject
     {
@@ -32,13 +33,11 @@
 
         private double averageRating;
 
-        private int lastChapterUploaded;
+        private int? lastChapterUploaded;
 
         private DateTime? lastChapterUploadedDate;
 
         private string remoteSummaryImagePath;
-
-        private string localSummaryImagePath;
 
         private int currentChapterReading;
 
@@ -58,10 +57,18 @@
         [Ignore]
         public IEnumerable<string> Providers
         {
-            get { return this.ProvidersDb.Split(Constants.Separators, StringSplitOptions.RemoveEmptyEntries); }
+            get
+            {
+                if (string.IsNullOrEmpty(this.ProvidersDb))
+                {
+                    return Enumerable.Empty<string>();
+                }
+
+                return this.ProvidersDb.Split(Constants.Separators, StringSplitOptions.RemoveEmptyEntries);
+            }
         }
 
-        internal string ProvidersDb
+        public string ProvidersDb
         {
             get { return this.providers; }
             set
@@ -88,10 +95,18 @@
         [Ignore]
         public IEnumerable<string> AlternativeNames
         {
-            get { return this.AlternativeNamesDb.Split(Constants.Separators, StringSplitOptions.RemoveEmptyEntries); }
+            get
+            {
+                if (string.IsNullOrEmpty(this.AlternativeNamesDb))
+                {
+                    return Enumerable.Empty<string>();
+                }
+
+                return this.AlternativeNamesDb.Split(Constants.Separators, StringSplitOptions.RemoveEmptyEntries);
+            }
         }
 
-        internal string AlternativeNamesDb
+        public string AlternativeNamesDb
         {
             get { return this.alternativeNames; }
             set
@@ -106,10 +121,18 @@
         [Ignore]
         public IEnumerable<string> Authors
         {
-            get { return this.AuthorsDb.Split(Constants.Separators, StringSplitOptions.RemoveEmptyEntries); }
+            get 
+            {
+                if (string.IsNullOrEmpty(this.AuthorsDb))
+                {
+                    return Enumerable.Empty<string>();
+                }
+
+                return this.AuthorsDb.Split(Constants.Separators, StringSplitOptions.RemoveEmptyEntries);
+            }
         }
 
-        internal string AuthorsDb
+        public string AuthorsDb
         {
             get { return this.authors; }
             set
@@ -124,10 +147,18 @@
         [Ignore]
         public IEnumerable<string> Artists
         {
-            get { return this.ArtistsDb.Split(Constants.Separators, StringSplitOptions.RemoveEmptyEntries); }
+            get
+            {
+                if (string.IsNullOrEmpty(this.ArtistsDb))
+                {
+                    return Enumerable.Empty<string>();
+                }
+
+                return this.ArtistsDb.Split(Constants.Separators, StringSplitOptions.RemoveEmptyEntries);
+            }
         }
 
-        internal string ArtistsDb
+        public string ArtistsDb
         {
             get { return this.artists; }
             set
@@ -142,10 +173,18 @@
         [Ignore]
         public IEnumerable<string> Categories
         {
-            get { return this.CategoriesDb.Split(Constants.Separators, StringSplitOptions.RemoveEmptyEntries); }
+            get 
+            {
+                if (string.IsNullOrEmpty(this.CategoriesDb))
+                {
+                    return Enumerable.Empty<string>();
+                }
+
+                return this.CategoriesDb.Split(Constants.Separators, StringSplitOptions.RemoveEmptyEntries);
+            }
         }
 
-        internal string CategoriesDb
+        public string CategoriesDb
         {
             get { return this.categories; }
             set
@@ -177,7 +216,7 @@
             }
         }
 
-        internal int? StatusDb
+        public int? StatusDb
         {
             get { return this.status; }
             set
@@ -203,7 +242,7 @@
             }
         }
 
-        internal int? ReadingDirectionDb
+        public int? ReadingDirectionDb
         {
             get { return this.readingDirection; }
             set
@@ -227,7 +266,7 @@
             internal set { this.SetValue(ref this.averageRating, value); }
         }
 
-        public int LastChapterUploaded
+        public int? LastChapterUploaded
         {
             get { return this.lastChapterUploaded; }
             internal set { this.SetValue(ref this.lastChapterUploaded, value); }
@@ -244,12 +283,6 @@
         {
             get { return this.remoteSummaryImagePath; }
             set { this.SetValue(ref this.remoteSummaryImagePath, value); }
-        }
-
-        public string SummaryImagePath
-        {
-            get { return this.localSummaryImagePath; }
-            internal set { this.SetValue(ref this.localSummaryImagePath, value); }
         }
 
         public int CurrentChapterReading
@@ -281,6 +314,15 @@
 
         public Manga()
         {
+        }
+
+        // TODO: kill this method asap
+        public Manga(string key, string title, string authors, string categories)
+        {
+            this.Key = key;
+            this.Title = title;
+            this.AuthorsDb = authors;
+            this.CategoriesDb = categories;
         }
     }
 }

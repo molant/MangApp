@@ -1,4 +1,5 @@
 ﻿using MangAppClient.Core.Model;
+using MangAppClient.Core.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,8 +12,13 @@ namespace MangAppClient.ViewModel
 {
     public class MangaSummaryViewModel : MangAppViewModelBase
     {
+        private LocalData localData;
+
         public MangaSummaryViewModel(Manga manga)
         {
+            // HACK: LocalData should be a singleton or something global
+            this.localData = new LocalData();
+
             Title = manga.Title;
             Description = manga.Description;
             AlternativeNames = manga.AlternativeNames;
@@ -23,7 +29,7 @@ namespace MangAppClient.ViewModel
             YearOfRelease = manga.YearOfRelease;
             Status = manga.Status;
             ReadingDirection = manga.ReadingDirection;
-            SummaryImagePath = new Uri(Path.Combine(ApplicationData.Current.LocalFolder.Path, manga.SummaryImagePath));
+            SummaryImagePath = new Uri(Path.Combine(ApplicationData.Current.LocalFolder.Path, this.localData.GetSummaryImage(manga).Result));
             LastChapter = manga.LastChapterUploaded;
             LastChapterDate = manga.LastChapterUploadedDate;
         }

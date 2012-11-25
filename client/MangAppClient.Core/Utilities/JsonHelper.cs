@@ -8,19 +8,9 @@
 
     public static class JsonHelper
     {
-        public static Manga ParseManga(JToken token)
+        internal static Manga ParseManga(JToken token)
         {
-            // TODO: handle null return in callers to this method!
-            int? lastChapter = JsonHelper.ParseInt(token["chapters_len"]);
-
-            if (!lastChapter.HasValue)
-            {
-                return null;
-            }
-
             Manga manga = new Manga();
-
-            manga.LastChapterUploaded = lastChapter.Value;
 
             manga.Key = token["_id"].Value<string>();
             manga.Title = token["title"].Value<string>();
@@ -36,13 +26,13 @@
             manga.ArtistsDb = string.Join("#", token["artists"].Children().Values<string>());
             manga.CategoriesDb = string.Join("#", token["categories"].Children().Values<string>());
 
-            manga.YearOfRelease = ParseYear(JsonHelper.ParseInt(token["released"]));
+            manga.YearOfRelease = JsonHelper.ParseInt(token["released"]);
             manga.StatusDb = JsonHelper.ParseInt(token["status"]);
             manga.ReadingDirectionDb = JsonHelper.ParseInt(token["direction"]);
 
             manga.RemoteSummaryImagePath = token["image"].Value<string>();
-            manga.SummaryImagePath = null;
 
+            manga.LastChapterUploaded = JsonHelper.ParseInt(token["chapters_len"]);
             manga.LastChapterUploadedDate = ParseDateTime(JsonHelper.ParseInt(token["last_chapter_date"]));
             manga.CurrentChapterReading = 1;
             manga.CurrentPageReading = 1;
@@ -56,7 +46,7 @@
             return manga;
         }
 
-        public static void ParseMangaChapters(Manga manga, JToken token)
+        internal static void ParseMangaChapters(Manga manga, JToken token)
         {
             JToken chapters = token["chapters"];
             if (chapters != null)
@@ -65,13 +55,25 @@
             }
         }
 
-        public static void ParseChapterPages(Chapter chapter, JToken token)
+        internal static void ParseChapterPages(Chapter chapter, JToken token)
         {
             JToken pages = token["pages"];
             if (pages != null)
             {
                 chapter.Pages = ParsePages(pages.Children());
             }
+        }
+
+        internal static Provider ParseProvider(JToken token)
+        {
+            Provider provider = new Provider();
+
+            provider.Key = token["_id"].Value<string>();
+            provider.Name = token["name"].Value<string>();
+            provider.Url = token["url"].Value<string>();
+            provider.LogoImagePath = token["image"].Value<string>();
+
+            return provider;
         }
 
         private static Chapter ParseChapter(string mangaKey, JToken token)

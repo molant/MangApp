@@ -18,13 +18,13 @@ namespace MangAppClient.Design
 
         public void CreateInitialDb()
         {
-            //mangaList = new ObservableCollection<Manga>
-            //{
-            //    new Manga { Key = "1", Title = "Manga Title 1", AuthorsDb = "Author 1", CategoriesDb = "Action" },
-            //    new Manga { Key = "2", Title = "Manga Title 2", AuthorsDb = "Author 2", CategoriesDb = "Comedy" },
-            //    new Manga { Key = "3", Title = "Manga Title 3", AuthorsDb = "Author 3", CategoriesDb = "Horror" },
-            //    new Manga { Key = "4", Title = "Manga Title 4", AuthorsDb = "Author 4", CategoriesDb = "Mystery" },
-            //};
+            mangaList = new ObservableCollection<Manga>
+            {
+                new Manga("1", "Manga Title 1", "Author 1", "Action"),
+                new Manga("2", "Manga Title 2", "Author 2", "Comedy"),
+                new Manga("3", "Manga Title 3", "Author 3", "Horror"),
+                new Manga("4", "Manga Title 4", "Author 4", "Mystery")
+            };
         }
 
         public void AddFavoriteManga(Manga manga)
@@ -108,7 +108,6 @@ namespace MangAppClient.Design
 
         public void Initialize()
         {
-            throw new NotImplementedException();
         }
     }
 }

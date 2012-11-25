@@ -69,7 +69,7 @@ namespace MangAppClient.ViewModel
         {
             get
             {
-                return new Uri(Path.Combine(ApplicationData.Current.LocalFolder.Path, Manga.SummaryImagePath));
+                return new Uri(Path.Combine(ApplicationData.Current.LocalFolder.Path, dataBase.GetSummaryImage(Manga).Result));
             }
         }
 
@@ -126,9 +126,11 @@ namespace MangAppClient.ViewModel
         {
             service.GetMangaChapters(Manga);
 
-            var imageUri = await dataBase.GetBackgroundImage(Manga);            
-            if(imageUri == null)
-                imageUri = dataBase.GetDefaultBackgroundImage().Result;
+            var imageUri = await dataBase.GetBackgroundImage(Manga);
+            if (imageUri == null)
+            {
+                imageUri = await dataBase.GetDefaultBackgroundImage();
+            }
 
             Background = new BitmapImage(new Uri(Path.Combine(ApplicationData.Current.LocalFolder.Path, imageUri)));
         }
