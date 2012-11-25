@@ -107,6 +107,8 @@
                         }
                     }
                 }
+
+                chapter.IsDownloaded = true;
             }
         }
 
